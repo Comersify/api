@@ -1,0 +1,10 @@
+env
+.env
+db.sqlite3
+cart/migrations/*
+order/migrations/*
+product/migrations/*
+tracking/migrations/*
+user/migrations/*
+whitelist/migrations/*
+
