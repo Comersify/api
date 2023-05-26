@@ -8,3 +8,4 @@ tracking/migrations/*
 user/migrations/*
 whitelist/migrations/*
 __pycache__
+./*/__pycache__/*
