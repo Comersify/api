@@ -7,4 +7,4 @@ product/migrations/*
 tracking/migrations/*
 user/migrations/*
 whitelist/migrations/*
-
+__pycache__
