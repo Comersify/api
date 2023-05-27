@@ -28,8 +28,8 @@ INSTALLED_APPS = [
     'order',
     'product',
     'user',
+    'wishlist',
     'tracking',
-    'whitelist',
     'cart',
 
 ]
