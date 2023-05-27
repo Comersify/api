@@ -6,6 +6,6 @@ order/migrations/*
 product/migrations/*
 tracking/migrations/*
 user/migrations/*
-whitelist/migrations/*
+wishlist/migrations/*
 __pycache__
 ./*/__pycache__/*
