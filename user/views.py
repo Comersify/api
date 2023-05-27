@@ -1,3 +1,13 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def update_account(request):
+    return
+
+
+def login(request):
+    return
+
+
+def signup(request):
+    return
