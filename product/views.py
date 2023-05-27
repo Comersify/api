@@ -32,6 +32,8 @@ def delete_coupon(request, id):
 def update_coupon(request, id):
     return {"mess": "heelo"}
 
+def get_coupon_by_id(request, id):
+    return 
 
 def get_discount(request):
     return {"mess": "heelo"}
@@ -47,3 +49,21 @@ def delete_discount(request, id):
 
 def update_discount(request, id):
     return {"mess": "heelo"}
+
+def get_my_product(request):
+    return 
+
+def top_deals(request):
+    return 
+
+def top_categories(request):
+    return 
+
+def get_categories(request):
+    return 
+
+def get_product_details(request, id):
+    return 
+
+def get_reviews(request, id):
+    return 
