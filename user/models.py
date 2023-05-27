@@ -58,3 +58,8 @@ class Store(models.Model):
     description = models.TextField()
     logo = models.ImageField(upload_to=make_logo_image_path)
     cover = models.ImageField(upload_to=make_cover_image_path)
+
+
+class AppReviews(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.SET_NULL)
+    review = models.TextField()
