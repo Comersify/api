@@ -61,5 +61,15 @@ class Store(models.Model):
 
 
 class AppReviews(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.SET_NULL)
+    class IntegerChoices(models.IntegerChoices):
+        CHOICE_ONE = 1, 'One'
+        CHOICE_TWO = 2, 'Two'
+        CHOICE_THREE = 3, 'Three'
+        CHOICE_FOUR = 4, 'Four'
+        CHOICE_FIVE = 5, 'Five'
+
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     review = models.TextField()
+    stars = models.IntegerField(choices=IntegerChoices.choices)
+
+
