@@ -1,12 +1,14 @@
-FROM python:latest
-
-COPY ./requirements.txt ./requirements.txt
-
-RUN pip install -r requirements.txt
-
+FROM python:latest 
+WORKDIR /api
 RUN pip install gunicorn
-
+ENV SECRET_KEY=django-insecure-jfalh_%+a9ub@h*vrc*ws^et6*8-7*e56yzqj8g(pno-(iu^47
+ENV ENV=DEV
+ENV DJANGO_MANAGEPY_COLLECTSTATIC_NO_INPUT=1
+COPY ./requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
 COPY . . 
-
-CMD ["gunicorn", "core.wsgi:application",  "--bind", "0.0.0.0:8000"]
+RUN python manage.py collectstatic --no-input
+RUN python manage.py makemigrations 
+RUN python manage.py migrate
+CMD ["gunicorn", "--reload", "core.wsgi:application",  "--bind", "0.0.0.0:8000"]
 
