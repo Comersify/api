@@ -12,6 +12,7 @@ def update_account(request):
 
 class LoginView(APIView):
     def post(self, request):
+        print(request.data)
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
@@ -25,6 +26,11 @@ class LoginView(APIView):
             return Response(response_data)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class RefreshTokenView(APIView):
+    def post(self, request):
+        return Response({"refresh": "z"})
 
 
 def signup(request):
