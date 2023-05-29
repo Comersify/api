@@ -1,4 +1,5 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
+import json
 
 
 class TokenToUserMiddleware:
@@ -12,10 +13,10 @@ class TokenToUserMiddleware:
             jwt_auth = JWTAuthentication()
             # Returns a tuple (user, token)
             user, _ = jwt_auth.authenticate(request)
-            print(user)
             # Assign the user to request.user
             request.user = user if user.is_authenticated else None
-
+        if request.body:
+            request.data = json.loads(request.body)
         # Process the request
         response = self.get_response(request)
 
