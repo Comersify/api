@@ -36,6 +36,9 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=20, unique=True)
     user_type = models.CharField(
         choices=TypeChoices.choices, default=TypeChoices.CUSTOMER, max_length=10)
+    is_active = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    image = models.ImageField(upload_to="uplaods/user", null=True, blank=True)
     REQUIRED_FIELDS = ['email', 'first_name',
                        'last_name']
 
@@ -71,5 +74,3 @@ class AppReviews(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     review = models.TextField()
     stars = models.IntegerField(choices=IntegerChoices.choices)
-
-
