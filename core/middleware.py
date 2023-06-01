@@ -9,17 +9,16 @@ class TokenToUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print(request.headers)
         # Check if the authorization header is present
         if 'Authorization' in request.headers:
             # Use JWTAuthentication to authenticate the token
             AccessTokenBackend().authenticate(request)
 
-        if request.body:
-            try:
+        try:
+            if request.body:
                 request.data = json.loads(request.body)
-            except:
-                pass
+        except:
+            pass
         # Process the request
         response = self.get_response(request)
 
