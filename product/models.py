@@ -7,32 +7,42 @@ USER = get_user_model()
 
 
 def make_product_image_path(instance, filename):
-    username = instance.product.user.username
+    username = instance.product.store.user.username
     filename = f"p_{filename}"
     return os.path.join('uploads/vendors', username, 'product', filename)
 
 
 def make_product_image_path(instance, filename):
-    username = instance.product.user.username
+    username = instance.product.store.user.username
     filename = f"pk_{filename}"
     return os.path.join('uploads/vendors', username, 'product', filename)
 
 
 class Category(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"parent__isnull": True})
     name = models.CharField(max_length=100)
 
 
 class Product(models.Model):
-    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    store = models.ForeignKey(
+        'user.Store', on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)
     categoryID = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     price = models.FloatField()
+    in_stock = models.IntegerField()
 
     def __str__(self) -> str:
         return self.title
+
+
+class ProductPackage(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(upload_to="uploads/products-package/")
+    title = models.CharField(max_length=100)
 
 
 class ProductImage(models.Model):
@@ -40,22 +50,16 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to=make_product_image_path)
 
 
-class ProductPackage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="images/products-package/")
-    title = models.CharField(max_length=100)
-
-
 class Review(models.Model):
-
     class IntegerChoices(models.IntegerChoices):
         CHOICE_ONE = 1, 'One'
         CHOICE_TWO = 2, 'Two'
         CHOICE_THREE = 3, 'Three'
         CHOICE_FOUR = 4, 'Four'
         CHOICE_FIVE = 5, 'Five'
-
-    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True, limit_choices_to={
+        'user__user_type': 'CUSTOMER'})
     review = models.TextField()
     stars = models.IntegerField(choices=IntegerChoices.choices)
 

@@ -56,11 +56,14 @@ class ShippingInfo(models.Model):
 
 class Store(models.Model):
 
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, unique=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, limit_choices_to={
+        'user__user_type': 'VENDOR'})
+    name = models.CharField(max_length=30)
     description = models.TextField()
-    logo = models.ImageField(upload_to=make_logo_image_path)
-    cover = models.ImageField(upload_to=make_cover_image_path)
+    logo = models.ImageField(
+        upload_to=make_logo_image_path, null=True, blank=True)
+    cover = models.ImageField(
+        upload_to=make_cover_image_path, null=True, blank=True)
 
 
 class AppReviews(models.Model):

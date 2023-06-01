@@ -12,7 +12,8 @@ class Order(models.Model):
         SHIPPED = 'SHIPPED', "SHIPPED"
         DELEVRED = 'DELEVRED', "DELEVRED"
 
-    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, limit_choices_to={
+        'user__user_type': 'CUSTOMER'})
     product = models.ForeignKey(
         "product.Product", on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField()

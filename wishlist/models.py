@@ -7,5 +7,6 @@ USER = get_user_model()
 
 class WishList(models.Model):
 
-    user = models.OneToOneField(USER, on_delete=models.CASCADE)
+    user = models.OneToOneField(USER, on_delete=models.CASCADE, limit_choices_to={
+                                'user__user_type': 'CUSTOMER'})
     products = models.ManyToManyField("product.Product")

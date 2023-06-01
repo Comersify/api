@@ -12,7 +12,7 @@ class ShoppingCart(models.Model):
         SUBMITTED = "SUBMITTED", "SUBMITTED"
         IN_PROGRESSE = "IN_PROGRESSE", "IN_PROGRESSE"
 
-    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
-    orders = models.ManyToManyField("order.Order")
-    status = models.CharField(
-        max_length=20, choices=StatusChoices.choices, default=StatusChoices.IN_PROGRESSE)
+    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True,  limit_choices_to={
+        'user__user_type': 'CUSTOMER'})
+    orders = models.ManyToManyField("order.Order",  limit_choices_to={
+        'order__status': 'IN_CART'})
