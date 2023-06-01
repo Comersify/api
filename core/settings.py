@@ -18,6 +18,10 @@ ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL = 'user.CustomUser'
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,7 +38,6 @@ INSTALLED_APPS = [
     'cart',
     'user',
     'ads',
-
 ]
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
@@ -63,6 +66,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 TEMPLATES = [
     {
