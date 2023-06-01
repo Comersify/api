@@ -32,7 +32,7 @@ def delete_coupon(request, id):
 def update_coupon(request, id):
     return {"mess": "heelo"}
 
-def get_coupon_by_id(request, id):
+def get_coupon_by_code(request, id):
     return 
 
 def get_discount(request):

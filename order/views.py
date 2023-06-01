@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 
-def get_orders(request):
+def get_my_orders(request):
     return
 
 

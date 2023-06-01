@@ -6,8 +6,12 @@ def get_cart_details(request, id):
 
 
 def add_product_to_cart(request, id):
-    return 
+    return
 
 
 def delete_product_from_cart(request, id):
-    return 
+    return
+
+
+def update_product_in_cart(request, id):
+    return
