@@ -1,5 +1,8 @@
 PHONY: run
 
+shell: 
+	python manage.py shell
+
 run:
 	python manage.py runserver
 
