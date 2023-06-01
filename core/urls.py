@@ -22,8 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("product.urls")),
     path("", include("order.urls")),
-    # path("cart/", include("cart.urls")),
-    # path("whitelist/", include("whitelist.urls")),
+    path("", include("cart.urls")),
+    path("", include("wishlist.urls")),
     path("", include("user.urls")),
+    path("", include("ads.urls")),
     # path("tracking/", include("tracking.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
