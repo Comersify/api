@@ -5,6 +5,10 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
+from .models import Store
+from product.serializers import ProductSerializer
+from product.models import Review
+from order.models import Order
 
 User = get_user_model()
 
@@ -69,7 +73,6 @@ class SignupView(APIView):
 
     @csrf_exempt
     def post(self, request):
-        print(request.data)
         first_name = request.data.get('firstName')
         last_name = request.data.get('lastName')
         password = request.data.get('password')
@@ -100,28 +103,28 @@ class SignupView(APIView):
 
 class GetStoreByIDView(APIView):
     def get(self, request, id):
-        sotre = Store.objects.filter(id=id).get()
+        sotre = Store.objects.filter(id=id)
+        if store.exists():
+            store = sotre.get()
+        else:
+            return Response({'type': 'error', 'message': "Store not found"})
         orders = Order.objects.filter(product__store__id=id).count()
         reviews = Review.objects.filter(product__store__id=id).count()
         data = {
-            "cover": store.cover,
-            "logo": store.logo,
-            "name": store.name,
-            "description": store.description,
-            "orders":orders,
+            "cover": sotre.cover.url,
+            "logo": sotre.logo.url,
+            "name": sotre.name,
+            "description": sotre.description,
+            "orders": orders,
             "reviews": reviews,
-            
+            "products": ProductSerializer().get_data(store_id=id)
         }
         return Response({'type': 'success', 'data': data})
 
+
 class GetTopStorseView(APIView):
-    def get(self, request, id):
+    def get(self, request):
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-
-def top_stores(request):
-    return
 
 
 def get_app_reviews(request):
