@@ -1,14 +1,15 @@
 from django.urls import path
 from .views import *
-from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path("account/update/", update_account),
-    path("login/", csrf_exempt(LoginView.as_view())),
-    path("signup/", signup),
-    path("store/<int:id>", csrf_exempt(GetStoreByIDView.as_view())),
-    path("store/top/", top_stores),
-    path("app-reviews/", get_app_reviews),
+    path("account/info/", SettingsView.as_view()),
+    path("account/update/", UpdateSettingsView.as_view()),  # ver
+    path("login/", LoginView.as_view()),  # ver
+    path("refresh/", RefreshTokenView.as_view()),  # ver
+    path("signup/", SignupView.as_view()),  # ver
+    path("stores/id/<int:id>/", csrf_exempt(GetStoreByIDView.as_view())),
+    path("stores/top/", GetTopStorseView.as_view()),  # ver
+    path("app-reviews/", get_app_reviews),  # ver
     path("shipping-info/", get_addresse),
     path("shipping-info/create/", create_addresse),
 ]
