@@ -77,3 +77,4 @@ class AppReviews(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     review = models.TextField()
     stars = models.IntegerField(choices=IntegerChoices.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
