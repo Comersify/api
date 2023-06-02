@@ -96,3 +96,17 @@ def create_dis():
                 product=pr[x]
             )
             print(f"product : {d.title}")
+
+
+def create_images():
+    import os
+    images = os.listdir('./media/uploads/images')
+    x = 0
+    for p in Store.objects.all():
+        if x == len(images):
+            x = 0
+        p.logo = f"/uploads/images/{images[x]}"
+        p.cover = f"/uploads/images/{images[x]}"
+        p.save()
+        print(p.logo)
+        x += 1
