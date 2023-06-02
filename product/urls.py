@@ -3,27 +3,27 @@ from .views import *
 
 urlpatterns = [
 
-    path("products/", get_product),
-    path("my-products/", get_my_product),
-    path("products/create/", create_product),
-    path("products/delete/<int:id>/", delete_product),
-    path("products/update/<int:id>/", update_product),
-    path("products/super-deals/", top_deals), # ver
-    path("products/<int:id>/", get_product_details),
+    path("products/", GetProductsView.as_view()),
+    path("my-products/", GetMyProductsView.as_view()),
+    path("products/create/", CreateProductView.as_view()),
+    path("products/delete/<int:id>/", DeleteProductView.as_view()),
+    path("products/update/<int:id>/", UpdateProductView.as_view()),
+    path("products/super-deals/", GetSuperDealsView.as_view()),  # ver
+    path("products/<int:id>/", GetProductDetailsView.as_view()),
 
-    path("categories/top/", top_categories), # ver
-    path("categories/", get_categories), # ver
+    path("categories/top/", GetHotCategoriesView.as_view()),  # ver
+    path("categories/", GetCategoriesView.as_view()),  # ver
 
-    path("product/<int:id>/reviews", get_reviews), # ver
+    path("product/<int:id>/reviews", GetReviewsView.as_view()),  # ver
 
-    path("my-coupons/", get_coupon),
-    path("coupon/<str:code>", get_coupon_by_code), # ver
-    path("coupons/create/", create_coupon),
-    path("coupons/delete/<int:id>/", delete_coupon),
-    path("coupons/update/<int:id>/", update_coupon),
+    path("my-coupons/", GetCouponView.as_view()),
+    path("coupon/<str:code>", GetCouponByCodeView.as_view()),  # ver
+    path("coupons/create/", CreateCouponView.as_view()),
+    path("coupons/delete/<int:id>/", DeleteCouponView.as_view()),
+    path("coupons/update/<int:id>/", UpdateCouponView.as_view()),
 
-    path("discounts/", get_discount),
-    path("discounts/create/", create_discount),
-    path("discounts/delete/<int:id>/", delete_discount),
-    path("discounts/update/<int:id>/", update_discount),
+    path("discounts/", GetDiscountView.as_view()),
+    path("discounts/create/", CreateDiscountView.as_view()),
+    path("discounts/delete/<int:id>/", DeleteCouponView.as_view()),
+    path("discounts/update/<int:id>/", UpdateProductView.as_view()),
 ]

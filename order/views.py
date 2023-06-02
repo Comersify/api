@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-def get_my_orders(request):
-    return
+class GetMyOrdersView(APIView):
+    def get(request):
+        return Response({"type": "error", "message": "not developed yet"})
 
 
-def create_order(request):
-    return
+class CreateOrderView(APIView):
+    def get(request):
+        return Response({"type": "error", "message": "not developed yet"})

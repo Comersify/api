@@ -1,15 +1,17 @@
-from django.shortcuts import render
-
-# Create your views here.
-
-
-def get_wish_list_details(request, id):
-    return
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-def add_product_to_wish_list(request, id):
-    return 
+class GetWishListDetailsView(APIView):
+    def get(request):
+        return Response({"type": "error", "message": "Not developed yet"})
 
 
-def delete_product_from_wish_list(request, id):
-    return 
+class AddProductToWishListView(APIView):
+    def post(request):
+        return Response({"type": "error", "message": "Not developed yet"})
+
+
+class DeleteProductFromWishList(APIView):
+    def post(request):
+        return Response({"type": "error", "message": "Not developed yet"})

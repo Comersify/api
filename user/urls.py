@@ -7,9 +7,9 @@ urlpatterns = [
     path("login/", LoginView.as_view()),  # ver
     path("refresh/", RefreshTokenView.as_view()),  # ver
     path("signup/", SignupView.as_view()),  # ver
-    path("stores/id/<int:id>/", csrf_exempt(GetStoreByIDView.as_view())),
+    path("stores/id/<int:id>/", GetStoreByIDView.as_view()),
     path("stores/top/", GetTopStorseView.as_view()),  # ver
-    path("app-reviews/", get_app_reviews),  # ver
+    path("app-reviews/", GetAppReviewsView.as_view()),  # ver
     path("shipping-info/", get_addresse),
     path("shipping-info/create/", create_addresse),
 ]

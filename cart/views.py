@@ -1,17 +1,22 @@
-from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-def get_cart_details(request, id):
-    return
+class GetCartDetailsView(APIView):
+    def get(request, id):
+        return Response({"type": "error", "message": "not developed yet"})
 
 
-def add_product_to_cart(request, id):
-    return
+class AddProoductToCartView(APIView):
+    def post(request):
+        return Response({"type": "error", "message": "not developed yet"})
 
 
-def delete_product_from_cart(request, id):
-    return
+class DeleteProoductFromCartView(APIView):
+    def post(request):
+        return Response({"type": "error", "message": "not developed yet"})
 
 
-def update_product_in_cart(request, id):
-    return
+class UpdateProoductInCartView(APIView):
+    def post(request):
+        return Response({"type": "error", "message": "not developed yet"})

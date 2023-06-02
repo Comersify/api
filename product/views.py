@@ -1,69 +1,109 @@
-from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import ProductSerializer, CategorySerializer
 
 
-def get_product(request):
-    return {"mess": "heelo"}
+class GetSuperDealsView(APIView):
+    def get(self, request):
+        try:
+            serializer = ProductSerializer()
+            data = serializer.get_super_deals()
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "data": "Something went wrong try later"})
 
 
-def create_product(request):
-    return {"mess": "heelo"}
+class GetHotCategoriesView(APIView):
+    def get(self, request):
+        try:
+            serializer = CategorySerializer()
+            data = serializer.get_hot_categories()
+            print(data)
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "data": "Something went wrong try later"})
 
 
-def delete_product(request, id):
-    return {"mess": "heelo"}
+class GetProductsView(APIView):
+    def get(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def update_product(request, id):
-    return {"mess": "heelo"}
+class CreateProductView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def get_coupon(request):
-    return {"mess": "heelo"}
+class DeleteProductView(APIView):
+    def post(self, request, id):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def create_coupon(request):
-    return {"mess": "heelo"}
+class UpdateProductView(APIView):
+    def post(self, request, id):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def delete_coupon(request, id):
-    return {"mess": "heelo"}
+class GetCouponView(APIView):
+    def get(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def update_coupon(request, id):
-    return {"mess": "heelo"}
-
-def get_coupon_by_code(request, id):
-    return 
-
-def get_discount(request):
-    return {"mess": "heelo"}
+class CreateCouponView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def create_discount(request):
-    return {"mess": "heelo"}
+class DeleteCouponView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def delete_discount(request, id):
-    return {"mess": "heelo"}
+class UpdateCouponView(APIView):
+    def post(self, request, id):
+        return Response({"type": "error", "data": "not developed yet "})
 
 
-def update_discount(request, id):
-    return {"mess": "heelo"}
+class GetCouponByCodeView(APIView):
+    def get(self, request, code):
+        return Response({"type": "error", "data": "not developed yet "})
 
-def get_my_product(request):
-    return 
 
-def top_deals(request):
-    return 
+class GetDiscountView(APIView):
+    def get(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
-def top_categories(request):
-    return 
 
-def get_categories(request):
-    return 
+class CreateDiscountView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
-def get_product_details(request, id):
-    return 
 
-def get_reviews(request, id):
-    return 
+class DeleteDiscountView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+
+class UpdateDiscountView(APIView):
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+
+class GetMyProductsView(APIView):
+    def get(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+
+class GetCategoriesView(APIView):
+    def get(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+
+class GetProductDetailsView(APIView):
+    def get(self, request, id):
+        return Response({"type": "error", "data": "not developed yet "})
+
+
+class GetReviewsView(APIView):
+    def get(self, request, product_id):
+        return Response({"type": "error", "data": "not developed yet "})
