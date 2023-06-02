@@ -5,10 +5,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
-from .models import Store
-from product.serializers import ProductSerializer
-from product.models import Review
-from order.models import Order
+from .serializers import StoreSerializer
+from .models import AppReviews
 
 User = get_user_model()
 
@@ -103,32 +101,34 @@ class SignupView(APIView):
 
 class GetStoreByIDView(APIView):
     def get(self, request, id):
-        sotre = Store.objects.filter(id=id)
-        if store.exists():
-            store = sotre.get()
-        else:
+        try:
+            serializer = StoreSerializer()
+            data = serializer.get_store_details(id)
+            if data:
+                return Response({'type': 'success', 'data': data})
             return Response({'type': 'error', 'message': "Store not found"})
-        orders = Order.objects.filter(product__store__id=id).count()
-        reviews = Review.objects.filter(product__store__id=id).count()
-        data = {
-            "cover": sotre.cover.url,
-            "logo": sotre.logo.url,
-            "name": sotre.name,
-            "description": sotre.description,
-            "orders": orders,
-            "reviews": reviews,
-            "products": ProductSerializer().get_data(store_id=id)
-        }
-        return Response({'type': 'success', 'data': data})
+        except:
+            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 class GetTopStorseView(APIView):
     def get(self, request):
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            serializer = StoreSerializer()
+            data = serializer.get_top_stores()
+            return Response({'type': 'success', 'data': data})
+        except:
+            return Response({'type': 'error', 'message': 'Something went wrong refresh the page'})
 
 
-def get_app_reviews(request):
-    return
+class GetAppReviewsView(APIView):
+    def get(self, request):
+        try:
+            query = AppReviews.objects.all()[:5]
+            data = list(query)
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 def get_addresse(requesr):
