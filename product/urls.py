@@ -9,12 +9,12 @@ urlpatterns = [
     path("products/delete/<int:id>/", DeleteProductView.as_view()),
     path("products/update/<int:id>/", UpdateProductView.as_view()),
     path("products/super-deals/", GetSuperDealsView.as_view()),  # ver
-    path("products/<int:id>/", GetProductDetailsView.as_view()),
+    path("products/id/<int:id>/", GetProductDetailsView.as_view()),
 
     path("categories/top/", GetHotCategoriesView.as_view()),  # ver
     path("categories/", GetCategoriesView.as_view()),  # ver
 
-    path("product/<int:id>/reviews", GetReviewsView.as_view()),  # ver
+    path("reviews/<int:id>", GetReviewsView.as_view()),  # ver
 
     path("my-coupons/", GetCouponView.as_view()),
     path("coupon/<str:code>", GetCouponByCodeView.as_view()),  # ver
