@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 
 from pathlib import Path
@@ -84,6 +85,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
@@ -93,7 +95,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -110,6 +111,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'TOKEN_EXPIRED_AFTER': 3600  # Expiry time in seconds (1 hour)
+}
+
+
+SIMPLE_JWT = {
+    # Expiry time for refresh token (30 days)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
 
 LANGUAGE_CODE = 'en-us'
 
