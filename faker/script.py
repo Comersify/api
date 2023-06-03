@@ -101,12 +101,14 @@ def create_dis():
 def create_images():
     import os
     images = os.listdir('./media/uploads/images')
-    x = 0
-    for p in Store.objects.all():
-        if x == len(images):
-            x = 0
-        p.logo = f"/uploads/images/{images[x]}"
-        p.cover = f"/uploads/images/{images[x]}"
-        p.save()
-        print(p.logo)
-        x += 1
+    t = ['X', 'L', 'M', 'S', 'XL']
+    for y in t:
+        for p in Product.objects.all():
+            x = randint(0, len(images) - 1)
+            i = ProductPackage.objects.create(
+                image=f"/uploads/images/{images[x]}",
+                product=p,
+                title=y
+            )
+            print(i.title)
+            x += 1
