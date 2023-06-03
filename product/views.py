@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import ProductSerializer, CategorySerializer
+from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer
 
 
 class GetSuperDealsView(APIView):
@@ -26,7 +26,12 @@ class GetHotCategoriesView(APIView):
 
 class GetProductsView(APIView):
     def get(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
+        try:
+            serializer = ProductSerializer()
+            data = serializer.get_products()
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 class CreateProductView(APIView):
@@ -96,14 +101,24 @@ class GetMyProductsView(APIView):
 
 class GetCategoriesView(APIView):
     def get(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
+        try:
+            serializer = CategorySerializer()
+            data = serializer.get_all_categories()
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "message": "Something went wrong, try later"})
 
 
 class GetProductDetailsView(APIView):
     def get(self, request, id):
-        return Response({"type": "error", "data": "not developed yet "})
+        serializer = ProductSerializer()
+        data = serializer.get_product_details(id)
+        return Response({"type": "success", "data": data})
 
 
 class GetReviewsView(APIView):
-    def get(self, request, product_id):
-        return Response({"type": "error", "data": "not developed yet "})
+    def get(self, request, id):
+        serializer = ReviewsSerializer()
+        stats = serializer.get_reviews_stats(id)
+        reviews = serializer.get_reviews(id)
+        return Response({"type": "success", "data": {"stats": stats, "reviews": reviews}})
