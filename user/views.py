@@ -101,14 +101,12 @@ class SignupView(APIView):
 
 class GetStoreByIDView(APIView):
     def get(self, request, id):
-        try:
-            serializer = StoreSerializer()
-            data = serializer.get_store_details(id)
-            if data:
-                return Response({'type': 'success', 'data': data})
-            return Response({'type': 'error', 'message': "Store not found"})
-        except:
-            return Response({"type": "error", "message": "Something went wrong try later"})
+        serializer = StoreSerializer()
+        data = serializer.get_store_details(id)
+        if data:
+            return Response({'type': 'success', 'data': data})
+        return Response({'type': 'error', 'message': "Store not found"})
+#            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 class GetTopStorseView(APIView):
