@@ -57,7 +57,7 @@ class ShippingInfo(models.Model):
 class Store(models.Model):
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, limit_choices_to={
-        'user__user_type': 'VENDOR'})
+        'user_type': 'VENDOR'})
     name = models.CharField(max_length=30)
     description = models.TextField()
     logo = models.ImageField(

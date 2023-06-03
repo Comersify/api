@@ -59,9 +59,10 @@ class Review(models.Model):
         CHOICE_FIVE = 5, 'Five'
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True, limit_choices_to={
-        'user__user_type': 'CUSTOMER'})
+        'user_type': 'CUSTOMER'})
     review = models.TextField()
     stars = models.IntegerField(choices=IntegerChoices.choices)
+    created_at = models.DateTimeField(auto_now_add=True, auto_created=True)
 
 
 class Coupon(models.Model):

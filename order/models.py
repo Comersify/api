@@ -13,9 +13,11 @@ class Order(models.Model):
         DELEVRED = 'DELEVRED', "DELEVRED"
 
     user = models.ForeignKey(USER, on_delete=models.CASCADE, limit_choices_to={
-        'user__user_type': 'CUSTOMER'})
+        'user_type': 'CUSTOMER'})
     product = models.ForeignKey(
         "product.Product", on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField()
+    pack = models.ForeignKey('product.ProductPackage',
+                             on_delete=models.CASCADE)
     status = models.CharField(
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
