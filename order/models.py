@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from django.db.models import Q
+from datetime import date
 USER = get_user_model()
 
 
@@ -21,3 +22,7 @@ class Order(models.Model):
                              on_delete=models.CASCADE)
     status = models.CharField(
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
+
+    coupon = models.ForeignKey(
+        "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
+        limit_choices_to=Q(product=models.F('product'), end_date__gt=date.today()))
