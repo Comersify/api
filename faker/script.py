@@ -112,3 +112,17 @@ def create_images():
             )
             print(i.title)
             x += 1
+
+
+def create_coupon():
+    pr = Product.objects.all()
+    print(len(pr))
+    with open('./faker/coupon.json') as f:
+        data = json.load(f)
+        for i, line in enumerate(data):
+            a = Coupon.objects.create(
+                product=pr[i],
+                code=line['code'],
+                percentage=line['percentage'],
+                end_date=line['date']
+            )
