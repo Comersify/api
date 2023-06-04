@@ -26,3 +26,5 @@ class Order(models.Model):
     coupon = models.ForeignKey(
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
         limit_choices_to=Q(product=models.F('product'), end_date__gt=date.today()))
+
+    created_at = models.DateTimeField(auto_created=True, auto_now_add=True)
