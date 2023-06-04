@@ -4,7 +4,6 @@ from django.db.models import Count, Value, OuterRef, Subquery, Avg
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
-from wishlist.models import WishList
 
 User = get_user_model()
 
@@ -160,3 +159,4 @@ class ReviewsSerializer:
             5: Review.objects.filter(product_id=id, stars=5).count() * percent
         }
         return stats
+
