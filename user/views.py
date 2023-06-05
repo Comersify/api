@@ -4,39 +4,70 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from core.backend import AccessTokenBackend
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import StoreSerializer
 from .models import AppReviews
+from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
+
 
 User = get_user_model()
 
 
 class SettingsView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
 
     def get(self, request):
-        try:
-            user = User.objects.filter(id=request.user.id).get()
-            data = {
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "email": user.email,
-                "phone_number": user.phone_number,
-            }
-            if user.image:
-                data["image"] = user.image
-            return Response({"type": "success", "data": data})
-        except:
+        user = User.objects.filter(id=request.user.id)
+        if not user.exists():
             return Response({"type": "error", "message": "user not fount"})
+        user = user.get()
+
+        data = {
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "phone_number": user.phone_number,
+        }
+        if user.image:
+            data["image"] = user.image.url
+        return Response({"type": "success", "data": data})
 
 
 class UpdateSettingsView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
 
     def post(self, request):
-        if request.POST:
-            data = request.data
-        return Response({"type": "success", "message": "test"})
+        user = User.objects.filter(id=request.user.id)
+        if not user.exists():
+            return Response({"type": "error", "message": "User not found"})
+        user = user.get()
+
+        first_name = request.data.get('firstName')
+        last_name = request.data.get('lastName')
+        email = request.data.get('email')
+        phone_number = request.data.get('phoneNumber')
+        old_password = request.data.get('oldPassword')
+        new_password = request.data.get('password')
+        password_confermation = request.data.get('passwordConfermation')
+        if len(request.data.keys()) < 0:
+            return Response({'type': 'error', 'message': 'No updates found'})
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+        if email:
+            user.email = email
+        if phone_number:
+            user.phone_number = phone_number
+        if old_password and new_password and password_confermation:
+            if not user.check_password(old_password) or new_password != password_confermation:
+                return Response({'type': 'error', 'message': 'password not valid'})
+            user.set_password(new_password)
+        user.save()
+        return Response({'type': 'success', 'message': 'Your account information updated successfully'})
 
 
 class LoginView(APIView):
@@ -62,7 +93,7 @@ class RefreshTokenView(APIView):
         if refresh:
             token = RefreshToken(refresh)
             access = str(token.access_token)
-            return Response({"type": "success", "refresh": refresh, "access": access})
+            return Response({"type": "success", "refresh": refresh, "access": access, 'exp': token.payload['exp']})
         else:
             return Response({"type": "error", "message": "invalid token"})
 
