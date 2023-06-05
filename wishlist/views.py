@@ -4,11 +4,19 @@ from .models import WishList
 from product.models import Product
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
+from .seriliazes import WishListSerializer
 
 
 class GetWishListDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+
     def get(self, request):
-        return Response({"type": "error", "message": "Not developed yet"})
+        serializer = WishListSerializer()
+        data = serializer.get_data(request.user.id)
+        if data:
+            return Response({"type": "success", "data": data})
+        return Response({"type": "success", "data": []})
 
 
 class ProductInWishListView(APIView):
