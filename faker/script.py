@@ -123,6 +123,6 @@ def create_coupon():
             a = Coupon.objects.create(
                 product=pr[i],
                 code=line['code'],
-                percentage=line['percentage'],
+                value=line['percentage'],
                 end_date=line['date']
             )
