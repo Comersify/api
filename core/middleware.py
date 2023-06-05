@@ -13,7 +13,6 @@ class TokenToUserMiddleware:
         if 'Authorization' in request.headers:
             # Use JWTAuthentication to authenticate the token
             AccessTokenBackend().authenticate(request)
-
         try:
             if request.body:
                 request.data = json.loads(request.body)
