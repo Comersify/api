@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import ShoppingCart
-from product.models import Coupon
+from product.models import Coupon, ProductPackage, Product
 from order.models import Order
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
@@ -23,31 +23,48 @@ class AddProoductToCartView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
 
-    def create_order(self, request):
+    def create_order(self, user_id, product_id, pack_id):
         order = Order.objects.create(
-            user_id=request.user.id,
-            product_id=request.data["product_id"],
-            pack_id=request.data["pack_id"],
-            quantity=1,
-            status="IN_CART",
+            product_id=product_id,
+            pack_id=pack_id,
+            user_id=user_id,
         )
+
         return order
 
     @csrf_exempt
     def post(self, request):
+        product_id = request.data.get('product_id')
+        pack_id = request.data.get('pack_id')
+
+        if not product_id:
+            return Response({"type": "error", "message": "Data is missing"})
+
+        product = Product.objects.filter(id=product_id)
+        if not product.exists():
+            return Response({"type": "error", "message": "product does not exist"})
+
+        has_pack = ProductPackage.objects.filter(
+            product_id=product_id).exists()
+        if has_pack and not pack_id:
+            return Response({"type": "error", "message": "Data is missing"})
+
         cart = ShoppingCart.objects.filter(user_id=request.user.id)
+
         if cart.exists():
             in_cart = cart.filter(
-                orders__product__id=request.data['product_id'])
+                orders__product__id=product_id)
             if len(in_cart) > 0:
                 return Response({"type": "error", "message": "Product already in cart"})
             else:
-                order = self.create_order(request)
+                order = self.create_order(
+                    request.user.id, product_id, pack_id)
                 cart = cart.get()
                 cart.orders.add(order)
                 return Response({"type": "success", "message": "Product added to cart"})
         else:
-            order = self.create_order(request)
+            order = self.create_order(
+                request.user.id, product_id, pack_id)
             cart = ShoppingCart.objects.create(
                 user_id=request.user.id,
             )
@@ -104,17 +121,28 @@ class ApplyCouponView(APIView):
         code = request.data.get('code')
         if not code:
             return Response({"type": "error", "message": "Data is missing"})
+
         cart = ShoppingCart.objects.filter(user_id=request.user.id)
         if not cart.exists():
             return Response({"type": "error", "message": "Data is missing"})
         cart = cart.get()
         ids = cart.orders.all().select_related('product').values('product__id')
         ids = [id['product__id'] for id in ids]
+
+        used = Order.objects.filter(
+            coupon__code=code,
+            user_id=request.user.id,
+            product_id__in=ids
+        ).exclude(status="IN_CART").exists()
+        if used:
+            return Response({"type": "error", "message": "This coupon already used"})
+
         coupon = Coupon.objects.filter(product_id__in=ids).filter(code=code)
         if not coupon.exists():
             return Response({"type": "error", "message": "Coupon not valid"})
+
         coupon = coupon.select_related('product').get()
         order = cart.orders.filter(product_id=coupon.product.id).get()
         order.coupon = coupon
         order.save()
-        return Response({"type": "success", "data": {"coupon__code": order.coupon.code, "coupon__percentage": order.coupon.percentage, "product__price": order.product.price}})
+        return Response({"type": "success", "data": {"coupon__code": order.coupon.code, "coupon__value": order.coupon.value, "product__price": order.product.price}})
