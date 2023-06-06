@@ -29,7 +29,8 @@ class CustomUser(AbstractUser):
         CUSTOMER = "CUSTOMER", "CUSTOMER"
 
     phone_number = models.CharField(max_length=15, blank=True)
-    image = models.ImageField(upload_to=make_profile_image_path, null=True)
+    image = models.ImageField(
+        upload_to=make_profile_image_path, null=True, default="media/avatar.jpeg")
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=20, default="sad")
     last_name = models.CharField(max_length=20, default="sam")
@@ -51,6 +52,7 @@ class ShippingInfo(models.Model):
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=20)
     postal_code = models.CharField(max_length=20)
 
 

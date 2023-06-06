@@ -159,4 +159,3 @@ class ReviewsSerializer:
             5: Review.objects.filter(product_id=id, stars=5).count() * percent
         }
         return stats
-

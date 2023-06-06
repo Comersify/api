@@ -18,7 +18,6 @@ class GetHotCategoriesView(APIView):
         try:
             serializer = CategorySerializer()
             data = serializer.get_hot_categories()
-            print(data)
             return Response({"type": "success", "data": data})
         except:
             return Response({"type": "error", "data": "Something went wrong try later"})
@@ -28,6 +27,7 @@ class GetProductsView(APIView):
     def get(self, request):
         try:
             serializer = ProductSerializer()
+            print(request.GET)
             data = serializer.get_products()
             return Response({"type": "success", "data": data})
         except:
