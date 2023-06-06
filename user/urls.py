@@ -10,6 +10,4 @@ urlpatterns = [
     path("stores/id/<int:id>/", GetStoreByIDView.as_view()),
     path("stores/top/", GetTopStorseView.as_view()),  # ver
     path("app-reviews/", GetAppReviewsView.as_view()),  # ver
-    path("shipping-info/", get_addresse),
-    path("shipping-info/create/", create_addresse),
 ]
