@@ -81,7 +81,10 @@ class LoginView(APIView):
                 "type": "success",
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
+                'exp': refresh.payload['exp']
             }
+            if user.image:
+                response_data['image'] = user.image.url
             return Response(response_data)
         else:
             return Response({"type": 'error', "message": 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -93,7 +96,12 @@ class RefreshTokenView(APIView):
         if refresh:
             token = RefreshToken(refresh)
             access = str(token.access_token)
-            return Response({"type": "success", "refresh": refresh, "access": access, 'exp': token.payload['exp']})
+            user_id = token.payload['user_id']
+            user = User.objects.filter(id=user_id).get()
+            image = None
+            if user.image:
+                image = user.image.url
+            return Response({"type": "success", "refresh": refresh, "access": access, 'exp': token.payload['exp'], 'image': image})
         else:
             return Response({"type": "error", "message": "invalid token"})
 
@@ -158,11 +166,3 @@ class GetAppReviewsView(APIView):
             return Response({"type": "success", "data": data})
         except:
             return Response({"type": "error", "message": "Something went wrong try later"})
-
-
-def get_addresse(requesr):
-    return
-
-
-def create_addresse(request):
-    return
