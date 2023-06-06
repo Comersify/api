@@ -126,3 +126,8 @@ def create_coupon():
                 value=line['percentage'],
                 end_date=line['date']
             )
+
+
+def get(id):
+    c = Coupon.objects.filter(product_id=id).get()
+    return c.code
