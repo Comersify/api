@@ -15,6 +15,8 @@ class Order(models.Model):
 
     user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True, limit_choices_to={
         'user_type': 'CUSTOMER'})
+    shipping_info = models.ForeignKey(
+        'user.ShippingInfo', on_delete=models.SET_NULL, null=True, blank=True)
     product = models.ForeignKey(
         "product.Product", on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
@@ -26,7 +28,7 @@ class Order(models.Model):
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
         limit_choices_to={"product": models.F('product'), "end_date__lt": date.today()})
     price = models.FloatField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_created=True, auto_now_add=True)
+    created_at = models.DateTimeField(null=True, blank=True)
 
     def clean(self) -> None:
         if self.product.id and self.pack.product.id != self.product.id:
