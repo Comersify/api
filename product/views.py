@@ -27,10 +27,30 @@ class GetProductsView(APIView):
     def get(self, request):
         try:
             serializer = ProductSerializer()
-            print(request.GET)
-            data = serializer.get_products()
-            return Response({"type": "success", "data": data})
-        except:
+            products = serializer.get_products()
+            q = request.GET.get('q')
+            price_from = request.GET.get('price_from')
+            price_to = request.GET.get('price_to')
+            stars = int(request.GET.get('stars'))
+            categories = request.GET.get(
+                'categories').replace(" ", "").split(",")
+            orderby = request.GET.get('orderBy')
+            if price_from:
+                products = products.filter(act_price__gte=price_from)
+            if price_to:
+                products = products.filter(act_price__lte=price_to)
+            if stars > 0:
+                products = products.filter(reviews__gte=stars)
+            if categories != ['']:
+                categories = [int(cat) for cat in categories]
+                products = products.filter(category_id__in=categories)
+            if orderby:
+                if orderby == "act_price":
+                    products = products.order_by(orderby)
+                else:
+                    products = products.order_by(f"-{orderby}")
+            return Response({"type": "success", "data": products})
+        except Exception as e:
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
