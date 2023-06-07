@@ -30,8 +30,10 @@ class GetProductsView(APIView):
             serializer = ProductSerializer()
             products = serializer.get_products()
             keyword = request.GET.get('q')
-            price_from = int(request.GET.get('from'))
-            price_to = int(request.GET.get('to'))
+            price_from = int(request.GET.get('from')) if request.GET.get(
+                'from') else request.GET.get('from')
+            price_to = int(request.GET.get('to')) if request.GET.get(
+                'to') else request.GET.get('to')
             stars = int(request.GET.get('stars'))
             categories = request.GET.get(
                 'categories').replace(" ", "").split(",")
@@ -42,9 +44,9 @@ class GetProductsView(APIView):
                     Q(title__icontains=keyword) |
                     Q(description__icontains=keyword)
                 )
-            if price_from > 0:
+            if price_from != '' and price_from > 0:
                 products = products.filter(act_price__gte=price_from)
-            if price_to > 0:
+            if price_to != '' and price_to > 0:
                 products = products.filter(act_price__lte=price_to)
             if stars > 0:
                 products = products.filter(reviews__gte=stars)
@@ -58,6 +60,7 @@ class GetProductsView(APIView):
                     products = products.order_by(f"-{orderby}")
             return Response({"type": "success", "data": products})
         except Exception as e:
+            print(e)
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
