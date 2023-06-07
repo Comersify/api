@@ -142,6 +142,7 @@ class SignupView(APIView):
             last_name=last_name,
             password=password,
             email=email,
+            is_active=True,
             phone_number=phone_number
         )
         return Response({'type': 'success', 'message': 'User created successfully.'})

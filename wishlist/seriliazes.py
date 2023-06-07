@@ -33,8 +33,9 @@ class WishListSerializer:
     def get_data(self, user_id):
         wish_list = WishList.objects.filter(user_id=user_id)
         if not wish_list.exists():
-            return []
-        wish_list = wish_list.get()
+            wish_list = WishList.objects.create(user_id=user_id)
+        else:
+            wish_list = wish_list.get()
         products = wish_list.products.all()
         products = self.get_products(products)
         return products

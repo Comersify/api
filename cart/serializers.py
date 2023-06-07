@@ -55,8 +55,13 @@ class ShoppingCartSerializer:
 
     def get_data(self, id):
         cart = ShoppingCart.objects.filter(
-            user_id=id).get()
-
+            user_id=id)
+        if cart.exists():
+            cart = cart.get()
+        else:
+            cart = ShoppingCart.objects.create(
+                user_id=id
+            )
         coupons, coupons_total = self.get_coupons(cart)
         orders = self.get_orders(cart)
         checkout = self.get_checkout(cart)
