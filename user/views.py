@@ -40,18 +40,24 @@ class UpdateSettingsView(APIView):
     authentication_classes = [AccessTokenBackend]
 
     def post(self, request):
+        import json
         user = User.objects.filter(id=request.user.id)
         if not user.exists():
             return Response({"type": "error", "message": "User not found"})
         user = user.get()
-
-        first_name = request.data.get('firstName')
-        last_name = request.data.get('lastName')
-        email = request.data.get('email')
-        phone_number = request.data.get('phoneNumber')
-        old_password = request.data.get('oldPassword')
-        new_password = request.data.get('password')
-        password_confermation = request.data.get('passwordConfermation')
+        image = request.data.get('file')
+        data = None
+        if image:
+            data = json.loads(request.data.get('json_data'))
+        else:
+            data = request.data
+        first_name = data.get('firstName')
+        last_name = data.get('lastName')
+        email = data.get('email')
+        phone_number = data.get('phoneNumber')
+        old_password = data.get('oldPassword')
+        new_password = data.get('password')
+        password_confermation = data.get('passwordConfermation')
         if len(request.data.keys()) < 0:
             return Response({'type': 'error', 'message': 'No updates found'})
         if first_name:
@@ -62,6 +68,9 @@ class UpdateSettingsView(APIView):
             user.email = email
         if phone_number:
             user.phone_number = phone_number
+        if image:
+            user.image.delete()
+            user.image.save(image.name, image)
         if old_password and new_password and password_confermation:
             if not user.check_password(old_password) or new_password != password_confermation:
                 return Response({'type': 'error', 'message': 'password not valid'})
