@@ -131,3 +131,17 @@ def create_coupon():
 def get(id):
     c = Coupon.objects.filter(product_id=id).get()
     return c.code
+
+
+def set_cats():
+    cats = Category.objects.all()
+    x = 0
+
+    for p in Product.objects.all():
+        p.category_id = cats[x].id
+        p.save()
+        print(f"{x} => {len(cats)} : {len(cats) == x}")
+        if len(cats) == x + 1:
+            x = 0
+        else:
+            x += 1
