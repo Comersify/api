@@ -29,11 +29,23 @@ class Product(models.Model):
     store = models.ForeignKey(
         'user.Store', on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)
-    categoryID = models.ForeignKey(
+    category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     price = models.FloatField()
     in_stock = models.IntegerField()
+
+    @property
+    def current_price(self):
+        from datetime import datetime
+        discount = Discount.objects.filter(
+            end_date__lt=datetime.now(), product_id=self.pk)
+        act_price = self.price
+        print(discount)
+        if discount.exists():
+            discount = discount.get()
+            act_price -= discount.percentage * self.price / 100
+        return act_price
 
     def __str__(self) -> str:
         return self.title
