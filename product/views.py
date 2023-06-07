@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer
+from django.db.models import Q
 
 
 class GetSuperDealsView(APIView):
@@ -28,16 +29,22 @@ class GetProductsView(APIView):
         try:
             serializer = ProductSerializer()
             products = serializer.get_products()
-            q = request.GET.get('q')
-            price_from = request.GET.get('price_from')
-            price_to = request.GET.get('price_to')
+            keyword = request.GET.get('q')
+            price_from = int(request.GET.get('from'))
+            price_to = int(request.GET.get('to'))
             stars = int(request.GET.get('stars'))
             categories = request.GET.get(
                 'categories').replace(" ", "").split(",")
             orderby = request.GET.get('orderBy')
-            if price_from:
+            if keyword:
+                print(f"length os {len(products)}")
+                products = products.filter(
+                    Q(title__icontains=keyword) |
+                    Q(description__icontains=keyword)
+                )
+            if price_from > 0:
                 products = products.filter(act_price__gte=price_from)
-            if price_to:
+            if price_to > 0:
                 products = products.filter(act_price__lte=price_to)
             if stars > 0:
                 products = products.filter(reviews__gte=stars)
