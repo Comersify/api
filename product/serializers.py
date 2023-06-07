@@ -1,10 +1,10 @@
 from .models import Product, Discount, ProductImage, Category, ProductPackage, Review
 from order.models import Order
-from django.db.models import Count, Value, OuterRef, Subquery, Avg
+from django.db.models import Count, Value, OuterRef, Subquery, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from datetime import datetime
 User = get_user_model()
 
 
@@ -16,8 +16,9 @@ class ProductSerializer():
         ).values('image')[:1]
 
         subquery_discount = Discount.objects.filter(
-            product=OuterRef('id')
-        ).values('percentage')[:1]
+            product=OuterRef('id'),
+            end_date__lt=datetime.today()
+        ).order_by("-id").values('percentage')[:1]
 
         subquery_completed_orders = Order.objects.filter(
             product=OuterRef('id'), status='DELEVRED'
@@ -27,13 +28,17 @@ class ProductSerializer():
             orders=Coalesce(Subquery(subquery_completed_orders), Value(0)),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
-            reviews=Coalesce(Avg('review__stars'), Value(0.0))
+            reviews=Coalesce(Avg('review__stars'), Value(0.0)),
+            act_price=ExpressionWrapper(
+                F('price')-Coalesce(
+                    F('discount_value') * F('price')/100, 0), output_field=models.FloatField()),
         )
         if has_discount:
             products = products.filter(discount_value__gt=10)
 
         products = products.filter(in_stock__gt=0).values(
-            'id', 'title', 'price', 'discount_value', 'orders', 'image', 'reviews')
+            'id', 'title', 'price', 'discount_value',
+            'act_price', 'orders', 'image', 'reviews')
         return products
 
     def get_super_deals(self):
@@ -48,7 +53,7 @@ class ProductSerializer():
     def get_product_details(self, id):
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id')
-        ).values('percentage')[:1]
+        ).order_by("-id").values('percentage')[:1]
 
         subquery_completed_orders = Order.objects.filter(
             product=OuterRef('id'), status='DELEVRED'
@@ -91,7 +96,7 @@ class CategorySerializer:
             image=Subquery(subquery_image),
             orders=Subquery(subquery_completed_orders)
         ).filter(
-            categoryID=OuterRef('id')
+            category=OuterRef('id')
         ).order_by('-orders').values('id')[:4]
 
         categories = Category.objects.annotate(
@@ -106,7 +111,7 @@ class CategorySerializer:
 
         results = Product.objects.filter(
             categoryID__in=Subquery(categories.values('pk'))
-        ).order_by('categoryID', 'pk').annotate(category_count=Subquery(
+        ).order_by('category', 'pk').annotate(category_count=Subquery(
             categories.values('pk')
             .annotate(product_count=models.Count('product'))
             .filter(pk=OuterRef('categoryID_id'))

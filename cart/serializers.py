@@ -25,7 +25,7 @@ class ShoppingCartSerializer:
         subquery_image = ProductImage.objects.filter(
             product_id=OuterRef('product_id')).values('image')[:1]
         subquery_discount = Discount.objects.filter(
-            product_id=OuterRef('product_id')).values('percentage')[:1]
+            product_id=OuterRef('product_id')).order_by("-id").values('percentage')[:1]
 
         orders = cart.orders.all().prefetch_related(
             'pack', 'product'

@@ -14,7 +14,7 @@ class WishListSerializer:
 
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id')
-        ).values('percentage')[:1]
+        ).order_by("-id").values('percentage')[:1]
 
         subquery_completed_orders = Order.objects.filter(
             product=OuterRef('id'), status='DELEVRED'
