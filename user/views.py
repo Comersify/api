@@ -155,7 +155,6 @@ class GetStoreByIDView(APIView):
         if data:
             return Response({'type': 'success', 'data': data})
         return Response({'type': 'error', 'message': "Store not found"})
-#            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 class GetTopStorseView(APIView):
