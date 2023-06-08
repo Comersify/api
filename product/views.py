@@ -64,69 +64,50 @@ class GetProductsView(APIView):
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
-class CreateProductView(APIView):
-    def post(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
-
-
-class DeleteProductView(APIView):
-    def post(self, request, id):
-        return Response({"type": "error", "data": "not developed yet "})
-
-
-class UpdateProductView(APIView):
-    def post(self, request, id):
-        return Response({"type": "error", "data": "not developed yet "})
-
-
-class GetCouponView(APIView):
+class ProductView(APIView):
     def get(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
-
-class CreateCouponView(APIView):
     def post(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
+    def delete(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
-class DeleteCouponView(APIView):
-    def post(self, request):
+    def update(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
 
-class UpdateCouponView(APIView):
-    def post(self, request, id):
-        return Response({"type": "error", "data": "not developed yet "})
 
-
-class GetCouponByCodeView(APIView):
-    def get(self, request, code):
-        return Response({"type": "error", "data": "not developed yet "})
-
-
-class GetDiscountView(APIView):
+class CouponView(APIView):
     def get(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
-
-class CreateDiscountView(APIView):
     def post(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
+    def delete(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
 
-class DeleteDiscountView(APIView):
-    def post(self, request):
+    def update(self, request):
         return Response({"type": "error", "data": "not developed yet "})
 
 
-class UpdateDiscountView(APIView):
-    def post(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
 
 
-class GetMyProductsView(APIView):
+class DiscountView(APIView):
     def get(self, request):
         return Response({"type": "error", "data": "not developed yet "})
+
+    def post(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+    def delete(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
+    def update(self, request):
+        return Response({"type": "error", "data": "not developed yet "})
+
 
 
 class GetCategoriesView(APIView):
