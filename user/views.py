@@ -90,7 +90,8 @@ class LoginView(APIView):
                 "type": "success",
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'exp': refresh.payload['exp']
+                'exp': refresh.payload['exp'],
+                "name": user.first_name
             }
             if user.image:
                 response_data['image'] = user.image.url
@@ -110,7 +111,7 @@ class RefreshTokenView(APIView):
             image = None
             if user.image:
                 image = user.image.url
-            return Response({"type": "success", "refresh": refresh, "access": access, 'exp': token.payload['exp'], 'image': image})
+            return Response({"type": "success", "refresh": refresh, "access": access, 'exp': token.payload['exp'], 'image': image, "name": user.first_name})
         else:
             return Response({"type": "error", "message": "invalid token"})
 
