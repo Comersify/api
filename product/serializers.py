@@ -5,6 +5,9 @@ from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
 from datetime import datetime
+from .models import Coupon
+
+
 User = get_user_model()
 
 
@@ -164,3 +167,32 @@ class ReviewsSerializer:
             5: Review.objects.filter(product_id=id, stars=5).count() * percent
         }
         return stats
+
+class CouponSerializer:
+    def get_data(self, user_id):
+        order_subquery = Order.objects.filter(status="DELEVRED", product__store__user__id=user_id, coupon_id=OuterRef('id')).annotate(orders=Count('pk'))[:1]
+        coupons = Coupon.objects.filter(
+            product__store__user__id=user_id
+            ).annotate(orders=Subquery(order_subquery)).values(
+            'id', 'code', 'value', 'end_date', 'orders', 'product__title', 'product__id',
+        )
+        return coupons
+    
+
+class DiscountSerializer:
+    def get_data(self, user_id):
+        order_subquery = Order.objects.filter(
+            status="DELEVRED", 
+            product__store__user__id=user_id, 
+            coupon_id=OuterRef('id'),
+            created_at__lt=OuterRef('end_date'),
+            created_at__gte=OuterRef('start_date')
+
+        ).annotate(orders=Count('pk'))[:1]
+        discounts = Discount.objects.filter(
+            product__store__user__id=user_id
+            ).annotate(orders=Subquery(order_subquery)).values(
+            'id', 'title', 'percentage', 'end_date', 'orders', 'product__title', 'product__id',
+        )
+        return discounts
+    
