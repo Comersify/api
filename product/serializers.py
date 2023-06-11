@@ -1,6 +1,6 @@
 from .models import Product, Discount, ProductImage, Category, ProductPackage, Review
 from order.models import Order
-from django.db.models import Count, Value, OuterRef, Subquery, Avg, F, ExpressionWrapper
+from django.db.models import Count, Sum, Value, OuterRef, Subquery, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -11,7 +11,7 @@ from .models import Coupon
 User = get_user_model()
 
 
-class ProductSerializer():
+class ProductSerializer:
 
     def get_products(self, has_discount=False):
         subquery_image = ProductImage.objects.filter(
@@ -60,7 +60,7 @@ class ProductSerializer():
 
         subquery_completed_orders = Order.objects.filter(
             product=OuterRef('id'), status='DELEVRED'
-        ).values('product').annotate(count_completed_orders=Count('id')).values('count_completed_orders')[:1]
+        ).annotate(count_completed_orders=Count('id')).values('count_completed_orders')[:1]
 
         products = Product.objects.annotate(
             orders=Coalesce(Subquery(subquery_completed_orders), Value(0)),
@@ -76,6 +76,36 @@ class ProductSerializer():
             product_id=id).values('image')
         products["packs"] = list(ProductPackage.objects.filter(
             product_id=id).values('id', 'image', 'title'))
+        return products
+
+    def get_products_for_vendor(self, user_id):
+        subquery_image = ProductImage.objects.filter(
+            product=OuterRef('id')
+        ).values('image')[:1]
+
+        subquery_completed_orders = Order.objects.filter(
+            product=OuterRef('id'), status='DELEVRED'
+        ).annotate(count_completed_orders=Count('id')).values('count_completed_orders')[:1]
+
+        subquery_earned_from_orders = Order.objects.filter(
+            product=OuterRef('id'), status='DELEVRED'
+        ).annotate(spent=Sum('price')).values('spent')[:1]
+
+
+        subquery_packs = ProductPackage.objects.filter(
+            product_id=OuterRef('id')).annotate(packs=Count('pk')).values('packs')
+
+        products = Product.objects.filter(store__user__id=user_id).annotate(
+            image=Subquery(subquery_image),
+            packs=Coalesce(Subquery(subquery_packs),0),
+            orders=Coalesce(Subquery(subquery_completed_orders),0),
+            earning=Coalesce(Subquery(subquery_earned_from_orders),0),
+            reviews=Coalesce(Count('review__stars'), Value(0)),
+            reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
+        ).values(
+            'id', 'image', 'title', 'packs',
+            'orders',  'reviews', 'reviews_avg'
+        )
         return products
 
 
@@ -168,31 +198,32 @@ class ReviewsSerializer:
         }
         return stats
 
+
 class CouponSerializer:
     def get_data(self, user_id):
-        order_subquery = Order.objects.filter(status="DELEVRED", product__store__user__id=user_id, coupon_id=OuterRef('id')).annotate(orders=Count('pk'))[:1]
+        order_subquery = Order.objects.filter(
+            status="DELEVRED", product__store__user__id=user_id, coupon_id=OuterRef('id')).annotate(orders=Count('pk')).values('orders')[:1]
         coupons = Coupon.objects.filter(
             product__store__user__id=user_id
-            ).annotate(orders=Subquery(order_subquery)).values(
+        ).annotate(orders=Coalesce(Subquery(order_subquery), 0)).select_related('product').values(
             'id', 'code', 'value', 'end_date', 'orders', 'product__title', 'product__id',
         )
         return coupons
-    
+
 
 class DiscountSerializer:
     def get_data(self, user_id):
         order_subquery = Order.objects.filter(
-            status="DELEVRED", 
-            product__store__user__id=user_id, 
+            status="DELEVRED",
+            product__store__user__id=user_id,
             coupon_id=OuterRef('id'),
             created_at__lt=OuterRef('end_date'),
             created_at__gte=OuterRef('start_date')
 
-        ).annotate(orders=Count('pk'))[:1]
+        ).annotate(orders=Count('pk')).values('orders')[:1]
         discounts = Discount.objects.filter(
             product__store__user__id=user_id
-            ).annotate(orders=Subquery(order_subquery)).values(
+        ).annotate(orders=Coalesce(Subquery(order_subquery), 0)).values(
             'id', 'title', 'percentage', 'end_date', 'orders', 'product__title', 'product__id',
         )
         return discounts
-    
