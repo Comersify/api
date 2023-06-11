@@ -8,7 +8,7 @@ from core.backend import AccessTokenBackend
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import StoreSerializer
 from .models import AppReviews
-from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
+from .serializers import CustomersSerializer
 
 
 User = get_user_model()
@@ -176,3 +176,15 @@ class GetAppReviewsView(APIView):
             return Response({"type": "success", "data": data})
         except:
             return Response({"type": "error", "message": "Something went wrong try later"})
+
+
+class GetCustomersView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+
+    def get(self, request):
+        if request.user.user_type == "VENDOR":
+            serializer = CustomersSerializer()
+            data = serializer.get_data(request.user.id)
+            return Response({"type": "success", "data": list(data)})
+        return Response({"type": "error", "message": "user not valid"})
