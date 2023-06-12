@@ -67,6 +67,23 @@ class GetProductsView(APIView):
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
+class ProductDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+
+    def get(self, request, id=None):
+        if request.user.user_type == "VENDOR":
+            serializer = ProductSerializer()
+            data = serializer.get_product_details_for_vendor(request.user.id, id)
+            if not id:
+                return Response({"type": "error", "message": "Product id is missing"})
+            if not data:
+                return Response({"type": "error", "message": "Product not found"})
+            return Response({"type": "success", "data": data})
+        return Response({"type": "error", "message": "user not valid"})
+
+
+
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
@@ -75,10 +92,13 @@ class ProductView(APIView):
         if request.user.user_type == "VENDOR":
             serializer = ProductSerializer()
             data = serializer.get_products_for_vendor(request.user.id)
+            if not data:
+                return Response({"type": "error", "message": "Product not found"})
             return Response({"type": "success", "data": list(data)})
         return Response({"type": "error", "message": "user not valid"})
 
     def post(self, request):
+        print(request.data)
         return Response({"type": "error", "data": "not developed yet "})
 
     def delete(self, request):
