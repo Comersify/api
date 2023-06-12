@@ -145,3 +145,32 @@ def set_cats():
             x = 0
         else:
             x += 1
+
+
+def fix_images():
+    import os
+    images_users = os.listdir('./media/test-users')
+    images_products = os.listdir('./media/test-images')
+    from django.core.files import File
+    for p in Product.objects.all():
+        i = randint(0, len(images_products)-1)
+        ims = randint(1, 4)
+        for m in range(ims):
+            with open(f"./media/test-images/{images_products[i]}", "rb") as f:
+                images_file = File(f)
+                ir = ProductImage.objects.create(
+                    product_id=p.id,
+                    image=images_file
+                )
+                print(f"{p.title} => {ir.image.url}")
+    return
+    # for p in ProductPackage.objects.all():
+    #    p.image = "/media" + p.image.url
+    #    p.save()
+    #    print(f"{p.title} => {p.image.url}")
+    #
+    # for u in User.object.all():
+    #    i = randint(0, len(images)-1)
+    #    u.image =  f"/media/uploads/users/{images[i]}"
+    #    u.save()
+    #    print(f'user: {u.username}')
