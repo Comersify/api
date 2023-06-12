@@ -91,22 +91,43 @@ class ProductSerializer:
             product=OuterRef('id'), status='DELEVRED'
         ).annotate(spent=Sum('price')).values('spent')[:1]
 
-
         subquery_packs = ProductPackage.objects.filter(
             product_id=OuterRef('id')).annotate(packs=Count('pk')).values('packs')
 
         products = Product.objects.filter(store__user__id=user_id).annotate(
             image=Subquery(subquery_image),
-            packs=Coalesce(Subquery(subquery_packs),0),
-            orders=Coalesce(Subquery(subquery_completed_orders),0),
-            earning=Coalesce(Subquery(subquery_earned_from_orders),0),
+            packs=Coalesce(Subquery(subquery_packs), 0),
+            orders=Coalesce(Subquery(subquery_completed_orders), 0),
+            earning=Coalesce(Subquery(subquery_earned_from_orders), 0),
             reviews=Coalesce(Count('review__stars'), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
         ).values(
             'id', 'image', 'title', 'packs',
-            'orders',  'reviews', 'reviews_avg'
+            'orders', 'reviews', 'reviews_avg'
         )
         return products
+
+    def get_product_details_for_vendor(self, user_id, product_id):
+        product = Product.objects.filter(
+            store__user__id=user_id,
+            id=product_id
+        )
+        if not product.exists():
+            return False
+        product = product.values(
+            'id', 'title', 'category__id', 'price', 'description')
+        product_image = ProductImage.objects.filter(product_id=product_id)
+        if not product_image.exists():
+            return False
+        product_image = product_image.values('id', 'image')
+        product_package = ProductPackage.objects.filter(product_id=product_id)
+        if product_package.exists():
+            product_package = product_package.values("id", "image", 'title')
+        else:
+            product_package = []
+
+        data = [product, list(product_image), list(product_package)]
+        return data
 
 
 class CategorySerializer:
