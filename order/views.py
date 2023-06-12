@@ -7,6 +7,7 @@ from cart.models import ShoppingCart
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from .models import Order
+from .serializers import OrderSerializer
 
 
 class GetMyOrdersView(APIView):
@@ -86,3 +87,18 @@ class CreateOrderView(APIView):
             return Response({'type': 'success', 'message': 'Your was submitted wait the seller to shipe it'})
         except:
             return Response({'type': 'error', 'message': 'Something went wrong try later'})
+
+
+class VendorOrdersView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+    
+    def get(self, request):
+        if request.user.user_type == "VENDOR":
+            serializer = OrderSerializer()
+            data = serializer.get_data(request.user.id)
+            return Response({"type": "success", "data": list(data)})
+        return Response({"type":"error", "message": "User not valid"})
+
+    def put(self, request):
+        return Response({"type":"error", "message": "not developed yet"})
