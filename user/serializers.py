@@ -62,17 +62,24 @@ class CustomersSerializer:
             user_id=OuterRef('id')
         ).annotate(
             orders=Count('pk'),
-            spent=Sum('price')
         ).values('orders')[:1]
+        order_spent_subquery = Order.objects.filter(
+            product__store__user__id=user_id,
+            status="DELEVRED",
+            user_id=OuterRef('id')
+        ).annotate(
+            spent=Sum('price')
+        ).values('spent')[:1]
         reviews_subquery = Review.objects.filter(
             user_id=OuterRef('id')).annotate(reviews=Count('pk')).values('reviews')[:1]
 
         customers = USER.objects.annotate(
+            spent=Subquery(order_spent_subquery),
             orders=Coalesce(
                 Subquery(order_subquery), 0),
             reviews=Coalesce(Subquery(reviews_subquery), 0)
         ).filter(orders__gt=0).values(
             'first_name', 'last_name', 'image',
-            'orders', 'reviews'
+            'orders', 'reviews', 'spent'
         )
         return customers
