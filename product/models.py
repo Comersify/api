@@ -84,7 +84,7 @@ class Coupon(models.Model):
     value = models.FloatField(validators=[
         MinValueValidator(1, message='Minimum value is 1.'),
     ])
-    end_date = models.DateTimeField(auto_now=True, auto_now_add=False)
+    end_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     start_date = models.DateTimeField(auto_now_add=True)
 
     def clean(self) -> None:
@@ -100,5 +100,5 @@ class Discount(models.Model):
         MinValueValidator(0, message='Minimum value is 1.'),
         MaxValueValidator(90, message='Maximum value is 100.')
     ])
-    end_date = models.DateTimeField(auto_now=True, auto_now_add=False)
+    end_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     start_date = models.DateTimeField(auto_now_add=True)
