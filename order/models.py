@@ -33,6 +33,7 @@ class Order(models.Model):
     def clean(self) -> None:
         if self.product.id and self.pack.product.id != self.product.id:
             raise ValidationError("Pack is not valid")
-        if self.product.id and self.coupon.product.id != self.product.id:
-            raise ValidationError("Coupon is not valid")
+        if self.coupon:
+            if self.product.id and self.coupon.product.id != self.product.id:
+                raise ValidationError("Coupon is not valid")
         return super().clean()
