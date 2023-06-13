@@ -5,6 +5,7 @@ from django.db.models import Q
 from .models import Coupon, Discount
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
+from datetime import date
 
 
 class GetSuperDealsView(APIView):
@@ -74,14 +75,14 @@ class ProductDetailsView(APIView):
     def get(self, request, id=None):
         if request.user.user_type == "VENDOR":
             serializer = ProductSerializer()
-            data = serializer.get_product_details_for_vendor(request.user.id, id)
+            data = serializer.get_product_details_for_vendor(
+                request.user.id, id)
             if not id:
                 return Response({"type": "error", "message": "Product id is missing"})
             if not data:
                 return Response({"type": "error", "message": "Product not found"})
             return Response({"type": "success", "data": data})
         return Response({"type": "error", "message": "user not valid"})
-
 
 
 class ProductView(APIView):
@@ -125,13 +126,19 @@ class CouponView(APIView):
             code = request.data.get('code')
             value = request.data.get('value')
             end_date = request.data.get('end_date')
+
             if not product_id or not code or not value or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
+            end_date = end_date.split("-")
             coupon = Coupon.objects.create(
-                product=product_id,
+                product_id=product_id,
                 code=code,
                 value=value,
-                end_date=end_date,
+                end_date=date(
+                    int(end_date[0]),
+                    int(end_date[1]),
+                    int(end_date[2])+1
+                ),
             )
             return Response({"type": "success", "message": "coupon created successfully"})
         return Response({"type": "error", "message": "There is no coupons for you"})
@@ -164,11 +171,17 @@ class CouponView(APIView):
                 id=coupon_id, product__store__user__id=request.user.id)
             if not coupon.exists():
                 return Response({"type": "error", "data": "Coupon not found"})
+            end_date = end_date.split("-")
+
             coupon = coupon.get()
             coupon.product_id = product_id
             coupon.code = code
             coupon.value = value
-            coupon.end_date = end_date
+            coupon.end_date = date(
+                int(end_date[0]),
+                int(end_date[1]),
+                int(end_date[2])+1
+            )
             coupon.save()
             return Response({"type": "success", "message": "coupon updated successfully"})
         return Response({"type": "error", "message": "There is no coupons for you"})
@@ -189,15 +202,21 @@ class DiscountView(APIView):
             title = request.data.get('title')
             percentage = request.data.get('percentage')
             end_date = request.data.get('end_date')
+
             if not product_id or not title or not percentage or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
+            end_date = end_date.split("-")
             discount = Discount.objects.create(
-                product=product_id,
+                product_id=product_id,
                 title=title,
                 percentage=percentage,
-                end_date=end_date,
+                end_date=date(
+                    int(end_date[0]),
+                    int(end_date[1]),
+                    int(end_date[2])+1
+                ),
             )
-            return Response({"type": "success", "message": "discount created successfully", "data": discount})
+            return Response({"type": "success", "message": "discount created successfully"})
         return Response({"type": "error", "message": "There is no discounts for you"})
 
     def delete(self, request):
@@ -223,7 +242,7 @@ class DiscountView(APIView):
             end_date = request.data.get('end_date')
             if not discount_id or not product_id or not title or not percentage or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
-
+            end_date = end_date.split("-")
             discount = Discount.objects.filter(
                 id=discount_id, product__store__user__id=request.user.id)
             if not discount.exists():
@@ -232,7 +251,11 @@ class DiscountView(APIView):
             discount.product_id = product_id
             discount.title = title
             discount.percentage = percentage
-            discount.end_date = end_date
+            discount.end_date = date(
+                int(end_date[0]),
+                int(end_date[1]),
+                int(end_date[2])+1
+            )
             discount.save()
             return Response({"type": "success", "message": "discount updated successfully"})
         return Response({"type": "error", "message": "There is no discounts for you"})
