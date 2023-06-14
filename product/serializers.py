@@ -95,12 +95,13 @@ class ProductSerializer:
             image=Subquery(subquery_image),
             packs=Coalesce(Count('productpackage'), 0),
             orders=Coalesce(Subquery(subquery_completed_orders), 0),
-            earning=Coalesce(Subquery(subquery_earned_from_orders), Value(0.0)),
+            earning=Coalesce(
+                Subquery(subquery_earned_from_orders), Value(0.0)),
             reviews=Coalesce(Count('review__stars'), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
         ).values(
-            'id', 'image', 'title', 'packs','earning',
-            'orders', 'reviews', 'reviews_avg'
+            'id', 'image', 'title', 'price', 'in_stock', 'packs', 'earning',
+            'orders', 'reviews', 'reviews_avg',
         )
         return products
 
@@ -112,7 +113,7 @@ class ProductSerializer:
         if not product.exists():
             return False
         product = product.values(
-            'id', 'title', 'category__id', 'price', 'description')
+            'id', 'title', 'category__id', 'in_stock', 'price', 'description')
         product_image = ProductImage.objects.filter(product_id=product_id)
         if not product_image.exists():
             return False
@@ -220,8 +221,8 @@ class ReviewsSerializer:
 class CouponSerializer:
     def get_data(self, user_id):
         order_subquery = Order.objects.filter(
-            status="DELEVRED", 
-            product__store__user__id=user_id, 
+            status="DELEVRED",
+            product__store__user__id=user_id,
             coupon_id=OuterRef('id')).annotate(orders=Count('pk')).values('orders')[:1]
 
         product_image_subquery = ProductImage.objects.filter(
@@ -236,7 +237,7 @@ class CouponSerializer:
             'id', 'code', 'value', 'end_date', 'orders',
             'product_image', 'product__title', 'product__id',
         )
-        
+
         return coupons
 
 
@@ -249,13 +250,14 @@ class DiscountSerializer:
             created_at__gte=OuterRef('start_date')
 
         ).annotate(orders=Count('pk')).values('orders')[:1]
-        product_image_subquery = ProductImage.objects.filter(product_id=OuterRef('product__id')).values('image')[:1]
-        
+        product_image_subquery = ProductImage.objects.filter(
+            product_id=OuterRef('product__id')).values('image')[:1]
+
         discounts = Discount.objects.filter(
             product__store__user__id=user_id
         ).annotate(
             product_image=Subquery(product_image_subquery),
             orders=Coalesce(Subquery(order_subquery), 0)).values(
-            'id', 'title', 'percentage', 'end_date', 'orders', 'product__title','product_image', 'product__id',
+            'id', 'title', 'percentage', 'end_date', 'orders', 'product__title', 'product_image', 'product__id',
         )
         return discounts
