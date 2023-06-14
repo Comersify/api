@@ -2,10 +2,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
 from django.db.models import Q
-from .models import Coupon, Discount
+from .models import Coupon, Discount, Product, ProductPackage, ProductImage
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from datetime import date
+import json
+from user.models import Store
 
 
 class GetSuperDealsView(APIView):
@@ -99,14 +101,147 @@ class ProductView(APIView):
         return Response({"type": "error", "message": "user not valid"})
 
     def post(self, request):
-        print(request.data)
-        return Response({"type": "error", "data": "not developed yet "})
+        if request.user.user_type != "VENDOR":
+            return Response({"type": "error", "message": "user not valid"})
+        data = request.data.get('data')
+        if data is None:
+            return Response({"type": "error", "message": "Pls complete your product information"})
+
+        data = json.loads(data)
+        title = data.get('title')
+        category_id = data.get('category')
+        price = data.get('price')
+        description = data.get('description')
+        quantity = data.get('quantity')
+
+        if not title or not category_id or not price or not description or not quantity:
+            return Response({"type": "error", "message": "Pls complete your product information"})
+
+        store = Store.objects.filter(user_id=request.user.id)
+        if not store.exists():
+            return Response({"type": "error", "message": "Can't create product"})
+        store = store.get()
+        product = Product.objects.create(
+            store_id=store.id,
+            title=title,
+            category_id=category_id,
+            price=price,
+            description=description,
+            in_stock=quantity,
+        )
+
+        if request.data.get('image[0]') is None:
+            return Response({"type": "error", "message": "Product image is missing"})
+
+        i = 0
+        while True:
+            pack_title = request.data.get(f'title[{i}]')
+            pack_image = request.data.get(f'pack[{i}]')
+            if pack_title and pack_image:
+                product_pack = ProductPackage.objects.create(
+                    product_id=product.id,
+                    title=json.loads(pack_title),
+                    image=pack_image
+                )
+                i += 1
+            else:
+                break
+
+        for i in range(4):
+            product_image = request.data.get(f'image[{i}]')
+
+            if product_image:
+                image = ProductImage.objects.create(
+                    product_id=product.id,
+                    image=product_image
+                )
+            else:
+                break
+
+        return Response({"type": "success", "message": "product created successfully "})
 
     def delete(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
+        if request.user.user_type != "VENDOR":
+            return Response({"type": "error", "message": "user not valid"})
+        product_id = request.data.get('id')
+        if product_id is None:
+            return Response({"type": "error", "message": "data is missing"})
+        product = Product.objects.filter(
+            store__user__id=request.user.id, id=product_id
+        )
+        if not product.exists():
+            return Response({"type": "error", "message": "Product not found"})
+        product.delete()
+        return Response({"type": "success", "message": "Product was deleted"})
 
     def put(self, request):
-        return Response({"type": "error", "data": "not developed yet "})
+        if request.user.user_type != "VENDOR":
+            return Response({"type": "error", "message": "user not valid"})
+        data = request.data.get('data')
+
+        if data is None:
+            return Response({"type": "error", "message": "data is missing"})
+
+        data = json.loads(data)
+        product_id = data.get("id")
+        title = data.get("title")
+        category = data.get("category")
+        description = data.get("description")
+        price = data.get("price")
+        quantity = data.get("quantity")
+        images = data.get("images")
+        packs = data.get("packs")
+
+        if not product_id or not title or not category or not description or not price or not quantity:
+            return Response({"type": "error", "message": "Complete needed information"})
+
+        product = Product.objects.filter(
+            store__user__id=request.user.id,
+            id=product_id
+        )
+        if not product.exists():
+            return Response({"type": "error", "message": "Product not found"})
+        product = product.get()
+
+        deleted_product_images = ProductImage.objects.filter(
+            product_id=product.id).exclude(id__in=images)
+        deleted_product_packs = ProductPackage.objects.filter(
+            product_id=product.id).exclude(id__in=packs)
+        deleted_product_images.delete()
+        deleted_product_packs.delete()
+        i = 0
+        while True:
+            pack_title = request.data.get(f'title[{i}]')
+            pack_image = request.data.get(f'pack[{i}]')
+            if pack_title and pack_image:
+                product_pack = ProductPackage.objects.create(
+                    product_id=product.id,
+                    title=json.loads(pack_title),
+                    image=pack_image
+                )
+                i += 1
+            else:
+                break
+
+        for i in range(4):
+            product_image = request.data.get(f'image[{i}]')
+
+            if product_image:
+                image = ProductImage.objects.create(
+                    product_id=product.id,
+                    image=product_image
+                )
+            else:
+                break
+        print(description)
+        product.title = title
+        product.category_id = category
+        product.description = description
+        product.price = price
+        product.in_stock = quantity
+        product.save()
+
+        return Response({"type": "success", "message": "Product updated successfully"})
 
 
 class CouponView(APIView):
