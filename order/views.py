@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from product.models import Discount
-from datetime import date
+from datetime import date, datetime
 from rest_framework.views import APIView
 from user.models import ShippingInfo
 from cart.models import ShoppingCart
@@ -71,7 +71,7 @@ class CreateOrderView(APIView):
                 order.shipping_info_id = shipping_info_id
                 price = order.product.price
                 discount = Discount.objects.filter(
-                    product_id=order.product.id, end_date__lt=date.today())
+                    product_id=order.product.id, end_date__gt=date.today())
                 if discount.exists():
                     discount = discount.get()
                     price -= (price * discount.percentage / 100)
@@ -79,7 +79,6 @@ class CreateOrderView(APIView):
                 if order.coupon:
                     price -= order.coupon.value
                 order.price = price
-                from datetime import datetime
                 order.created_at = datetime.now()
                 order.save()
             cart.orders.clear()

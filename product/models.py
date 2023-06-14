@@ -39,7 +39,7 @@ class Product(models.Model):
     def current_price(self):
         from datetime import datetime
         discount = Discount.objects.filter(
-            end_date__lt=datetime.now(), product_id=self.pk)
+            end_date__gt=datetime.now(), product_id=self.pk)
         act_price = self.price
         if discount.exists():
             discount = discount.get()

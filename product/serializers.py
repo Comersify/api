@@ -20,7 +20,7 @@ class ProductSerializer:
 
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
-            end_date__lt=datetime.today()
+            end_date__gt=datetime.today()
         ).order_by("-id").values('percentage')[:1]
 
         subquery_completed_orders = Order.objects.filter(

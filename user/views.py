@@ -47,6 +47,7 @@ class UpdateSettingsView(APIView):
         user = user.get()
         image = request.data.get('file')
         data = None
+        print(request.data)
         if image:
             data = json.loads(request.data.get('json_data'))
         else:

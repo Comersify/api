@@ -26,7 +26,7 @@ class Order(models.Model):
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
     coupon = models.ForeignKey(
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
-        limit_choices_to={"product": models.F('product'), "end_date__lt": date.today()})
+        limit_choices_to={"product": models.F('product'), "end_date__gt": date.today()})
     price = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(null=True, blank=True)
 
