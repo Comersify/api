@@ -45,7 +45,6 @@ class GetProductsView(APIView):
                 'categories').replace(" ", "").split(",")
             orderby = request.GET.get('orderBy')
             if keyword:
-                print(f"length os {len(products)}")
                 products = products.filter(
                     Q(title__icontains=keyword) |
                     Q(description__icontains=keyword)
@@ -66,7 +65,6 @@ class GetProductsView(APIView):
                     products = products.order_by(f"-{orderby}")
             return Response({"type": "success", "data": products})
         except Exception as e:
-            print(e)
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
@@ -233,7 +231,6 @@ class ProductView(APIView):
                 )
             else:
                 break
-        print(description)
         product.title = title
         product.category_id = category
         product.description = description

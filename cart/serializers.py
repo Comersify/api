@@ -69,7 +69,6 @@ class ShoppingCartSerializer:
 
         if coupons_total['total']:
             total -= coupons_total['total']
-            print(coupons_total['total'])
         data = {
             "orders": list(orders),
             "coupons": list(coupons),

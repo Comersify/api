@@ -41,7 +41,6 @@ class Product(models.Model):
         discount = Discount.objects.filter(
             end_date__lt=datetime.now(), product_id=self.pk)
         act_price = self.price
-        print(discount)
         if discount.exists():
             discount = discount.get()
             act_price -= discount.percentage * self.price / 100
