@@ -1,10 +1,17 @@
 """
-ASGI config for core project.
+import os
+from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from chat import routing  # Import your app's routing module
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 
-For more information on this file, see
-https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
+application = ProtocolTypeRouter({
+    'http': get_asgi_application(),
+    'websocket': URLRouter(
+        routing.websocket_urlpatterns
+    ),
+})
 """
 
 import os
