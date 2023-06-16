@@ -20,3 +20,13 @@ migration:
 
 freeze:
 	pip freeze > requirements.txt
+
+merge:
+	git checkout master && git merge develop
+
+master-push:
+	git checkout master && git push master master
+
+dev-push:
+	git checkout develop && git push develop develop
+
