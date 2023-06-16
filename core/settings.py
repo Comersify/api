@@ -51,12 +51,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "https://boisterous-clafoutis-4deb4d.netlify.app",
+    "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://boisterous-clafoutis-4deb4d.netlify.app",
+    "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
