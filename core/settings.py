@@ -42,15 +42,23 @@ INSTALLED_APPS = [
 ]
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+# CORS_ORIGIN_ALLOW_ALL = True
+
+ADMIN_REACT_SITE = os.environ.get("ADMIN_REACT_SITE")
+STORE_NEXT_SITE = os.environ.get("STORE_NEXT_SITE")
+
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3005",
+    "https://boisterous-clafoutis-4deb4d.netlify.app",
+    ADMIN_REACT_SITE,
+    STORE_NEXT_SITE,
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:3005',
+    "https://boisterous-clafoutis-4deb4d.netlify.app",
+    ADMIN_REACT_SITE,
+    STORE_NEXT_SITE,
 ]
 
 CORS_ALLOW_CREDENTIALS = True
