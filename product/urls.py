@@ -12,6 +12,7 @@ urlpatterns = [
 
     path("reviews/<int:id>", GetReviewsView.as_view()),  # ver
 
+    path("dashboard/", DashboardDataView.as_view()),
 
     path("vendor/products/", ProductView.as_view()),
     path("vendor/products/<int:id>", ProductDetailsView.as_view()),

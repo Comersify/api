@@ -1,6 +1,6 @@
 from .models import Product, Discount, ProductImage, Category, ProductPackage, Review
 from order.models import Order
-from django.db.models import Count, Sum, Value, OuterRef, Subquery, Avg, F, ExpressionWrapper
+from django.db.models import Count, Sum, Value, OuterRef, Subquery,Q, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -23,12 +23,10 @@ class ProductSerializer:
             end_date__gt=datetime.today()
         ).order_by("-id").values('percentage')[:1]
 
-        subquery_completed_orders = Order.objects.filter(
-            product=OuterRef('id'), status='DELEVRED'
-        ).values('product').annotate(count_completed_orders=Count('id')).values('count_completed_orders')[:1]
-
         products = Product.objects.annotate(
-            orders=Coalesce(Subquery(subquery_completed_orders), Value(0)),
+            orders=Count(
+                "order", filter=Q(order__status= "DELEVRED")
+            ),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
             reviews=Coalesce(Avg('review__stars'), Value(0.0)),
@@ -58,12 +56,10 @@ class ProductSerializer:
             product=OuterRef('id')
         ).order_by("-id").values('percentage')[:1]
 
-        subquery_completed_orders = Order.objects.filter(
-            product=OuterRef('id'), status='DELEVRED'
-        ).annotate(count_completed_orders=Count('id')).values('count_completed_orders')[:1]
-
         products = Product.objects.annotate(
-            orders=Coalesce(Subquery(subquery_completed_orders), Value(0)),
+            orders=Count(
+                "order", filter=Q(order__status= "DELEVRED")
+            ),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
             reviews=Coalesce(Count('review__stars'), Value(0)),
@@ -83,20 +79,15 @@ class ProductSerializer:
             product=OuterRef('id')
         ).values('image')[:1]
 
-        subquery_completed_orders = Order.objects.filter(
-            product=OuterRef('id'), status='DELEVRED'
-        ).values('pk').annotate(count_completed_orders=Count('pk')).values('count_completed_orders')[:1]
-
-        subquery_earned_from_orders = Order.objects.filter(
-            product=OuterRef('id'), status='DELEVRED'
-        ).values('price').annotate(spent=Sum('price')).values('spent')[:1]
-
         products = Product.objects.filter(store__user__id=user_id).annotate(
             image=Subquery(subquery_image),
             packs=Coalesce(Count('productpackage'), 0),
-            orders=Coalesce(Subquery(subquery_completed_orders), 0),
+            orders=Count(
+                "order", filter=Q(order__status= "DELEVRED")
+            ),
             earning=Coalesce(
-                Subquery(subquery_earned_from_orders), Value(0.0)),
+                Sum("order__price", filter=Q(order__status= "DELEVRED") ),0.0)
+            ,
             reviews=Coalesce(Count('review__stars'), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
         ).values(

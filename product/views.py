@@ -2,12 +2,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
 from django.db.models import Q
-from .models import Coupon, Discount, Product, ProductPackage, ProductImage
+from .models import Coupon, Discount, Product, ProductPackage, ProductImage, Review
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from datetime import date
+from django.db.models import Sum
 import json
 from user.models import Store
+from order.models import Order
 
 
 class GetSuperDealsView(APIView):
@@ -416,3 +418,18 @@ class GetReviewsView(APIView):
         stats = serializer.get_reviews_stats(id)
         reviews = serializer.get_reviews(id)
         return Response({"type": "success", "data": {"stats": stats, "reviews": reviews}})
+
+class DashboardDataView(APIView):
+    def get(self, request):
+        data = {}
+        data['products'] = Product.objects.filter(store__user__id=request.user.id).count()
+        data['orders'] = Order.objects.filter(
+            product__store__user__id=request.user.id, 
+            status="DELEVRED"
+        ).count()
+        data['reviews'] = Review.objects.filter(product__store__user__id=request.user.id).count()
+        data['sales'] = Order.objects.filter(
+            product__store__user__id=request.user.id, 
+            status="DELEVRED"
+        ).annotate(earning=Sum('price')).values('earning')[0]['earning']
+        return Response({"type": "success", "data": data})
