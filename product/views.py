@@ -1,3 +1,5 @@
+from django.db.models import OuterRef
+from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
@@ -111,11 +113,14 @@ class ProductView(APIView):
         title = data.get('title')
         category_id = data.get('category')
         price = data.get('price')
+        buy_price = data.get('buy_price')
         description = data.get('description')
         quantity = data.get('quantity')
 
-        if not title or not category_id or not price or not description or not quantity:
+        if not buy_price or not title or not category_id or not price or not description or not quantity:
             return Response({"type": "error", "message": "Pls complete your product information"})
+        if not quantity and not request.data.get('pack_quantity[0]') and not request.data.get('title[0]') and not request.data.get('pack[0]'):
+            return Response({"type": "error", "message": "Complete needed information"})
 
         store = Store.objects.filter(user_id=request.user.id)
         if not store.exists():
@@ -126,6 +131,7 @@ class ProductView(APIView):
             title=title,
             category_id=category_id,
             price=price,
+            buy_price=buy_price,
             description=description,
             in_stock=quantity,
         )
@@ -134,9 +140,11 @@ class ProductView(APIView):
             return Response({"type": "error", "message": "Product image is missing"})
 
         i = 0
+        total_quantity = 0
         while True:
             pack_title = request.data.get(f'title[{i}]')
             pack_image = request.data.get(f'pack[{i}]')
+            pack_quantity = request.data.get(f'quantity[{i}]')
             if pack_title and pack_image:
                 product_pack = ProductPackage.objects.create(
                     product_id=product.id,
@@ -144,9 +152,11 @@ class ProductView(APIView):
                     image=pack_image
                 )
                 i += 1
+                total_quantity += pack_quantity
             else:
                 break
-
+        if total_quantity > 0:
+            product.in_stock = total_quantity
         for i in range(4):
             product_image = request.data.get(f'image[{i}]')
 
@@ -188,11 +198,14 @@ class ProductView(APIView):
         category = data.get("category")
         description = data.get("description")
         price = data.get("price")
+        buy_price = data.get("buy_price")
         quantity = data.get("quantity")
         images = data.get("images")
         packs = data.get("packs")
 
-        if not product_id or not title or not category or not description or not price or not quantity:
+        if not buy_price or not product_id or not title or not category or not description or not price:
+            return Response({"type": "error", "message": "Complete needed information"})
+        if not quantity and not request.data.get('pack_quantity[0]') and not request.data.get('title[0]') and not request.data.get('pack[0]'):
             return Response({"type": "error", "message": "Complete needed information"})
 
         product = Product.objects.filter(
@@ -210,16 +223,21 @@ class ProductView(APIView):
         deleted_product_images.delete()
         deleted_product_packs.delete()
         i = 0
+        total_quantity = 0
         while True:
             pack_title = request.data.get(f'title[{i}]')
             pack_image = request.data.get(f'pack[{i}]')
+            pack_quantity = request.data.get(f'pack_quantity[{i}]')
+
             if pack_title and pack_image:
                 product_pack = ProductPackage.objects.create(
                     product_id=product.id,
                     title=json.loads(pack_title),
-                    image=pack_image
+                    image=pack_image,
+                    quantity=pack_quantity
                 )
                 i += 1
+                total_quantity += pack_quantity
             else:
                 break
 
@@ -237,7 +255,11 @@ class ProductView(APIView):
         product.category_id = category
         product.description = description
         product.price = price
-        product.in_stock = quantity
+        product.buy_price = buy_price
+        if total_quantity > 0:
+            product.in_stock = total_quantity
+        else:
+            product.in_stock = quantity
         product.save()
 
         return Response({"type": "success", "message": "Product updated successfully"})
@@ -337,6 +359,16 @@ class DiscountView(APIView):
             percentage = request.data.get('percentage')
             end_date = request.data.get('end_date')
 
+            product_runing_duscoutns = Discount.objects.filter(
+                product_id=product_id,
+                end_date__gt=date.today()
+            )
+
+            if len(product_runing_duscoutns) >= 1:
+                if len(product_runing_duscoutns) >= 2:
+                    product_runing_duscoutns[1:].delete()
+                return Response({"type": "error", "message": "Product already have runing discounts"})
+
             if not product_id or not title or not percentage or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
             end_date = end_date.split("-")
@@ -419,17 +451,25 @@ class GetReviewsView(APIView):
         reviews = serializer.get_reviews(id)
         return Response({"type": "success", "data": {"stats": stats, "reviews": reviews}})
 
+
+User = get_user_model()
+
+
 class DashboardDataView(APIView):
     def get(self, request):
         data = {}
-        data['products'] = Product.objects.filter(store__user__id=request.user.id).count()
+        data['products'] = Product.objects.filter(
+            store__user__id=request.user.id).count()
         data['orders'] = Order.objects.filter(
-            product__store__user__id=request.user.id, 
+            product__store__user__id=request.user.id,
             status="DELEVRED"
         ).count()
-        data['reviews'] = Review.objects.filter(product__store__user__id=request.user.id).count()
+        data['reviews'] = Review.objects.filter(
+            product__store__user__id=request.user.id).count()
         data['sales'] = Order.objects.filter(
-            product__store__user__id=request.user.id, 
-            status="DELEVRED"
-        ).annotate(earning=Sum('price')).values('earning')[0]['earning']
+            status="DELEVRED",
+            product__store__user__id=request.user.id
+        ).aggregate(earning=Sum("price"))['earning']
+        print(data['sales'])
+
         return Response({"type": "success", "data": data})

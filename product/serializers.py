@@ -1,6 +1,6 @@
 from .models import Product, Discount, ProductImage, Category, ProductPackage, Review
 from order.models import Order
-from django.db.models import Count, Sum, Value, OuterRef, Subquery,Q, Avg, F, ExpressionWrapper
+from django.db.models import Count, Sum, Value, OuterRef, Subquery, Q, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -25,7 +25,7 @@ class ProductSerializer:
 
         products = Product.objects.annotate(
             orders=Count(
-                "order", filter=Q(order__status= "DELEVRED")
+                "order", filter=Q(order__status="DELEVRED")
             ),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
@@ -58,7 +58,7 @@ class ProductSerializer:
 
         products = Product.objects.annotate(
             orders=Count(
-                "order", filter=Q(order__status= "DELEVRED")
+                "order", filter=Q(order__status="DELEVRED")
             ),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
@@ -71,7 +71,7 @@ class ProductSerializer:
         products["images"] = ProductImage.objects.filter(
             product_id=id).values('image')
         products["packs"] = list(ProductPackage.objects.filter(
-            product_id=id).values('id', 'image', 'title'))
+            product_id=id).values('id', 'image', 'title', 'quantity'))
         return products
 
     def get_products_for_vendor(self, user_id):
@@ -79,19 +79,29 @@ class ProductSerializer:
             product=OuterRef('id')
         ).values('image')[:1]
 
+        subquery_discount = Discount.objects.filter(
+            product=OuterRef('id'),
+            end_date__gt=datetime.today()
+        ).order_by("-id").values('percentage')[:1]
+
         products = Product.objects.filter(store__user__id=user_id).annotate(
             image=Subquery(subquery_image),
             packs=Coalesce(Count('productpackage'), 0),
+            discount_value=Coalesce(Subquery(subquery_discount), 0),
             orders=Count(
-                "order", filter=Q(order__status= "DELEVRED")
+                "order", filter=Q(order__status="DELEVRED")
+            ),
+            act_price=ExpressionWrapper(
+                F('price')-Coalesce(
+                    F('discount_value') * F('price')/100, 0),
+                output_field=models.FloatField()
             ),
             earning=Coalesce(
-                Sum("order__price", filter=Q(order__status= "DELEVRED") ),0.0)
-            ,
+                Sum("order__price", filter=Q(order__status="DELEVRED")), 0.0),
             reviews=Coalesce(Count('review__stars'), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
         ).values(
-            'id', 'image', 'title', 'price', 'in_stock', 'packs', 'earning',
+            'id', 'image', 'title', 'price', 'buy_price', 'act_price', 'in_stock', 'packs', 'earning',
             'orders', 'reviews', 'reviews_avg',
         )
         return products
@@ -111,7 +121,8 @@ class ProductSerializer:
         product_image = product_image.values('id', 'image')
         product_package = ProductPackage.objects.filter(product_id=product_id)
         if product_package.exists():
-            product_package = product_package.values("id", "image", 'title')
+            product_package = product_package.values(
+                "id", "image", 'title', 'quantity')
         else:
             product_package = []
 
@@ -223,9 +234,9 @@ class CouponSerializer:
             product__store__user__id=user_id
         ).annotate(
             product_image=Subquery(product_image_subquery),
-            orders=Coalesce(Subquery(order_subquery), 0)
+            orders=Subquery(order_subquery)
         ).select_related('product').values(
-            'id', 'code', 'value', 'end_date', 'orders',
+            'id', 'code', 'value', 'end_date',
             'product_image', 'product__title', 'product__id',
         )
 
@@ -249,6 +260,6 @@ class DiscountSerializer:
         ).annotate(
             product_image=Subquery(product_image_subquery),
             orders=Coalesce(Subquery(order_subquery), 0)).values(
-            'id', 'title', 'percentage', 'end_date', 'orders', 'product__title', 'product_image', 'product__id',
+            'id', 'title', 'percentage', 'end_date', 'product__title', 'product_image', 'product__id',
         )
         return discounts
