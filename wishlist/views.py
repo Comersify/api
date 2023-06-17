@@ -75,3 +75,8 @@ class DeleteProductFromWishList(APIView):
             return Response({"type": "success", "message": "Product removed from your list"})
         else:
             return Response({"type": "success", "message": "Product is not in your list"})
+
+
+class Check(APIView):
+     def get(self, request):
+        return Response({"success":"deployed"})
