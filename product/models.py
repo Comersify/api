@@ -33,6 +33,7 @@ class Product(models.Model):
         Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     price = models.FloatField()
+    buy_price = models.FloatField()
     in_stock = models.IntegerField()
 
     @property
@@ -55,6 +56,7 @@ class ProductPackage(models.Model):
         Product, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ImageField(upload_to=make_product_packs_image_path)
     title = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
 
 
 class ProductImage(models.Model):
