@@ -76,7 +76,17 @@ class DeleteProductFromWishList(APIView):
         else:
             return Response({"type": "success", "message": "Product is not in your list"})
 
+from django.http import HttpResponse
 
-class Check(APIView):
-     def get(self, request):
-        return Response({"success":"deployed"})
+
+def index(request):
+    now = datetime.now()
+    html = f'''
+    <html>
+        <body>
+            <h1>Hello from Vercel!</h1>
+            <p>The current time is { now }.</p>
+        </body>
+    </html>
+    '''
+    return HttpResponse(html)
