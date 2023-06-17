@@ -50,6 +50,11 @@ STORE_NEXT_SITE = os.environ.get("STORE_NEXT_SITE")
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
+    # ADMIN
+    "https://admin-dashboard-pi-woad.vercel.app",
+    "https://master--steady-kangaroo-bebaba.netlify.app",
+
+    # Store
     "https://boisterous-clafoutis-4deb4d.netlify.app",
     "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
     ADMIN_REACT_SITE,
@@ -57,8 +62,14 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    # ADMIN
+    "https://admin-dashboard-pi-woad.vercel.app",
+    "https://master--steady-kangaroo-bebaba.netlify.app",
+    ###########
+    # STORE
     "https://boisterous-clafoutis-4deb4d.netlify.app",
     "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
+    ###########
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
@@ -99,7 +110,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {}
-if not DEBUG:
+
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -138,6 +150,12 @@ REST_FRAMEWORK = {
     'TOKEN_EXPIRED_AFTER': 3600  # Expiry time in seconds (1 hour)
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_SERVER')
+EMAIL_HOST_USER = os.getenv('EMAIL_USERNAME')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True
 
 SIMPLE_JWT = {
     # Expiry time for refresh token (30 days)
