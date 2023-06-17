@@ -16,6 +16,10 @@ elif os.environ.get("ENV") == "PROD":
 
 ALLOWED_HOSTS = ["*"]
 
+if os.environ.get("ENV") == "PROD":
+    ALLOWED_HOSTS = [".varcel.app"]
+
+
 AUTH_USER_MODEL = 'user.CustomUser'
 
 
