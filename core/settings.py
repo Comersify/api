@@ -14,10 +14,8 @@ if os.environ.get("ENV") == "DEV":
 elif os.environ.get("ENV") == "PROD":
     DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
 
-if os.environ.get("ENV") == "PROD":
-    ALLOWED_HOSTS = [".varcel.app"]
+ALLOWED_HOSTS = ["127.0.0.1",".varcel.app"]
 
 
 AUTH_USER_MODEL = 'user.CustomUser'
