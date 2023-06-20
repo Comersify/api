@@ -9,12 +9,14 @@ cryptography==41.0.1
 daphne==4.0.0
 Django==4.2.1
 django-cors-headers==4.0.0
+django-smtp-ssl==1.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 hyperlink==21.0.0
 idna==3.4
 incremental==22.10.0
 Pillow==9.5.0
+psycopg==3.1.9
 pyasn1==0.5.0
 pyasn1-modules==0.3.0
 pycparser==2.21
@@ -28,4 +30,5 @@ Twisted==22.10.0
 txaio==23.1.1
 typing_extensions==4.6.2
 watchdog==3.0.0
+whitenoise==6.5.0
 zope.interface==6.0

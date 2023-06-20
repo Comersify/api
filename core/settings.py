@@ -56,7 +56,7 @@ CORS_ALLOWED_ORIGINS = [
 
     # Store
     "https://boisterous-clafoutis-4deb4d.netlify.app",
-    "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
+    "https://next-js-ecommerce-alpha.vercel.app",
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
@@ -68,7 +68,7 @@ CSRF_TRUSTED_ORIGINS = [
     ###########
     # STORE
     "https://boisterous-clafoutis-4deb4d.netlify.app",
-    "https://next-js-ecommerce-hjpfp5hkl-saadaoui-salah.vercel.app",
+    "https://next-js-ecommerce-alpha.vercel.app",
     ###########
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
@@ -77,6 +77,7 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +87,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.TokenToUserMiddleware',
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'core.urls'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
