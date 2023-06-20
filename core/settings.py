@@ -14,7 +14,7 @@ if os.environ.get("ENV") == "DEV":
 elif os.environ.get("ENV") == "PROD":
     DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [os.environ.get("DOAMIN")]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -50,26 +50,11 @@ STORE_NEXT_SITE = os.environ.get("STORE_NEXT_SITE")
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    # ADMIN
-    "https://admin-dashboard-pi-woad.vercel.app",
-    "https://master--steady-kangaroo-bebaba.netlify.app",
-
-    # Store
-    "https://boisterous-clafoutis-4deb4d.netlify.app",
-    "https://next-js-ecommerce-alpha.vercel.app",
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    # ADMIN
-    "https://admin-dashboard-pi-woad.vercel.app",
-    "https://master--steady-kangaroo-bebaba.netlify.app",
-    ###########
-    # STORE
-    "https://boisterous-clafoutis-4deb4d.netlify.app",
-    "https://next-js-ecommerce-alpha.vercel.app",
-    ###########
     ADMIN_REACT_SITE,
     STORE_NEXT_SITE,
 ]
@@ -114,7 +99,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {}
 
-if DEBUG:
+if DEBUG or not DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
