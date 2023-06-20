@@ -11,8 +11,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
-if os.environ.get("ENV") == "PROD":
-    DEBUG = False
+
 
 ALLOWED_HOSTS = [os.environ.get("DOAMIN")]
 
