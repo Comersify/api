@@ -13,7 +13,7 @@ DEBUG = True
 
 
 
-ALLOWED_HOSTS = [os.environ.get("DOAMIN")]
+ALLOWED_HOSTS = ["ecommerce-api-production-65fa.up.railway.app","127.0.0.1:8000"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
