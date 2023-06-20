@@ -11,6 +11,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
+if os.getenv('ENV') == "PROD":
+    DEBUG = False
+
 
 
 ALLOWED_HOSTS = ["ecommerce-api-production-65fa.up.railway.app","127.0.0.1:8000"]
