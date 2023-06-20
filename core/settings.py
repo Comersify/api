@@ -12,11 +12,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 if os.getenv('ENV') == "PROD":
-    DEBUG = True
+    DEBUG = False
 
 
 
-ALLOWED_HOSTS = ["ecommerce-api-production-65fa.up.railway.app","127.0.0.1:8000", "ecommerce-api-test.up.railway.app"]
+ALLOWED_HOSTS = ["ecommerce-api-prod.up.railway.app","127.0.0.1:8000", "ecommerce-api-test.up.railway.app"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {}
 
-if DEBUG or not DEBUG:
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
