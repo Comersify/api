@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
-if os.environ.get("ENV") == "DEV":
-    DEBUG = True
-elif os.environ.get("ENV") == "PROD":
+DEBUG = True
+
+if os.environ.get("ENV") == "PROD":
     DEBUG = False
 
 ALLOWED_HOSTS = [os.environ.get("DOAMIN")]
