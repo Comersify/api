@@ -15,8 +15,8 @@ if os.getenv('ENV') == "PROD":
     DEBUG = False
 
 
-
-ALLOWED_HOSTS = ["ecommerce-api-prod.up.railway.app","127.0.0.1:8000", "ecommerce-api-test.up.railway.app"]
+ALLOWED_HOSTS = ["ecommerce-api-prod.up.railway.app",
+                 "127.0.0.1", "ecommerce-api-test.up.railway.app"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -46,25 +46,32 @@ INSTALLED_APPS = [
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 # CORS_ORIGIN_ALLOW_ALL = True
 
-ADMIN_REACT_SITE = os.environ.get("ADMIN_REACT_SITE")
-STORE_NEXT_SITE = os.environ.get("STORE_NEXT_SITE")
-
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    ADMIN_REACT_SITE,
-    STORE_NEXT_SITE,
+    'http://localhost:3000',
+    'http://localhost:3005',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:3005',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    ADMIN_REACT_SITE,
-    STORE_NEXT_SITE,
-]
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        os.environ.get("ADMIN_REACT_SITE"),
+        os.environ.get("STORE_NEXT_SITE"),
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        os.environ.get("ADMIN_REACT_SITE"),
+        os.environ.get("STORE_NEXT_SITE"),
+    ]
+
 
 CORS_ALLOW_CREDENTIALS = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,6 +81,21 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.TokenToUserMiddleware',
 ]
+
+if not DEBUG:
+    MIDDLEWARE = [
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'core.middleware.TokenToUserMiddleware',
+    ]
+
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -136,9 +158,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'TOKEN_EXPIRED_AFTER': 3600  # Expiry time in seconds (1 hour)
-}
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_SERVER')
@@ -147,9 +166,12 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_USE_TLS = True
 
-SIMPLE_JWT = {
-    # Expiry time for refresh token (30 days)
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+
+    # this is the maximum time AFTER the token was issued that
+    # it can be refreshed.  exprired tokens can't be refreshed.
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 
 LANGUAGE_CODE = 'en-us'
