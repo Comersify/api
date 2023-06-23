@@ -1,9 +1,9 @@
 from .models import ShoppingCart
 from product.models import ProductImage, Discount
-from django.db.models import Value, F, Sum, OuterRef, Subquery, ExpressionWrapper
+from django.db.models import Value, Q, F, Sum, OuterRef, Subquery, ExpressionWrapper
 from django.db import models
 from django.db.models.functions import Coalesce
-from datetime import date
+from datetime import datetime
 
 
 class ShoppingCartSerializer:
@@ -25,7 +25,9 @@ class ShoppingCartSerializer:
         subquery_image = ProductImage.objects.filter(
             product_id=OuterRef('product_id')).values('image')[:1]
         subquery_discount = Discount.objects.filter(
-            product_id=OuterRef('product_id')).order_by("-id").values('percentage')[:1]
+            product_id=OuterRef('product_id'),
+            end_date__gt=datetime.today()
+        ).order_by("-id").values('percentage')[:1]
 
         orders = cart.orders.all().prefetch_related(
             'pack', 'product'
@@ -40,12 +42,13 @@ class ShoppingCartSerializer:
         return orders
 
     def get_checkout(self, cart):
-        checkout = cart.orders.all().annotate(
+
+        checkout = self.get_orders(cart).annotate(
             order_price=ExpressionWrapper(
                 (F('quantity') * F('product__price')), output_field=models.FloatField(null=True)),
             discounted_price=ExpressionWrapper(
                 F('quantity')*(
-                    F('product__discount__percentage') * F('product__price')/100
+                    F('product__discount') * F('product__price')/100
                 ), output_field=models.FloatField(null=True)),
         ).aggregate(
             sub_total=Coalesce(Sum('order_price'), Value(0.0)),

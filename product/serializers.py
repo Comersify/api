@@ -53,7 +53,8 @@ class ProductSerializer:
 
     def get_product_details(self, id):
         subquery_discount = Discount.objects.filter(
-            product=OuterRef('id')
+            product=OuterRef('id'),
+            end_date__gt=datetime.today()
         ).order_by("-id").values('percentage')[:1]
 
         products = Product.objects.annotate(
