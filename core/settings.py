@@ -14,9 +14,11 @@ DEBUG = True
 if os.getenv('ENV') == "PROD":
     DEBUG = False
 
+ALLOWED_HOSTS = ["127.0.0.1"]
 
-ALLOWED_HOSTS = ["ecommerce-api-prod.up.railway.app",
-                 "127.0.0.1", "ecommerce-api-test.up.railway.app"]
+if not DEBUG:
+    ALLOWED_HOSTS = ["ecommerce-api-prod.up.railway.app",
+                     "ecommerce-api-test.up.railway.app"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -59,14 +61,13 @@ CSRF_TRUSTED_ORIGINS = [
 
 if not DEBUG:
     CORS_ALLOWED_ORIGINS = [
-        os.environ.get("ADMIN_REACT_SITE"),
-        os.environ.get("STORE_NEXT_SITE"),
+        'https://next-js-ecommerce-alpha.vercel.app',
+        'https://admin-dashboard-pi-woad.vercel.app',
     ]
     CSRF_TRUSTED_ORIGINS = [
-        os.environ.get("ADMIN_REACT_SITE"),
-        os.environ.get("STORE_NEXT_SITE"),
+        'https://next-js-ecommerce-alpha.vercel.app',
+        'https://admin-dashboard-pi-woad.vercel.app',
     ]
-
 
 CORS_ALLOW_CREDENTIALS = True
 
