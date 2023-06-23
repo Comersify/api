@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from .models import Order
 from .serializers import OrderSerializer
-
+from django.utils import timezone
 
 class GetMyOrdersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -71,7 +71,7 @@ class CreateOrderView(APIView):
                 order.shipping_info_id = shipping_info_id
                 price = order.product.price
                 discount = Discount.objects.filter(
-                    product_id=order.product.id, end_date__gt=date.today())
+                    product_id=order.product.id, end_date__gt=timezone.now())
                 if discount.exists():
                     discount = discount.get()
                     price -= (price * discount.percentage / 100)
@@ -79,7 +79,7 @@ class CreateOrderView(APIView):
                 if order.coupon:
                     price -= order.coupon.value
                 order.price = price
-                order.created_at = datetime.now()
+                order.created_at = timezone.now()
                 order.save()
             cart.orders.clear()
             cart.save()

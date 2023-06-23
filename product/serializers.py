@@ -4,7 +4,7 @@ from django.db.models import Count, Sum, Value, OuterRef, Subquery, Q, Avg, F, E
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
-from datetime import datetime
+from django.utils import timezone
 from .models import Coupon
 
 
@@ -20,7 +20,7 @@ class ProductSerializer:
 
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
-            end_date__gt=datetime.today()
+            end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
         products = Product.objects.annotate(
@@ -54,7 +54,7 @@ class ProductSerializer:
     def get_product_details(self, id):
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
-            end_date__gt=datetime.today()
+            end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
         products = Product.objects.annotate(
@@ -82,7 +82,7 @@ class ProductSerializer:
 
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
-            end_date__gt=datetime.today()
+            end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
         products = Product.objects.filter(store__user__id=user_id).annotate(

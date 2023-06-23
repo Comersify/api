@@ -12,7 +12,7 @@ from django.db.models import Sum
 import json
 from user.models import Store
 from order.models import Order
-
+from django.utils import timezone
 
 class GetSuperDealsView(APIView):
     def get(self, request):
@@ -361,7 +361,7 @@ class DiscountView(APIView):
 
             product_runing_duscoutns = Discount.objects.filter(
                 product_id=product_id,
-                end_date__gt=date.today()
+                end_date__gt=timezone.now()
             )
 
             if len(product_runing_duscoutns) >= 1:

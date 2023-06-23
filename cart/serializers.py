@@ -3,7 +3,7 @@ from product.models import ProductImage, Discount
 from django.db.models import Value, Q, F, Sum, OuterRef, Subquery, ExpressionWrapper
 from django.db import models
 from django.db.models.functions import Coalesce
-from datetime import datetime
+from django.utils import timezone
 
 
 class ShoppingCartSerializer:
@@ -26,7 +26,7 @@ class ShoppingCartSerializer:
             product_id=OuterRef('product_id')).values('image')[:1]
         subquery_discount = Discount.objects.filter(
             product_id=OuterRef('product_id'),
-            end_date__gt=datetime.today()
+            end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
         orders = cart.orders.all().prefetch_related(

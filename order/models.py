@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from datetime import date
+from django.utils import timezone
 USER = get_user_model()
 
 
@@ -26,7 +26,7 @@ class Order(models.Model):
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
     coupon = models.ForeignKey(
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
-        limit_choices_to={"product": models.F('product'), "end_date__gt": date.today()})
+        limit_choices_to={"product": models.F('product'), "end_date__gt": timezone.now()})
     price = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(null=True, blank=True)
 

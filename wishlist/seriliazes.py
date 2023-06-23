@@ -3,7 +3,7 @@ from product.models import ProductImage, Discount, Product
 from django.db.models import Count, Value, OuterRef, Subquery, Avg
 from django.db.models.functions import Coalesce
 from order.models import Order
-from datetime import datetime
+from django.utils import timezone
 
 
 class WishListSerializer:
@@ -15,7 +15,7 @@ class WishListSerializer:
 
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
-            end_date__gt=datetime.today()
+            end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
         subquery_completed_orders = Order.objects.filter(
