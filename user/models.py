@@ -39,6 +39,7 @@ class CustomUser(AbstractUser):
         choices=TypeChoices.choices, default=TypeChoices.CUSTOMER, max_length=10)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    auth_provider = models.CharField(max_length=20, default='EMAIL')
     image = models.ImageField(upload_to="uplaods/user", null=True, blank=True)
     REQUIRED_FIELDS = ['email', 'first_name',
                        'last_name']
