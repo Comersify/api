@@ -9,9 +9,24 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import StoreSerializer
 from .models import AppReviews
 from .serializers import CustomersSerializer
-
+from .tasks import send_reset_password_email
 
 User = get_user_model()
+
+
+class ResetPasswordView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"type": "error", "message": "email is missing"})
+        user = User.objects.filter(email=email)
+        if user.exists():
+            return Response({"type": "error", "message": "Email not related to any user"})
+        sent = send_reset_password_email.delay("sadse3se3@gmail.com", "token")
+        if sent:
+            return Response({"type": "success", "message": "Check your email reset password link was sent"})
+        else:
+            return Response({"type": "error", "message": "Something went wrong try later"})
 
 
 class SettingsView(APIView):
@@ -47,7 +62,6 @@ class UpdateSettingsView(APIView):
         user = user.get()
         image = request.data.get('file')
         data = None
-        print(request.data)
         if image:
             data = json.loads(request.data.get('json_data'))
         else:
