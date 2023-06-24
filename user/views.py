@@ -10,8 +10,22 @@ from .serializers import StoreSerializer
 from .models import AppReviews
 from .serializers import CustomersSerializer
 from .tasks import send_reset_password_email
+from .providers import sign_with_google
 
 User = get_user_model()
+
+
+class SignUpWithProviderView(APIView):
+    def post(self, request, provider):
+        token = request.data.get("token")
+        if not token:
+            return Response({"type": "error", "message": "Couldn't find your email try again"})
+        if provider == "google":
+            user_token = sign_with_google(token)
+            if not user_token:
+                return Response({"type": "error", "message": "Couldn't find your email try again"})
+            return Response({"type": "success", "data": user_token})
+        return Response({"type": "error", "message": "Provider not found"})
 
 
 class ResetPasswordView(APIView):

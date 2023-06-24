@@ -11,5 +11,6 @@ urlpatterns = [
     path("reset-password/", ResetPasswordView.as_view()),  # ver
     path("stores/id/<int:id>/", GetStoreByIDView.as_view()),
     path("stores/top/", GetTopStorseView.as_view()),  # ver
-    path("app-reviews/", GetAppReviewsView.as_view()),  # ver
+    path("app-reviews/", GetAppReviewsView.as_view()),
+    path('sign-up/<str:provider>', SignUpWithProviderView.as_view())  # ver
 ]
