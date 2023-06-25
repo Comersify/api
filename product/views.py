@@ -14,6 +14,7 @@ from user.models import Store
 from order.models import Order
 from django.utils import timezone
 
+
 class GetSuperDealsView(APIView):
     def get(self, request):
         try:
@@ -40,11 +41,14 @@ class GetProductsView(APIView):
             serializer = ProductSerializer()
             products = serializer.get_products()
             keyword = request.GET.get('q')
+            offset = int(request.GET.get("offset")) if request.GET.get(
+                "offset") else False
             price_from = int(request.GET.get('from')) if request.GET.get(
-                'from') else request.GET.get('from')
+                'from') else False
             price_to = int(request.GET.get('to')) if request.GET.get(
-                'to') else request.GET.get('to')
-            stars = int(request.GET.get('stars'))
+                'to') else False
+            stars = int(request.GET.get('stars')) if request.GET.get(
+                'stars') else False
             categories = request.GET.get(
                 'categories').replace(" ", "").split(",")
             orderby = request.GET.get('orderBy')
@@ -67,8 +71,17 @@ class GetProductsView(APIView):
                     products = products.order_by(orderby)
                 else:
                     products = products.order_by(f"-{orderby}")
-            return Response({"type": "success", "data": products})
+
+            paginate_from = False
+            paginate_to = False
+            if offset:
+                paginate_to = offset * 10
+                paginate_from = paginate_to - 10
+                products = products[paginate_from:paginate_to]
+
+            return Response({"type": "success", "data": products[:15]})
         except Exception as e:
+            print(e)
             return Response({"type": "error", "message": "Something went wrong try later"})
 
 
