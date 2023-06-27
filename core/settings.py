@@ -59,6 +59,16 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3005',
 ]
 
+CORS_ALLOW_HEADERS = [
+    "X-Comercify-Visitor",
+    "Authorization",
+    "Content-Type",
+]
+
+CORS_ALLOWED_METHODS = [
+    'GET', 'POST', 'DELETE', 'UPDATE'
+]
+
 if not DEBUG:
     CORS_ALLOWED_ORIGINS = [
         'https://next-js-ecommerce-alpha.vercel.app',
@@ -97,8 +107,8 @@ if not DEBUG:
         'core.middleware.TokenToUserMiddleware',
     ]
 
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'core.urls'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
