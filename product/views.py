@@ -37,7 +37,6 @@ class GetHotCategoriesView(APIView):
 
 class GetProductsView(APIView):
     def get(self, request):
-        try:
             serializer = ProductSerializer()
             products = serializer.get_products()
             keyword = request.GET.get('q')
@@ -50,7 +49,8 @@ class GetProductsView(APIView):
             stars = int(request.GET.get('stars')) if request.GET.get(
                 'stars') else False
             categories = request.GET.get(
-                'categories').replace(" ", "").split(",")
+                'categories').replace(" ", "").split(",") if request.GET.get(
+                'categories') else ['']
             orderby = request.GET.get('orderBy')
             if keyword:
                 products = products.filter(
@@ -80,10 +80,7 @@ class GetProductsView(APIView):
                 products = products[paginate_from:paginate_to]
 
             return Response({"type": "success", "data": products[:15]})
-        except Exception as e:
-            print(e)
-            return Response({"type": "error", "message": "Something went wrong try later"})
-
+        
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
