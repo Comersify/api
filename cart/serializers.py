@@ -58,7 +58,7 @@ class ShoppingCartSerializer:
 
     def get_data(self, id):
         cart = ShoppingCart.objects.filter(
-            user_id=id)
+            user_id=id).prefetch_related('orders', 'orders__product')
         if cart.exists():
             cart = cart.get()
         else:
