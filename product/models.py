@@ -103,3 +103,11 @@ class Discount(models.Model):
     ])
     end_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     start_date = models.DateTimeField(auto_now_add=True)
+
+
+class Shipping(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, limit_choices_to={
+        'user_type': 'VENDOR'})
+    wilaya = models.CharField(max_length=20)
+    price = models.FloatField(
+        validators=[MinValueValidator(0, "Price Can not be less then 0")])
