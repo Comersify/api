@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
 from django.db.models import Q
-from .models import Coupon, Discount, Product, ProductPackage, ProductImage, Review
+from .models import Shipping, Coupon, Discount, Product, ProductPackage, ProductImage, Review
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from datetime import date
@@ -37,50 +37,50 @@ class GetHotCategoriesView(APIView):
 
 class GetProductsView(APIView):
     def get(self, request):
-            serializer = ProductSerializer()
-            products = serializer.get_products()
-            keyword = request.GET.get('q')
-            offset = int(request.GET.get("offset")) if request.GET.get(
-                "offset") else False
-            price_from = int(request.GET.get('from')) if request.GET.get(
-                'from') else False
-            price_to = int(request.GET.get('to')) if request.GET.get(
-                'to') else False
-            stars = int(request.GET.get('stars')) if request.GET.get(
-                'stars') else False
-            categories = request.GET.get(
-                'categories').replace(" ", "").split(",") if request.GET.get(
-                'categories') else ['']
-            orderby = request.GET.get('orderBy')
-            if keyword:
-                products = products.filter(
-                    Q(title__icontains=keyword) |
-                    Q(description__icontains=keyword)
-                )
-            if price_from != '' and price_from > 0:
-                products = products.filter(act_price__gte=price_from)
-            if price_to != '' and price_to > 0:
-                products = products.filter(act_price__lte=price_to)
-            if stars > 0:
-                products = products.filter(reviews__gte=stars)
-            if categories != ['']:
-                categories = [int(cat) for cat in categories]
-                products = products.filter(category_id__in=categories)
-            if orderby:
-                if orderby == "act_price":
-                    products = products.order_by(orderby)
-                else:
-                    products = products.order_by(f"-{orderby}")
+        serializer = ProductSerializer()
+        products = serializer.get_products()
+        keyword = request.GET.get('q')
+        offset = int(request.GET.get("offset")) if request.GET.get(
+            "offset") else False
+        price_from = int(request.GET.get('from')) if request.GET.get(
+            'from') else False
+        price_to = int(request.GET.get('to')) if request.GET.get(
+            'to') else False
+        stars = int(request.GET.get('stars')) if request.GET.get(
+            'stars') else False
+        categories = request.GET.get(
+            'categories').replace(" ", "").split(",") if request.GET.get(
+            'categories') else ['']
+        orderby = request.GET.get('orderBy')
+        if keyword:
+            products = products.filter(
+                Q(title__icontains=keyword) |
+                Q(description__icontains=keyword)
+            )
+        if price_from != '' and price_from > 0:
+            products = products.filter(act_price__gte=price_from)
+        if price_to != '' and price_to > 0:
+            products = products.filter(act_price__lte=price_to)
+        if stars > 0:
+            products = products.filter(reviews__gte=stars)
+        if categories != ['']:
+            categories = [int(cat) for cat in categories]
+            products = products.filter(category_id__in=categories)
+        if orderby:
+            if orderby == "act_price":
+                products = products.order_by(orderby)
+            else:
+                products = products.order_by(f"-{orderby}")
 
-            paginate_from = False
-            paginate_to = False
-            if offset:
-                paginate_to = offset * 10
-                paginate_from = paginate_to - 10
-                products = products[paginate_from:paginate_to]
+        paginate_from = False
+        paginate_to = False
+        if offset:
+            paginate_to = offset * 10
+            paginate_from = paginate_to - 10
+            products = products[paginate_from:paginate_to]
 
-            return Response({"type": "success", "data": products[:15]})
-        
+        return Response({"type": "success", "data": products[:15]})
+
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -187,7 +187,7 @@ class ProductView(APIView):
         if product_id is None:
             return Response({"type": "error", "message": "data is missing"})
         product = Product.objects.filter(
-            store__user__id=request.user.id, id=product_id
+            user__id=request.user.id, id=product_id
         )
         if not product.exists():
             return Response({"type": "error", "message": "Product not found"})
@@ -219,7 +219,7 @@ class ProductView(APIView):
             return Response({"type": "error", "message": "Complete needed information"})
 
         product = Product.objects.filter(
-            store__user__id=request.user.id,
+            user__id=request.user.id,
             id=product_id
         )
         if not product.exists():
@@ -315,7 +315,7 @@ class CouponView(APIView):
             if not coupon_id:
                 return Response({"type": "error", "message": "can't delete coupon"})
             coupon = Coupon.objects.filter(
-                id=coupon_id, product__store__user__id=request.user.id)
+                id=coupon_id, product__user__id=request.user.id)
             if not coupon.exists():
                 return Response({"type": "error", "data": "Coupon not found"})
             coupon = coupon.get()
@@ -334,7 +334,7 @@ class CouponView(APIView):
                 return Response({"type": "error", "message": "complete missing data"})
 
             coupon = Coupon.objects.filter(
-                id=coupon_id, product__store__user__id=request.user.id)
+                id=coupon_id, product__user__id=request.user.id)
             if not coupon.exists():
                 return Response({"type": "error", "data": "Coupon not found"})
             end_date = end_date.split("-")
@@ -401,7 +401,7 @@ class DiscountView(APIView):
             if not discount_id:
                 return Response({"type": "error", "message": "can't delete discount"})
             discount = Discount.objects.filter(
-                id=discount_id, product__store__user__id=request.user.id)
+                id=discount_id, product__user__id=request.user.id)
             if not discount.exists():
                 return Response({"type": "error", "data": "discount not found"})
             discount = discount.get()
@@ -420,7 +420,7 @@ class DiscountView(APIView):
                 return Response({"type": "error", "message": "complete missing data"})
             end_date = end_date.split("-")
             discount = Discount.objects.filter(
-                id=discount_id, product__store__user__id=request.user.id)
+                id=discount_id, product__user__id=request.user.id)
             if not discount.exists():
                 return Response({"type": "error", "data": "discount not found"})
             discount = discount.get()
@@ -469,16 +469,16 @@ class DashboardDataView(APIView):
     def get(self, request):
         data = {}
         data['products'] = Product.objects.filter(
-            store__user__id=request.user.id).count()
+            user__id=request.user.id).count()
         data['orders'] = Order.objects.filter(
-            product__store__user__id=request.user.id,
+            product__user__id=request.user.id,
             status="DELEVRED"
         ).count()
         data['reviews'] = Review.objects.filter(
-            product__store__user__id=request.user.id).count()
+            product__user__id=request.user.id).count()
         data['sales'] = Order.objects.filter(
             status="DELEVRED",
-            product__store__user__id=request.user.id
+            product__user__id=request.user.id
         ).aggregate(earning=Sum("price"))['earning']
         print(data['sales'])
 

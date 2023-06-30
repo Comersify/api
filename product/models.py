@@ -8,13 +8,13 @@ USER = get_user_model()
 
 
 def make_product_image_path(instance, filename):
-    username = instance.product.store.user.username
+    username = instance.product.user.username
     filename = f"p_{instance.product.id}_{instance.id}.jpeg"
     return os.path.join('./uploads/vendors', username, 'product', filename)
 
 
 def make_product_packs_image_path(instance, filename):
-    username = instance.product.store.user.username
+    username = instance.product.user.username
     filename = f"pk_{instance.product.id}_{instance.id}.jpeg"
     return os.path.join('./uploads/vendors', username, 'product', filename)
 
@@ -26,8 +26,8 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    store = models.ForeignKey(
-        'user.Store', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        USER, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)

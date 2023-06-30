@@ -5,7 +5,6 @@ from product.serializers import ProductSerializer
 from rest_framework import serializers
 from django.db.models.functions import Coalesce
 from order.models import Order
-from product.models import Review
 
 USER = get_user_model()
 
@@ -23,7 +22,7 @@ class StoreSerializer:
         return list(stores)
 
     def get_store_details(self, id):
-        subquery_order = Order.objects.filter(product__store__id=OuterRef(
+        subquery_order = Order.objects.filter(product__user__id=OuterRef(
             'id'), status="DELEVRED").annotate(orders_count=Count('id')).values('orders_count')[:1]
         store = Store.objects.filter(pk=id).annotate(
             orders=Coalesce(Subquery(subquery_order), 0),
@@ -57,9 +56,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CustomersSerializer:
     def get_data(self, user_id):
         customers = USER.objects.annotate(
-            spent=Sum("order__price", filter=Q(order__status= "DELEVRED", order__product__store__user__id=user_id)),
+            spent=Sum("order__price", filter=Q(
+                order__status="DELEVRED", order__product__user__id=user_id)),
             orders=Count(
-                "order", filter=Q(order__status= "DELEVRED", order__product__store__user__id=user_id)),
+                "order", filter=Q(order__status="DELEVRED", order__product__user__id=user_id)),
             reviews=Count("review")
         ).filter(orders__gt=0).values(
             'first_name', 'last_name', 'image',
