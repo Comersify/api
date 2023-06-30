@@ -3,6 +3,8 @@ import json
 from user.models import CustomUser as User, Store
 from product.models import *
 import os
+from django.core.files import File
+from datetime import datetime
 
 
 def create_user():
@@ -66,7 +68,7 @@ def create_cat():
 
 
 def create_product():
-    users = Store.objects.all()
+    users = User.objects.filter(user_type="VENDOR")
     cats = Category.objects.filter(parent__isnull=False)
     with open('./faker/product.json') as f:
         data = json.load(f)
@@ -74,7 +76,7 @@ def create_product():
             cat = randint(0, len(cats)-1)
             user = randint(0, len(users)-1)
             p = Product.objects.create(
-                store=users[user],
+                user=users[user],
                 title=line["title"],
                 category=cats[cat],
                 description=line["description"],
@@ -96,7 +98,7 @@ def create_dis():
             d = Discount.objects.create(
                 title=line["title"],
                 percentage=line["percentage"],
-                end_date=line["end_date"],
+                end_date=datetime.strptime(line["end_date"], "%d/%m/%Y"),
                 product=pr[x]
             )
             print(f"product : {d.title}")
@@ -106,9 +108,12 @@ def create_images():
     import os
     images = os.listdir('./faker/images')
     t = ['X', 'L', 'M', 'S', 'XL']
-    for y in t:
-        for p in Product.objects.all():
-            with open(f"./faker/images/{images[i]}", "rb") as f:
+    for p in Product.objects.all():
+        qua = p.in_stock
+        for y in t:
+            quantity = randint(0, int(qua/2))
+            randomized = randint(0, len(images)-1)
+            with open(f"./faker/images/{images[randomized]}", "rb") as f:
                 images_file = File(f)
                 if y in t[:4]:
                     ir = ProductImage.objects.create(
@@ -116,11 +121,13 @@ def create_images():
                         image=images_file
                     )
                 i = ProductPackage.objects.create(
-                    image=image_file,
+                    image=images_file,
                     product=p,
-                    title=y
+                    title=y,
+                    quantity=quantity
                 )
                 print(f"{i.title} => {i.image.url}")
+
 
 def create_coupon():
     pr = Product.objects.all()
@@ -132,7 +139,7 @@ def create_coupon():
                 product=pr[i],
                 code=line['code'],
                 value=line['percentage'],
-                end_date=line['date']
+                end_date=datetime.strptime(line["date"], "%d/%m/%Y")
             )
 
 
@@ -154,44 +161,26 @@ def set_cats():
         else:
             x += 1
 
+from product.models import Shipping
 
-def fix_images():
-    
-    images_products = os.listdir('./media/test-images')
-    from django.core.files import File
-    for p in Product.objects.all():
-        i = randint(0, len(images_products)-1)
-        ims = randint(1, 4)
-        for m in range(ims):
-            x = randint(0, len(images) - 1)
-            with open(f"./faker/images/{images[i]}", "rb") as f:
-                images_file = File(f)
-                i = ProductPackage.objects.create(
-                    image=f"/uploads/images/{images[x]}",
-                    product=p,
-                    title=y
+def create_shipping():
+    with open('./faker/shipping.json') as f:
+        data = json.load(f)
+        for u in User.objects.filter(user_type="VENDOR"):
+            for i, line in enumerate(data['wilayas']):
+                Shipping.objects.create(
+                    user=u,
+                    wilaya=line['name'],
+                    price=line['price'],
                 )
-                print(i.title)
-                x += 1
-
-    return
-    # for p in ProductPackage.objects.all():
-    #    p.image = "/media" + p.image.url
-    #    p.save()
-    #    print(f"{p.title} => {p.image.url}")
-    #
-    # for u in User.object.all():
-    #    i = randint(0, len(images)-1)
-    #    u.image =  f"/media/uploads/users/{images[i]}"
-    #    u.save()
-    #    print(f'user: {u.username}')
-
 
 def run():
-    #create_user()
-    #create_cat()
-    #create_store()
-    #create_product()
+    # create_user()
+    # create_cat()
+    # create_store()
+    # create_product()
+    #create_images()
     #set_cats()
-    create_coupon()
-    create_dis()
+    #create_coupon()
+    #create_dis()
+    create_shipping()

@@ -1,0 +1,196 @@
+{
+  "wilayas": [
+    {
+      "name": "Adrar",
+      "price": 1000
+    },
+    {
+      "name": "Chlef",
+      "price": 500
+    },
+    {
+      "name": "Laghouat",
+      "price": 1000
+    },
+    {
+      "name": "Oum El Bouaghi",
+      "price": 500
+    },
+    {
+      "name": "Batna",
+      "price": 1000
+    },
+    {
+      "name": "Béjaïa",
+      "price": 500
+    },
+    {
+      "name": "Biskra",
+      "price": 1000
+    },
+    {
+      "name": "Béchar",
+      "price": 500
+    },
+    {
+      "name": "Blida",
+      "price": 1000
+    },
+    {
+      "name": "Bouira",
+      "price": 500
+    },
+    {
+      "name": "Tamanrasset",
+      "price": 1000
+    },
+    {
+      "name": "Tébessa",
+      "price": 500
+    },
+    {
+      "name": "Tlemcen",
+      "price": 1000
+    },
+    {
+      "name": "Tiaret",
+      "price": 500
+    },
+    {
+      "name": "Tizi Ouzou",
+      "price": 1000
+    },
+    {
+      "name": "Algiers",
+      "price": 500
+    },
+    {
+      "name": "Djelfa",
+      "price": 1000
+    },
+    {
+      "name": "Jijel",
+      "price": 500
+    },
+    {
+      "name": "Sétif",
+      "price": 1000
+    },
+    {
+      "name": "Saïda",
+      "price": 500
+    },
+    {
+      "name": "Skikda",
+      "price": 1000
+    },
+    {
+      "name": "Sidi Bel Abbès",
+      "price": 500
+    },
+    {
+      "name": "Annaba",
+      "price": 1000
+    },
+    {
+      "name": "Guelma",
+      "price": 500
+    },
+    {
+      "name": "Constantine",
+      "price": 1000
+    },
+    {
+      "name": "Médéa",
+      "price": 500
+    },
+    {
+      "name": "Mostaganem",
+      "price": 1000
+    },
+    {
+      "name": "M'Sila",
+      "price": 500
+    },
+    {
+      "name": "Mascara",
+      "price": 1000
+    },
+    {
+      "name": "Ouargla",
+      "price": 500
+    },
+    {
+      "name": "Oran",
+      "price": 1000
+    },
+    {
+      "name": "El Bayadh",
+      "price": 500
+    },
+    {
+      "name": "Illizi",
+      "price": 1000
+    },
+    {
+      "name": "Bordj Bou Arréridj",
+      "price": 500
+    },
+    {
+      "name": "Boumerdès",
+      "price": 1000
+    },
+    {
+      "name": "El Tarf",
+      "price": 500
+    },
+    {
+      "name": "Tindouf",
+      "price": 1000
+    },
+    {
+      "name": "Tissemsilt",
+      "price": 500
+    },
+    {
+      "name": "El Oued",
+      "price": 1000
+    },
+    {
+      "name": "Khenchela",
+      "price": 500
+    },
+    {
+      "name": "Souk Ahras",
+      "price": 1000
+    },
+    {
+      "name": "Tipaza",
+      "price": 500
+    },
+    {
+      "name": "Mila",
+      "price": 1000
+    },
+    {
+      "name": "Aïn Defla",
+      "price": 500
+    },
+    {
+      "name": "Naâma",
+      "price": 1000
+    },
+    {
+      "name": "Aïn Témouchent",
+      "price": 500
+    },
+    {
+      "name": "Ghardaïa",
+      "price": 1000
+    },
+    {
+      "name": "Relizane",
+      "price": 500
+    }
+  ]
+}
