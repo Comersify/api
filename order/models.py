@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
 USER = get_user_model()
 
 
@@ -13,12 +14,12 @@ class Order(models.Model):
         SHIPPED = 'SHIPPED', "SHIPPED"
         DELEVRED = 'DELEVRED', "DELEVRED"
 
-    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True, limit_choices_to={
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, limit_choices_to={
         'user_type': 'CUSTOMER'})
     shipping_info = models.ForeignKey(
         'user.ShippingInfo', on_delete=models.SET_NULL, null=True, blank=True)
     product = models.ForeignKey(
-        "product.Product", on_delete=models.SET_NULL, null=True)
+        "product.Product", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     pack = models.ForeignKey('product.ProductPackage',
                              on_delete=models.SET_NULL, null=True, blank=True)
@@ -28,6 +29,8 @@ class Order(models.Model):
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
         limit_choices_to={"product": models.F('product'), "end_date__gt": timezone.now()})
     price = models.FloatField(null=True, blank=True)
+    shipping = models.ForeignKey(
+        'product.shipping', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True, blank=True)
 
     def clean(self) -> None:
