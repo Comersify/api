@@ -1,4 +1,4 @@
-from .models import Product, Discount, ProductImage, Category, ProductPackage, Review
+from .models import Shipping, Product, Discount, ProductImage, Category, ProductPackage, Review
 from order.models import Order
 from django.db.models import Count, Sum, Value, OuterRef, Subquery, Q, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
@@ -69,10 +69,17 @@ class ProductSerializer:
         products = products.filter(id=id).values(
             'id', 'title', 'price', 'discount_value', 'orders', 'reviews', 'description', 'reviews_avg'
         ).get()
+
         products["images"] = ProductImage.objects.filter(
             product_id=id).values('image')
+
         products["packs"] = list(ProductPackage.objects.filter(
             product_id=id).values('id', 'image', 'title', 'quantity'))
+
+        products["shipping"] = Shipping.objects.filter(
+            user_id=Product.objects.filter(
+                id=id).get().user.id
+        ).values('id', 'wilaya', 'price')
         return products
 
     def get_products_for_vendor(self, user_id):
@@ -85,7 +92,7 @@ class ProductSerializer:
             end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
-        products = Product.objects.filter(store__user__id=user_id).annotate(
+        products = Product.objects.filter(user__id=user_id).annotate(
             image=Subquery(subquery_image),
             packs=Coalesce(Count('productpackage'), 0),
             discount_value=Coalesce(Subquery(subquery_discount), 0),
@@ -109,7 +116,7 @@ class ProductSerializer:
 
     def get_product_details_for_vendor(self, user_id, product_id):
         product = Product.objects.filter(
-            store__user__id=user_id,
+            user__id=user_id,
             id=product_id
         )
         if not product.exists():
@@ -225,14 +232,14 @@ class CouponSerializer:
     def get_data(self, user_id):
         order_subquery = Order.objects.filter(
             status="DELEVRED",
-            product__store__user__id=user_id,
+            product__user__id=user_id,
             coupon_id=OuterRef('id')).annotate(orders=Count('pk')).values('orders')[:1]
 
         product_image_subquery = ProductImage.objects.filter(
             product_id=OuterRef('product__id')).values('image')[:1]
 
         coupons = Coupon.objects.filter(
-            product__store__user__id=user_id
+            product__user__id=user_id
         ).annotate(
             product_image=Subquery(product_image_subquery),
             orders=Subquery(order_subquery)
@@ -248,7 +255,7 @@ class DiscountSerializer:
     def get_data(self, user_id):
         order_subquery = Order.objects.filter(
             status="DELEVRED",
-            product__store__user__id=user_id,
+            product__user__id=user_id,
             created_at__lt=OuterRef('end_date'),
             created_at__gte=OuterRef('start_date')
 
@@ -257,7 +264,7 @@ class DiscountSerializer:
             product_id=OuterRef('product__id')).values('image')[:1]
 
         discounts = Discount.objects.filter(
-            product__store__user__id=user_id
+            product__user__id=user_id
         ).annotate(
             product_image=Subquery(product_image_subquery),
             orders=Coalesce(Subquery(order_subquery), 0)).values(
