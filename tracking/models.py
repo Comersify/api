@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+import uuid
 User = get_user_model()
 
 
 class Tracker(models.Model):
-    id = models.CharField(primary_key=True, auto_created=True, unique=True, max_length=20)
+    id = models.UUIDField(primary_key=True, unique=True,
+                          default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
