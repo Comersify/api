@@ -18,8 +18,8 @@ class Tracker(models.Model):
 class Visit(models.Model):
     tracker = models.ForeignKey(Tracker, on_delete=models.CASCADE)
     client_url = models.CharField(max_length=50)
-    api_url = models.CharField(max_length=50)
+    client_path = models.CharField(max_length=20)
+    api_path = models.CharField(max_length=20)
     browser = models.CharField(max_length=20)
-    browser_version = models.CharField(max_length=20)
     ip_address = models.GenericIPAddressField()
     logged_in = models.BooleanField(default=False)
