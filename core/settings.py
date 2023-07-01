@@ -14,7 +14,7 @@ DEBUG = True
 if os.getenv('ENV') == "PROD":
     DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", "*.railway.app"]
+ALLOWED_HOSTS = ["127.0.0.1", ".railway.app"]
 
 
 AUTH_USER_MODEL = 'user.CustomUser'
