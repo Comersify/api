@@ -91,6 +91,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.TokenToUserMiddleware',
+    'tracking.middleware.TrackerMiddleware'
 ]
 
 if not DEBUG:
@@ -105,6 +106,7 @@ if not DEBUG:
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'core.middleware.TokenToUserMiddleware',
+        'tracking.middleware.TrackerMiddleware'
     ]
 
 if not DEBUG:
