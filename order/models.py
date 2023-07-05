@@ -15,7 +15,7 @@ class Order(models.Model):
         DELEVRED = 'DELEVRED', "DELEVRED"
 
     user = models.ForeignKey(USER, on_delete=models.CASCADE, limit_choices_to={
-        'user_type': 'CUSTOMER'})
+        'user_type': 'CUSTOMER'}, null=True)
     shipping_info = models.ForeignKey(
         'user.ShippingInfo', on_delete=models.SET_NULL, null=True, blank=True)
     product = models.ForeignKey(
@@ -33,10 +33,12 @@ class Order(models.Model):
         'product.shipping', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True, blank=True)
 
-    def clean(self) -> None:
+    def save(self) -> None:
         if self.product.id and self.pack.product.id != self.product.id:
             raise ValidationError("Pack is not valid")
         if self.coupon:
             if self.product.id and self.coupon.product.id != self.product.id:
                 raise ValidationError("Coupon is not valid")
-        return super().clean()
+        if not self.user and self.product.user.user_type != "INDIVIDUAL-SELLER":
+            raise ValidationError("User not valid")
+        return super().save()
