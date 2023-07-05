@@ -1,8 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from cryptography.fernet import Fernet 
 import os
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from uuid import uuid4
+from django.conf import settings
+from errors import NotValidUser
 
 def make_profile_image_path(instance, filename):
     username = instance.username
@@ -28,6 +31,9 @@ class CustomUser(AbstractUser):
         ADMIN = "ADMIN", "ADMIN"
         VENDOR = "VENDOR", "VENDOR"
         CUSTOMER = "CUSTOMER", "CUSTOMER"
+        INDIVIDUAL_SELLER = "INDIVIDUAL-SELLER", "INDIVIDUAL-SELLER" 
+        STORE_OWNER = "STORE-OWNER", "STORE-OWNER"
+
 
     phone_number = models.CharField(max_length=15, blank=True)
     image = models.ImageField(
@@ -35,9 +41,9 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=20, default="sad")
     last_name = models.CharField(max_length=20, default="sam")
-    username = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=30, unique=True)
     user_type = models.CharField(
-        choices=TypeChoices.choices, default=TypeChoices.CUSTOMER, max_length=10)
+        choices=TypeChoices.choices, default=TypeChoices.CUSTOMER, max_length=30)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     image = models.ImageField(
@@ -60,6 +66,24 @@ class CustomUser(AbstractUser):
             "image": self.image.url
         }
         return response_data
+
+
+
+
+class Token(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True)
+
+    def save(self, *args, **kwargs):
+        is_not_individual_vendor = self.user.user_type != "INDIVIDUAL-SELLER"
+        is_not_store_owner = self.user.user_type != "STORE-OWNER"
+        if is_not_individual_vendor and is_not_store_owner:
+            raise NotValidUser("User can't create token")
+        fernet = Fernet(settings.ENCRYPTION_KEY)
+        user_id = uuid4().__str__() + str(self.user.id)
+        encrypted_token = fernet.encrypt(user_id.encode()).decode()
+        self.token = encrypted_token
+        super().save(*args, **kwargs)
 
 
 class ShippingInfo(models.Model):
