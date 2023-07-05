@@ -11,6 +11,7 @@ from .serializers import OrderSerializer
 from django.utils import timezone
 from product.models import Product, ProductPackage, Discount
 
+
 class GetMyOrdersView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
@@ -34,10 +35,11 @@ class CreateOrderForIndividualSeller(APIView):
         quantity = request.data.get('quantity')
         product_id = request.data.get('productID')
         address = request.data.get('address')
-        packID = request.data.get("pakcID")
+        packID = request.data.get("packID")
         phone_number = request.data.get('phoneNumber')
         postal_code = request.data.get('postalCode')
         shipping_id = request.data.get("shippingID")
+
         if not product_id or not quantity or not full_name or not address or not phone_number or not postal_code or not shipping_id:
             return Response({"type": "error", "message": "Please enter all needed informations"})
 
@@ -45,10 +47,11 @@ class CreateOrderForIndividualSeller(APIView):
         if not shipping_obj.exists():
             return Response({"type": "error", "message": "Please enter all needed informations"})
 
-        product_obj = Product.objects.filter(id=product_id, user=request.owner)
+        product_obj = Product.objects.filter(
+            id=product_id)
+        print(product_obj.)
         if not product_obj.exists():
             return Response({"type": "error", "message": "Please enter all needed informations"})
-
 
         filtred_packs = ProductPackage.objects.filter(product_id=product_id)
         selected_pack = filtred_packs.filter(id=packID)
@@ -68,8 +71,7 @@ class CreateOrderForIndividualSeller(APIView):
                 postal_code=postal_code
             )
             shipping_info_id = info.id
-        
-        
+
         Order.objects.create(
             shipping_info__id=shipping_info_id,
             shipping__id=shipping_obj.id,
@@ -78,8 +80,7 @@ class CreateOrderForIndividualSeller(APIView):
             pack_id=packID,
             price=product_obj.current_price * quantity
         )
-        return Response({"type":"success", "message":"Order Created"})
-
+        return Response({"type": "success", "message": "Order Created"})
 
 
 class CreateOrderView(APIView):
