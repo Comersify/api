@@ -1,19 +1,18 @@
-from django.db.models import OuterRef
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
+from .serializers import IndividualSellerProductSerializer, ProductSerializer, CategorySerializer, ReviewsSerializer, CouponSerializer, DiscountSerializer
 from django.db.models import Q
-from .models import Shipping, Coupon, Discount, Product, ProductPackage, ProductImage, Review
+from .models import Coupon, Discount, Product, ProductPackage, ProductImage, Review
 from rest_framework.permissions import IsAuthenticated
-from core.backend import AccessTokenBackend
+from core.backend import *
 from datetime import date
 from django.db.models import Sum
 import json
 from user.models import Store
 from order.models import Order
 from django.utils import timezone
-
+from permissions import HasOwner
 
 class GetSuperDealsView(APIView):
     def get(self, request):
@@ -36,7 +35,15 @@ class GetHotCategoriesView(APIView):
 
 
 class GetProductsView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def get(self, request):
+        if request.owner == "INDIVIDUAL-SELLER":
+            serializer = IndividualSellerProductSerializer(request)
+            products = serializer.get_products()
+            return Response({"type":"success", "data": products})
+        
         serializer = ProductSerializer()
         products = serializer.get_products()
         keyword = request.GET.get('q')
@@ -86,13 +93,11 @@ class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
 
-    def get(self, request, id=None):
+    def get(self, request, id):
         if request.user.user_type == "VENDOR":
             serializer = ProductSerializer()
             data = serializer.get_product_details_for_vendor(
                 request.user.id, id)
-            if not id:
-                return Response({"type": "error", "message": "Product id is missing"})
             if not data:
                 return Response({"type": "error", "message": "Product not found"})
             return Response({"type": "success", "data": data})
@@ -448,6 +453,9 @@ class GetCategoriesView(APIView):
 
 
 class GetProductDetailsView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def get(self, request, id):
         serializer = ProductSerializer()
         data = serializer.get_product_details(id)
