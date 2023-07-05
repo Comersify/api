@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
+ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
 
 DEBUG = True
 
@@ -58,6 +59,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_HEADERS = [
     "X-Comercify-Visitor",
+    "X-Comercify-Individual-Seller",
+    "X-Comercify-Store-Owner",
     "Authorization",
     "Content-Type",
 ]
