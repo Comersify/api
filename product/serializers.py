@@ -11,6 +11,35 @@ from .models import Coupon
 User = get_user_model()
 
 
+class IndividualSellerProductSerializer:
+    def __int__(self, request):
+        self.owner = request.owner
+
+    def get_products(self):
+        products = Product.objects.filter(user=self.owner)
+        subquery_image = ProductImage.objects.filter(
+            product=OuterRef('id')
+        ).values('image')[:1]
+
+        subquery_discount = Discount.objects.filter(
+            product=OuterRef('id'),
+            end_date__gt=timezone.now()
+        ).order_by("-id").values('percentage')[:1]
+
+        products = Product.objects.annotate(
+            discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
+            image=Subquery(subquery_image),
+            act_price=ExpressionWrapper(
+                F('price')-Coalesce(
+                    F('discount_value') * F('price')/100, 0), output_field=models.FloatField()),
+        )
+
+        products = products.filter(in_stock__gt=0).values(
+            'id', 'title', 'price', 'discount_value',
+            'act_price', 'image')
+        return products
+
+
 class ProductSerializer:
 
     def get_products(self, has_discount=False):
