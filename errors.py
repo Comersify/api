@@ -1,0 +1,2 @@
+class NotValidUser(Exception):
+    pass
