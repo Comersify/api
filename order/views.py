@@ -46,12 +46,13 @@ class CreateOrderForIndividualSeller(APIView):
         shipping_obj = Shipping.objects.filter(id=shipping_id)
         if not shipping_obj.exists():
             return Response({"type": "error", "message": "Please enter all needed informations"})
+        shipping_obj = shipping_obj.get()
 
         product_obj = Product.objects.filter(
             id=product_id)
-        print(product_obj.)
         if not product_obj.exists():
             return Response({"type": "error", "message": "Please enter all needed informations"})
+        product_obj = product_obj.get()
 
         filtred_packs = ProductPackage.objects.filter(product_id=product_id)
         selected_pack = filtred_packs.filter(id=packID)
@@ -73,9 +74,9 @@ class CreateOrderForIndividualSeller(APIView):
             shipping_info_id = info.id
 
         Order.objects.create(
-            shipping_info__id=shipping_info_id,
-            shipping__id=shipping_obj.id,
-            product__id=product_obj.id,
+            shipping_info_id=shipping_info_id,
+            shipping_id=shipping_obj.id,
+            product_id=product_obj.id,
             status="SUBMITTED",
             pack_id=packID,
             price=product_obj.current_price * quantity
