@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from product.models import Product, Review
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
+from django.db.models.functions import Coalesce
 from django.db.models import Sum
 from order.models import Order
 
@@ -24,7 +25,6 @@ class DashboardDataView(APIView):
         data['sales'] = Order.objects.filter(
             status="DELEVRED",
             product__user__id=request.user.id
-        ).aggregate(earning=Sum("price"))['earning']
-        print(data['sales'])
+        ).aggregate(earning=Coalesce(Sum("price"), 0.0))['earning']
 
         return Response({"type": "success", "data": data})
