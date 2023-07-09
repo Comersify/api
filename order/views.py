@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from product.models import Discount, Shipping
+from product.models import Shipping
 from rest_framework.views import APIView
 from user.models import ShippingInfo
 from cart.models import ShoppingCart
@@ -8,8 +8,7 @@ from core.backend import AccessTokenBackend, UserTokenBackend
 from permissions import HasOwner
 from .models import Order
 from .serializers import OrderSerializer
-from django.utils import timezone
-from product.models import Product, ProductPackage, Discount
+from product.models import Product, ProductPackage
 
 
 class GetMyOrdersView(APIView):
@@ -79,7 +78,6 @@ class CreateOrderForIndividualSeller(APIView):
             product_id=product_obj.id,
             status="SUBMITTED",
             pack_id=packID,
-            price=product_obj.current_price * quantity
         )
         return Response({"type": "success", "message": "Order Created"})
 
@@ -130,11 +128,6 @@ class CreateOrderView(APIView):
                 order.status = "SUBMITTED"
                 order.shipping_info_id = shipping_info_id
                 order.shipping = shipping
-                price = order.product.current_price * order.quantity + shipping.price
-                if order.coupon:
-                    price -= order.coupon.value
-                order.price = price
-                order.created_at = timezone.now()
                 order.save()
             cart.orders.clear()
             cart.save()
@@ -156,3 +149,13 @@ class VendorOrdersView(APIView):
 
     def put(self, request):
         return Response({"type": "error", "message": "not developed yet"})
+
+
+class GetOrdersForLineChart(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+
+    def get(self, request):
+        serializer = OrderSerializer()
+        data = serializer.get_orders_for_line_chart(request.user.id)
+        return Response({"type": "success", "data": data})
