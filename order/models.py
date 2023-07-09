@@ -33,7 +33,7 @@ class Order(models.Model):
         'product.shipping', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True, blank=True)
 
-    def save(self) -> None:
+    def save(self, *args, **kwargs) -> None:
         if self.product.id and self.pack.product.id != self.product.id:
             raise ValidationError("Pack is not valid")
         if self.coupon:
@@ -41,4 +41,7 @@ class Order(models.Model):
                 raise ValidationError("Coupon is not valid")
         if not self.user and self.product.user.user_type != "INDIVIDUAL-SELLER":
             raise ValidationError("User not valid")
-        return super().save()
+        self.price = self.product.current_price * self.quantity + self.shipping.price
+        if self.coupon:
+            self.price -= self.coupon.value
+        return super().save(*args, **kwargs)
