@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
@@ -38,12 +39,11 @@ class Product(models.Model):
 
     @property
     def current_price(self):
-        from datetime import datetime
         discount = Discount.objects.filter(
-            end_date__gt=datetime.now(), product_id=self.pk)
+            end_date__gt=timezone.now(), product_id=self.pk)
         act_price = self.price
         if discount.exists():
-            discount = discount.get()
+            discount = discount.last()
             act_price -= discount.percentage * self.price / 100
         return act_price
 
