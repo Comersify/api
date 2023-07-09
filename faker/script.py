@@ -1,3 +1,4 @@
+from product.models import Shipping
 from random import randint
 import json
 from user.models import CustomUser as User, Store
@@ -161,7 +162,6 @@ def set_cats():
         else:
             x += 1
 
-from product.models import Shipping
 
 def create_shipping():
     with open('./faker/shipping.json') as f:
@@ -174,13 +174,43 @@ def create_shipping():
                     price=line['price'],
                 )
 
+
+def create_orders():
+    from order.models import Order
+    from datetime import date
+    ps = Product.objects.filter(user__username="ngaskoin9f")
+    users = User.objects.filter(user_type="CUSTOMER")
+    ships = Shipping.objects.filter(user__username="ngaskoin9f")
+
+    for i in range(100):
+        lp = randint(0, len(ps)-1)
+        lu = randint(0, len(users)-1)
+        lsp = randint(0, len(ships)-1)
+        quantity = randint(1, 15)
+        pack = ProductPackage.objects.filter(product=ps[lp]).last()
+        Order.objects.create(
+            status="DELEVRED",
+            product=ps[lp],
+            user=users[lu],
+            pack=pack,
+            quantity=quantity,
+            shipping=ships[lsp],
+            created_at=date(
+                2023,
+                randint(2, 12),
+                randint(2, 25)
+            )
+        )
+
+
 def run():
     # create_user()
     # create_cat()
     # create_store()
     # create_product()
-    #create_images()
-    #set_cats()
-    #create_coupon()
-    #create_dis()
-    create_shipping()
+    # create_images()
+    # set_cats()
+    # create_coupon()
+    # create_dis()
+    # create_shipping()
+    create_orders()
