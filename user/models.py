@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from cryptography.fernet import Fernet 
+from cryptography.fernet import Fernet
 import os
 from rest_framework_simplejwt.tokens import RefreshToken
 from uuid import uuid4
 from django.conf import settings
 from errors import NotValidUser
+
 
 def make_profile_image_path(instance, filename):
     username = instance.username
@@ -31,9 +32,8 @@ class CustomUser(AbstractUser):
         ADMIN = "ADMIN", "ADMIN"
         VENDOR = "VENDOR", "VENDOR"
         CUSTOMER = "CUSTOMER", "CUSTOMER"
-        INDIVIDUAL_SELLER = "INDIVIDUAL-SELLER", "INDIVIDUAL-SELLER" 
+        INDIVIDUAL_SELLER = "INDIVIDUAL-SELLER", "INDIVIDUAL-SELLER"
         STORE_OWNER = "STORE-OWNER", "STORE-OWNER"
-
 
     phone_number = models.CharField(max_length=15, blank=True)
     image = models.ImageField(
@@ -68,8 +68,6 @@ class CustomUser(AbstractUser):
         return response_data
 
 
-
-
 class Token(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token = models.CharField(max_length=100, unique=True)
@@ -88,7 +86,8 @@ class Token(models.Model):
 
 class ShippingInfo(models.Model):
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, limit_choices_to={
+                             "user_type": "customer"}, null=True)
     address = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     postal_code = models.CharField(max_length=20)
