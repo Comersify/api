@@ -17,3 +17,8 @@ class OrderSerializer:
             'coupon__code', 'created_at', 'user__first_name', 'user__last_name', 'user__image'
         )
         return orders
+
+    def get_orders_for_line_chart(self, user_id):
+        data = Order.objects.filter(product__user_id=user_id).order_by('created_at').values(
+            'id', 'price', 'created_at')
+        return list(data)
