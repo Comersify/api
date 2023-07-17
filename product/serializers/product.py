@@ -51,10 +51,11 @@ class ProductSerializer:
             end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
+        subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
+            'product__id').annotate(total=Count('product__id')).values('total')[:1]
+
         products = Product.objects.annotate(
-            orders=Count(
-                "order", filter=Q(order__status="DELEVRED")
-            ),
+            orders=Coalesce(Subquery(subquery_order), Value(0)),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
             reviews=Coalesce(Avg('review__stars'), Value(0.0)),
@@ -90,13 +91,14 @@ class ProductSerializer:
             end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
 
+        subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
+            'product__id').annotate(total=Count('product__id')).values('total')[:1]
+
         products = Product.objects.annotate(
-            orders=Count(
-                "order", filter=Q(order__status="DELEVRED")
-            ),
+            orders=Coalesce(Subquery(subquery_order), Value(0)),
             discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
-            reviews=Coalesce(Count('review__stars'), Value(0)),
+            reviews=Coalesce(Sum('review__stars'), Value(0)),
         )
 
         products = products.filter(id=id).values(
@@ -124,11 +126,16 @@ class ProductSerializer:
             product=OuterRef('id'),
             end_date__gt=timezone.now()
         ).order_by("-id").values('percentage')[:1]
+
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
+
+        subquery_packs = ProductPackage.objects.filter(product_id=OuterRef('id')).values(
+            'product__id').annotate(total=Count('product__id')).values('total')[:1]
+
         products = Product.objects.filter(user__id=user_id).annotate(
             image=Subquery(subquery_image),
-            packs=Coalesce(Count('productpackage'), 0),
+            packs=Coalesce(Subquery(subquery_packs), 0),
             discount_value=Coalesce(Subquery(subquery_discount), 0),
             orders=Subquery(subquery_order),
             act_price=ExpressionWrapper(
