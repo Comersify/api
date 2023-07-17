@@ -159,8 +159,8 @@ class ProductView(APIView):
         while True:
             pack_title = request.data.get(f'title[{i}]')
             pack_image = request.data.get(f'pack[{i}]')
-            pack_quantity = request.data.get(f'pack_quantity[{i}]')
-
+            pack_quantity = request.data.get(f'quantity[{i}]')
+            print(pack_quantity)
             if pack_title and pack_image:
                 product_pack = ProductPackage.objects.create(
                     product_id=product.id,
@@ -169,7 +169,7 @@ class ProductView(APIView):
                     quantity=pack_quantity
                 )
                 i += 1
-                total_quantity += pack_quantity
+                total_quantity += int(pack_quantity)
             else:
                 break
 
