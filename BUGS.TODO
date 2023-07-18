@@ -1,7 +1,6 @@
-orders
-packs
-quantity
+[*] orders
+[*] quantity
 
-forgot password
-notification
-chat
+[ ] forgot password
+[ ] notification
+[ ] chat
