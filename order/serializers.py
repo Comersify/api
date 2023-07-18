@@ -18,7 +18,10 @@ class OrderSerializer:
         )
         return orders
 
-    def get_orders_for_line_chart(self, user_id):
+    def get_orders_for_analytics(self, user_id):
         data = Order.objects.filter(product__user_id=user_id).order_by('created_at').values(
-            'id', 'price', 'created_at')
+            'id', 'price', 'created_at','shipping__wilaya', 
+            'user__first_name', 'user__last_name'
+        )
         return list(data)
+    
