@@ -12,10 +12,10 @@ class TrackerMiddleware:
         ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '') or request.META.get(
             'HTTP_CLIENT_IP', '') or request.META.get('REMOTE_ADDR', '')
         logged_in = False
-        
+
         if request.META.get('HTTP_AUTHORIZATION'):
             logged_in = True
-        
+
         client_url = request.META.get('HTTP_ORIGIN')
         api_path = request.META.get('PATH_INFO')
 
