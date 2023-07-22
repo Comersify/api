@@ -157,5 +157,5 @@ class GetOrdersForLineChart(APIView):
 
     def get(self, request):
         serializer = OrderSerializer()
-        data = serializer.get_orders_for_line_chart(request.user.id)
+        data = serializer.get_orders_for_analytics(request.user.id)
         return Response({"type": "success", "data": data})
