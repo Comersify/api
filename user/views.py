@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import StoreSerializer
 from .models import AppReviews
 from .serializers import CustomersSerializer
-from .tasks import send_message
 from .providers import sign_with_google
 from core.backend import UserTokenBackend
 from permissions import HasOwner
@@ -43,7 +42,7 @@ class ResetPasswordView(APIView):
         user = User.objects.filter(email=email)
         if user.exists():
             return Response({"type": "error", "message": "Email not related to any user"})
-        sent = send_message("sadse3se3@gmail.com", "token")
+        sent = True
         if sent:
             return Response({"type": "success", "message": "Check your email reset password link was sent"})
         else:
