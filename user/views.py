@@ -9,13 +9,17 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import StoreSerializer
 from .models import AppReviews
 from .serializers import CustomersSerializer
-from .tasks import send_reset_password_email
+from .tasks import send_message
 from .providers import sign_with_google
-
+from core.backend import UserTokenBackend
+from permissions import HasOwner
 User = get_user_model()
 
 
 class SignUpWithProviderView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+    
     def post(self, request, provider):
         token = request.data.get("token")
         if not token:
@@ -29,6 +33,9 @@ class SignUpWithProviderView(APIView):
 
 
 class ResetPasswordView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def post(self, request):
         email = request.data.get('email')
         if not email:
@@ -36,7 +43,7 @@ class ResetPasswordView(APIView):
         user = User.objects.filter(email=email)
         if user.exists():
             return Response({"type": "error", "message": "Email not related to any user"})
-        sent = send_reset_password_email.delay("sadse3se3@gmail.com", "token")
+        sent = send_message("sadse3se3@gmail.com", "token")
         if sent:
             return Response({"type": "success", "message": "Check your email reset password link was sent"})
         else:
@@ -44,8 +51,8 @@ class ResetPasswordView(APIView):
 
 
 class SettingsView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         user = User.objects.filter(id=request.user.id)
@@ -65,8 +72,8 @@ class SettingsView(APIView):
 
 
 class UpdateSettingsView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         import json
@@ -109,6 +116,9 @@ class UpdateSettingsView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = [HasOwner] 
+    authentication_classes = [UserTokenBackend]
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -130,6 +140,9 @@ class LoginView(APIView):
 
 
 class RefreshTokenView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def post(self, request):
         refresh = request.data.get('refresh')
         if refresh:
@@ -146,7 +159,9 @@ class RefreshTokenView(APIView):
 
 
 class SignupView(APIView):
-
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+    
     @csrf_exempt
     def post(self, request):
         first_name = request.data.get('firstName')
@@ -179,6 +194,9 @@ class SignupView(APIView):
 
 
 class GetStoreByIDView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def get(self, request, id):
         serializer = StoreSerializer()
         data = serializer.get_store_details(id)
@@ -188,6 +206,9 @@ class GetStoreByIDView(APIView):
 
 
 class GetTopStorseView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+    
     def get(self, request):
         try:
             serializer = StoreSerializer()
@@ -198,6 +219,9 @@ class GetTopStorseView(APIView):
 
 
 class GetAppReviewsView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def get(self, request):
         try:
             query = AppReviews.objects.all()[:5]
@@ -208,8 +232,8 @@ class GetAppReviewsView(APIView):
 
 
 class GetCustomersView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         if request.user.user_type == "VENDOR":

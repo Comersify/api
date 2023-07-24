@@ -7,11 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from core.backend import AccessTokenBackend
 from .serializers import ShoppingCartSerializer
-
+from core.backend import UserTokenBackend
+from permissions import HasOwner
 
 class GetCartDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         serializer = ShoppingCartSerializer()
@@ -20,8 +21,8 @@ class GetCartDetailsView(APIView):
 
 
 class AddProoductToCartView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def create_order(self, user_id, product_id, pack_id):
         order = Order.objects.create(
@@ -73,8 +74,8 @@ class AddProoductToCartView(APIView):
 
 
 class DeleteProoductFromCartView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         order_id = request.data.get("order_id")
@@ -92,8 +93,8 @@ class DeleteProoductFromCartView(APIView):
 
 
 class UpdateProoductInCartView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         order_id = request.data.get("order_id")
@@ -114,8 +115,8 @@ class UpdateProoductInCartView(APIView):
 
 
 class ApplyCouponView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         code = request.data.get('code')

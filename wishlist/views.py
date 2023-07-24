@@ -6,10 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from .seriliazes import WishListSerializer
 from datetime import datetime
+from core.backend import UserTokenBackend
+from permissions import HasOwner
 
 class GetWishListDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         serializer = WishListSerializer()
@@ -20,8 +22,8 @@ class GetWishListDetailsView(APIView):
 
 
 class ProductInWishListView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request, id):
         wish_list = WishList.objects.filter(user_id=request.user.id)
@@ -33,8 +35,8 @@ class ProductInWishListView(APIView):
 
 
 class AddProductToWishListView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         wish_list = WishList.objects.filter(user_id=request.user.id)
@@ -60,8 +62,8 @@ class AddProductToWishListView(APIView):
 
 
 class DeleteProductFromWishList(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         wish_list = WishList.objects.filter(user_id=request.user.id)
@@ -84,7 +86,7 @@ def index(request):
     html = f'''
     <html>
         <body>
-            <h1>Hello from API!</h1>
+            <h1>Hello from Comercify API!</h1>
             <p>The current time is { now }.</p>
         </body>
     </html>

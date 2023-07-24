@@ -1,3 +1,5 @@
+from core.backend import UserTokenBackend
+from permissions import HasOwner
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
 from product.models import Product, ProductImage, ProductPackage
@@ -8,8 +10,8 @@ import json
 
 
 class ProductDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request, id):
         if request.user.user_type == "VENDOR":
@@ -23,8 +25,8 @@ class ProductDetailsView(APIView):
 
 
 class ProductView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         if request.user.user_type == "VENDOR":

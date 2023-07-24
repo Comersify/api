@@ -9,11 +9,12 @@ from permissions import HasOwner
 from .models import Order
 from .serializers import OrderSerializer
 from product.models import Product, ProductPackage
-
+from core.backend import UserTokenBackend
+from permissions import HasOwner
 
 class GetMyOrdersView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         try:
@@ -83,8 +84,8 @@ class CreateOrderForIndividualSeller(APIView):
 
 
 class CreateOrderView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
         try:
@@ -137,8 +138,8 @@ class CreateOrderView(APIView):
 
 
 class VendorOrdersView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         if request.user.user_type == "VENDOR":
@@ -152,8 +153,8 @@ class VendorOrdersView(APIView):
 
 
 class GetOrdersForLineChart(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend]
+    permission_classes = [IsAuthenticated, HasOwner]
+    authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
         serializer = OrderSerializer()
