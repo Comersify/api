@@ -82,15 +82,18 @@ from django.http import HttpResponse
 
 
 def index(request):
-    now = datetime.now()
     html = f'''
     <html>
+    <head>
+    <title style="color: green;">Comercify</title>
+    </head>
         <body
             style="
+            user-select:none;
             height: 100%; padding: 0; margin: 0;
             display:flex; justify-content: center; align-items:center;
-         background-image: linear-gradient(to right, #ff80b5, #9089fc);
-            "
+        background-image: linear-gradient(to right, #ff4b96, #6056ff);
+           "
         >
          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="
                 color:white; height:80px; width:80px; font-weight: bold; margin-right: 10px;
