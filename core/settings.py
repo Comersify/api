@@ -57,8 +57,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3005',
-    "https://comercify-dashboard.varcel.app",
-    "https://comercify.varcel.app",
+    "https://comercify-dashboard.vercel.app",
+    "https://comercify.vercel.app",
 ]
 
 CORS_ALLOW_HEADERS = [
