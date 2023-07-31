@@ -51,14 +51,14 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3005',
-    "comercify-dashboard.varcel.app",
-    "comercify.varcel.app",
+    "https://comercify-dashboard.varcel.app",
+    "https://comercify.varcel.app",
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3005',
-"comercify-dashboard.varcel.app",
-    "comercify.varcel.app",
+    "https://comercify-dashboard.varcel.app",
+    "https://comercify.varcel.app",
 ]
 
 CORS_ALLOW_HEADERS = [
