@@ -7,8 +7,8 @@ from django.conf.global_settings import DEBUG
 
 
 def main():
-
-    MakeEnvVariables().run()
+    if DEBUG:
+        MakeEnvVariables().run()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     try:
         from django.core.management import execute_from_command_line
