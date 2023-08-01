@@ -8,7 +8,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
 
 DEBUG = True
 
@@ -73,16 +72,6 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_METHODS = [
     'GET', 'POST', 'DELETE', 'UPDATE'
 ]
-
-if not DEBUG:
-    CORS_ALLOWED_ORIGINS = [
-        'https://next-js-ecommerce-git-master-saadaoui-salah.vercel.app/',
-        'https://admin-dashboard-pi-woad.vercel.app',
-    ]
-    CSRF_TRUSTED_ORIGINS = [
-        'https://next-js-ecommerce-git-master-saadaoui-salah.vercel.app/',
-        'https://admin-dashboard-pi-woad.vercel.app',
-    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -152,11 +141,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get("DB_NAME"),
-            'USER': os.environ.get("DB_USER"),
-            'PASSWORD': os.environ.get("DB_PASSWORD"),
-            'HOST': os.environ.get("DB_HOST"),
-            'PORT': os.environ.get("DB_PORT"),
+            'NAME': os.environ.get("PGDATABASE"),
+            'USER': os.environ.get("PGUSER"),
+            'PASSWORD': os.environ.get("PGPASSWORD"),
+            'HOST': os.environ.get("PGHOST"),
+            'PORT': os.environ.get("PGPORT"),
         }
     }
 
@@ -177,12 +166,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+""" EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_SERVER')
 EMAIL_HOST_USER = os.getenv('EMAIL_USERNAME')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = True """
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,

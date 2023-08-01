@@ -77,7 +77,8 @@ class Token(models.Model):
         is_not_store_owner = self.user.user_type != "STORE-OWNER"
         if is_not_individual_vendor and is_not_store_owner:
             raise NotValidUser("User can't create token")
-        fernet = Fernet(settings.ENCRYPTION_KEY)
+        key = Fernet.generate_key()
+        fernet = Fernet(key)
         user_id = uuid4().__str__() + str(self.user.id)
         encrypted_token = fernet.encrypt(user_id.encode()).decode()
         self.token = encrypted_token
