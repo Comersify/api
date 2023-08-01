@@ -74,6 +74,9 @@ class GetProductDetailsView(APIView):
 
 
 class GetSuperDealsView(APIView):
+    permission_classes = [HasOwner]
+    authentication_classes = [UserTokenBackend]
+
     def get(self, request):
         try:
             serializer = ProductSerializer()

@@ -5,8 +5,11 @@ User = get_user_model()
 
 
 class Tracker(models.Model):
-    id = models.UUIDField(primary_key=True, unique=True,
-                          default=uuid.uuid4, editable=False)
+    def generator():
+        return str(uuid.uuid4())
+
+    id = models.CharField(primary_key=True, unique=True, max_length=40,
+                          default=generator, editable=False)
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

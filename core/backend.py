@@ -22,16 +22,19 @@ class AccessTokenBackend(JWTAuthentication):
 class UserTokenBackend:
 
     def authenticate_header(self, request):
-        if 'X-Comercify-Individual-Seller' in request.headers:
+        if 'X-Comercify-Individual-Seller' in request.headers or "X-Comercify-Store-Owner" in request.headers:
             return True
         return False
 
     def authenticate(self, request):
         try:
-            token = request.headers['X-Comercify-Individual-Seller']
+            token = request.headers.get(
+                'X-Comercify-Individual-Seller') or request.headers.get('X-Comercify-Store-Owner')
+            print(request.headers.get('X-Comercify-Store-Owner'))
             token = Token.objects.filter(token=token).get()
             request.owner = token.user
-        except:
+        except Exception as e:
+            print(e)
             return None
 
         return (token.user, token)
