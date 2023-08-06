@@ -27,7 +27,7 @@ class Order(models.Model):
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
     coupon = models.ForeignKey(
         "product.Coupon", on_delete=models.SET_NULL, null=True, blank=True,
-        limit_choices_to={"product": models.F('product'), "end_date__gt": timezone.now()})
+        limit_choices_to={"product": models.F('product')})
     price = models.FloatField(null=True, blank=True)
     shipping = models.ForeignKey(
         'product.shipping', on_delete=models.CASCADE, null=True)
@@ -36,7 +36,7 @@ class Order(models.Model):
     def save(self, *args, **kwargs) -> None:
         if self.product.id and self.pack.product.id != self.product.id:
             raise ValidationError("Pack is not valid")
-        if self.coupon:
+        if self.coupon and self.coupon.end_date > timezone.now():
             if self.product.id and self.coupon.product.id != self.product.id:
                 raise ValidationError("Coupon is not valid")
         if not self.user and self.product.user.user_type != "INDIVIDUAL-SELLER":
