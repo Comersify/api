@@ -203,14 +203,44 @@ def create_orders():
         )
 
 
+apps = [
+    'ads',
+    'cart',
+    'chat',
+    'order',
+    'product',
+    'tracking',
+    'user',
+    'wishlist'
+]
+
+
+def clear_migrations():
+    for app in apps:
+        migrations = os.listdir(f"{app}/migrations")
+        migrations.remove('__init__.py')
+        for migration in migrations:
+            try:
+                os.remove(f"{app}/migrations/{migration}")
+            except:
+                try:
+                    cache = os.listdir(f"{app}/migrations/__pycache__")
+                    for c in cache:
+                        os.remove(f"{app}/migrations/__pycache__/{c}")
+                    os.rmdir(f"{app}/migrations/__pycache__")
+                except FileNotFoundError:
+                    pass
+        print(f"folder {app} is cleaned")
+
+
 def run():
     # create_user()
     # create_cat()
     # create_store()
-    # create_product()
-    # create_images()
-    # set_cats()
-    # create_coupon()
-    # create_dis()
-    # create_shipping()
+    create_product()
+    create_images()
+    set_cats()
+    create_coupon()
+    create_dis()
+    create_shipping()
     create_orders()
