@@ -235,7 +235,7 @@ class GetCustomersView(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             serializer = CustomersSerializer()
             data = serializer.get_data(request.user.id)
             return Response({"type": "success", "data": list(data)})

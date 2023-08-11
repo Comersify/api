@@ -18,6 +18,8 @@ class TrackerMiddleware:
 
         client_url = request.META.get('HTTP_ORIGIN')
         api_path = request.META.get('PATH_INFO')
+        print("###########")
+        print(trackID)
         if trackID:
             Visit.objects.create(
                 tracker_id=trackID,

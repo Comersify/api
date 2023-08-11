@@ -13,14 +13,14 @@ class CouponView(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             serializer = CouponSerializer()
             data = serializer.get_data(request.user.id)
             return Response({"type": "success", "data": list(data)})
         return Response({"type": "error", "message": "There is no coupons for you"})
 
     def post(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             product_id = request.data.get('product_id')
             code = request.data.get('code')
             value = request.data.get('value')
@@ -43,7 +43,7 @@ class CouponView(APIView):
         return Response({"type": "error", "message": "There is no coupons for you"})
 
     def delete(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             coupon_id = request.data.get("id")
             if not coupon_id:
                 return Response({"type": "error", "message": "can't delete coupon"})
@@ -57,7 +57,7 @@ class CouponView(APIView):
         return Response({"type": "error", "message": "There is no coupons for you"})
 
     def put(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             coupon_id = request.data.get('id')
             product_id = request.data.get('product_id')
             code = request.data.get('code')
