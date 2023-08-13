@@ -15,7 +15,7 @@ class TokenToUserMiddleware:
             # Use JWTAuthentication to authenticate the token
             AccessTokenBackend().authenticate(request)
         
-        if 'X-Comercify-Individual-Seller' in request.headers:
+        if 'X-Comercify-Owner' in request.headers:
             # Use JWTAuthentication to authenticate the token
             UserTokenBackend().authenticate(request)
 

@@ -49,6 +49,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
     'http://localhost:3005',
     "https://comercify-dashboard.vercel.app",
     "https://comercify.vercel.app",
@@ -56,6 +57,7 @@ CORS_ALLOWED_ORIGINS = [
     
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
     'http://localhost:3005',
     "https://comercify-dashboard.vercel.app",
     "https://comercify.vercel.app",
@@ -63,8 +65,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_HEADERS = [
     "X-Comercify-Visitor",
-    "X-Comercify-Individual-Seller",
-    "X-Comercify-Store-Owner",
+    "X-Comercify-Owner",
     "Authorization",
     "Content-Type",
 ]
