@@ -14,7 +14,7 @@ class ProductDetailsView(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request, id):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             serializer = ProductSerializer()
             data = serializer.get_product_details_for_vendor(
                 request.user.id, id)
@@ -29,7 +29,7 @@ class ProductView(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             serializer = ProductSerializer()
             data = serializer.get_products_for_vendor(request.user.id)
             if not data:

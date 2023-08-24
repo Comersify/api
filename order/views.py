@@ -142,7 +142,7 @@ class VendorOrdersView(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             serializer = OrderSerializer()
             data = serializer.get_data(request.user.id)
             return Response({"type": "success", "data": list(data)})
@@ -157,6 +157,7 @@ class GetOrdersForLineChart(APIView):
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
-        serializer = OrderSerializer()
-        data = serializer.get_orders_for_analytics(request.user.id)
-        return Response({"type": "success", "data": data})
+        if request.user.user_type != "CUSTOMER":
+            serializer = OrderSerializer()
+            data = serializer.get_orders_for_analytics(request.user.id)
+            return Response({"type": "success", "data": data})

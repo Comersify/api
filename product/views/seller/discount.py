@@ -19,7 +19,7 @@ class DiscountView(APIView):
         return Response({"type": "success", "data": list(data)})
 
     def post(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             product_id = request.data.get('product_id')
             title = request.data.get('title')
             percentage = request.data.get('percentage')
@@ -52,7 +52,7 @@ class DiscountView(APIView):
         return Response({"type": "error", "message": "There is no discounts for you"})
 
     def delete(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             discount_id = request.data.get("id")
             if not discount_id:
                 return Response({"type": "error", "message": "can't delete discount"})
@@ -66,7 +66,7 @@ class DiscountView(APIView):
         return Response({"type": "error", "message": "There is no discounts for you"})
 
     def put(self, request):
-        if request.user.user_type == "VENDOR":
+        if request.user.user_type != "CUSTOMER":
             discount_id = request.data.get('id')
             product_id = request.data.get('product_id')
             title = request.data.get('title')

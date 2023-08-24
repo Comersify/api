@@ -32,7 +32,7 @@ class CustomUser(AbstractUser):
         ADMIN = "ADMIN", "ADMIN"
         VENDOR = "VENDOR", "VENDOR"
         CUSTOMER = "CUSTOMER", "CUSTOMER"
-        INDIVIDUAL_SELLER = "INDIVIDUAL-SELLER", "INDIVIDUAL-SELLER"
+        INDIVIDUAL_SELLER = "ONE-SELLER", "ONE-SELLER"
         STORE_OWNER = "STORE-OWNER", "STORE-OWNER"
 
     phone_number = models.CharField(max_length=15, blank=True)
@@ -73,7 +73,7 @@ class Token(models.Model):
     token = models.CharField(max_length=100, unique=True)
 
     def save(self, *args, **kwargs):
-        is_not_individual_vendor = self.user.user_type != "INDIVIDUAL-SELLER"
+        is_not_individual_vendor = self.user.user_type != "ONE-SELLER"
         is_not_store_owner = self.user.user_type != "STORE-OWNER"
         if is_not_individual_vendor and is_not_store_owner:
             raise NotValidUser("User can't create token")
