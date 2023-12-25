@@ -6,7 +6,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "django-insecure-jfalh_%+a9ub@h*vrc*ws^et6*8-7*e56yzqj8g(pno-(iu^47"
 
 
 DEBUG = True
@@ -54,7 +54,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://comercify-dashboard.vercel.app",
     "https://comercify.vercel.app",
 ]
-    
+
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3001',
