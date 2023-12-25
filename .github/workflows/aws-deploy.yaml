@@ -25,8 +25,10 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          echo "${{ secrets.SECRET_KEY }}"
           docker build . -f DockerFile.prod -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comercify-api:latest
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comercify-api:latest
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Deploy to EC2
+        run: |
+          echo "Deploying to EC2..."
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_INSTANCE_IP }} 'docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-ecr-repo:latest && docker run -d -p <host-port>:<container-port> --name <container-name> ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-ecr-repo:latest'
