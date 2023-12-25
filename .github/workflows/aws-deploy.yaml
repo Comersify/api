@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker build -t $DOCKER_IMAGE DockerFile.prod
+        run: docker build  . -f DockerFile.dev -t $DOCKER_IMAGE
 
       - name: Push Docker image to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -24,6 +24,7 @@ jobs:
           ECR_REGISTRY: 478521433580.dkr.ecr.us-east-1.amazonaws.com/comercify-api
           AWS_REGION: us-east-1
           DOCKER_IMAGE: comercify-api
+          
       - run: docker tag $DOCKER_IMAGE $ECR_REGISTRY/$DOCKER_IMAGE
       - run: docker push $ECR_REGISTRY/$DOCKER_IMAGE
 
