@@ -13,19 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Docker image
-        run: docker build  . -f DockerFile.dev -t comercify-api
-      - name: Push Docker image to AWS ECR
+      - name: Build & Push Docker image to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registry: 478521433580.dkr.ecr.us-east-1.amazonaws.com/comercify-api
         env:
-          ECR_REGISTRY: 478521433580.dkr.ecr.us-east-1.amazonaws.com/comercify-api
-          AWS_REGION: us-east-1
-          DOCKER_IMAGE: comercify-api
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: comercify-api
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-      - run: docker tag $DOCKER_IMAGE $ECR_REGISTRY/$DOCKER_IMAGE
-      - run: docker push $ECR_REGISTRY/$DOCKER_IMAGE
 
   deploy:
     runs-on: ubuntu-latest
