@@ -31,4 +31,5 @@ jobs:
       - name: Deploy to EC2
         run: |
           echo "Deploying to EC2..."
-          ssh -i "${{ secrets.SSH_PRIVATE_KEY }}" ec2-user@${{ secrets.EC2_INSTANCE_IP }} 'docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-ecr-repo:latest && docker run -d -p <host-port>:<container-port> --name <container-name> ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-ecr-repo:latest'
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > secret.pem && chmod 400 secret.pem
+          ssh -i "secret.pem" ec2-user@${{ secrets.EC2_INSTANCE_IP }} 'docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-ecr-repo:latest && docker run -d -p <host-port>:<container-port> --name <container-name> ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comercify-api:latest'
