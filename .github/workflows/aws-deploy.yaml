@@ -24,8 +24,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and Push Docker Image
-        run: echo ${{ secrets.SECRET_KEY }}
         run: |
+          echo "${{ secrets.SECRET_KEY }}"
           docker build . -f DockerFile.prod -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comercify-api:latest
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comercify-api:latest
     env:
