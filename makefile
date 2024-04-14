@@ -1,5 +1,8 @@
 PHONY: run
 
+console:
+	chmod 400 salaha.pem && ssh -i "salaha.pem" ec2-user@ec2-54-87-199-247.compute-1.amazonaws.com
+
 docker-run:
 	docker run api:v0.0
 

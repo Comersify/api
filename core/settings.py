@@ -6,15 +6,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = "django-insecure-jfalh_%+a9ub@h*vrc*ws^et6*8-7*e56yzqj8g(pno-(iu^47"
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+DEBUG = bool(os.environ["DEBUG"])
 
 
-DEBUG = True
-
-if os.getenv('ENV') == "PROD":
-    DEBUG = False
-
-ALLOWED_HOSTS = ["127.0.0.1", ".railway.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 AUTH_USER_MODEL = 'user.CustomUser'
@@ -48,6 +45,7 @@ INSTALLED_APPS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
+    "https://api.comercify.shop",
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3005',
@@ -56,6 +54,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://api.comercify.shop",
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3005',
@@ -167,12 +166,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-""" EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+""" 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_SERVER')
 EMAIL_HOST_USER = os.getenv('EMAIL_USERNAME')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = True """
+EMAIL_USE_TLS = True 
+"""
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
@@ -193,7 +194,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/staticfiles')
 STATIC_URL = '/static/'
 
 
