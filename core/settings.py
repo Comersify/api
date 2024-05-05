@@ -44,6 +44,10 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^http://\w+\.localhost:3000",
+]
+
 CORS_ALLOWED_ORIGINS = [
     "https://api.comercify.shop",
     'http://localhost:3000',
