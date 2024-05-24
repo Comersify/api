@@ -14,7 +14,7 @@ class TokenToUserMiddleware:
         if 'Authorization' in request.headers:
             # Use JWTAuthentication to authenticate the token
             AccessTokenBackend().authenticate(request)
-        
+
         if 'X-Comercify-Owner' in request.headers:
             # Use JWTAuthentication to authenticate the token
             UserTokenBackend().authenticate(request)
@@ -28,3 +28,17 @@ class TokenToUserMiddleware:
         response = self.get_response(request)
 
         return response
+
+
+"""
+class TokenInjectionMiddleware(MiddlewareMixin):
+    def process_response(self, request, response):
+        # Check if the user is authenticated and there is no token in the response already
+        if request.user.is_authenticated:
+            tokens = get_tokens_for_user(request.user)
+            # Adding tokens to the response headers
+            response["X-Access-Token"] = tokens['access']
+            response["X-Refresh-Token"] = tokens['refresh']
+
+        return response
+"""
