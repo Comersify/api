@@ -37,12 +37,17 @@ INSTALLED_APPS = [
     'cart',
     'user',
     'ads',
+    'website'
 ]
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 # CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^http://\w+\.localhost:3000",
+]
 
 CORS_ALLOWED_ORIGINS = [
     "https://api.comercify.shop",
@@ -85,12 +90,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.TokenToUserMiddleware',
-    'tracking.middleware.TrackerMiddleware'
+    'tracking.middleware.TrackerMiddleware',
+    'tracking.middleware.SubDomainMiddleware',
 ]
 
 if not DEBUG:
     MIDDLEWARE = [
-        "whitenoise.middleware.WhiteNoiseMiddleware",
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
@@ -100,7 +105,8 @@ if not DEBUG:
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'core.middleware.TokenToUserMiddleware',
-        'tracking.middleware.TrackerMiddleware'
+        'tracking.middleware.TrackerMiddleware',
+        'tracking.middleware.SubDomainMiddleware',
     ]
 
 if not DEBUG:

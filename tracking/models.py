@@ -24,5 +24,6 @@ class Visit(models.Model):
     client_path = models.CharField(max_length=20)
     api_path = models.CharField(max_length=20)
     browser = models.CharField(max_length=20)
+    sub_domain = models.ForeignKey('website.Website', on_delete=models.SET_NULL, null=True)
     ip_address = models.GenericIPAddressField()
     logged_in = models.BooleanField(default=False)
