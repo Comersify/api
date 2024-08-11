@@ -1,10 +1,10 @@
-
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer, IndividualSellerProductSerializer
 from core.backend import UserTokenBackend
 from permissions import HasOwner
 from rest_framework.response import Response
 from django.db.models import Q
+from user.models import CustomUser
 
 
 class GetProductsView(APIView):
@@ -12,7 +12,7 @@ class GetProductsView(APIView):
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):
-        if request.owner == "INDIVIDUAL-SELLER":
+        if request.owner.user_type == CustomUser.TypeChoices.INDIVIDUAL_SELLER:
             serializer = IndividualSellerProductSerializer(request)
             products = serializer.get_products()
             return Response({"type": "success", "data": products})
