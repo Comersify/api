@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from cryptography.fernet import Fernet
 import os
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -25,8 +25,31 @@ def make_cover_image_path(instance, filename):
     filename = f"cover_{filename}"
     return os.path.join('uploads/vendors', username, filename)
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-class CustomUser(AbstractUser):
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('user_type', "ADMIN")
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class CustomUser(AbstractUser, PermissionsMixin):
 
     class TypeChoices(models.TextChoices):
         ADMIN = "ADMIN", "ADMIN"
@@ -48,8 +71,12 @@ class CustomUser(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     image = models.ImageField(
         upload_to=make_profile_image_path, null=True, blank=True)
-    REQUIRED_FIELDS = ['email', 'first_name',
+
+    objects = CustomUserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name',
                        'last_name']
+    
 
     def save(self, *args, **kwargs):
         self.username = self.email.split("@")[0]
