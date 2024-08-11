@@ -8,8 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
-DEBUG = bool(os.environ["DEBUG"])
-
+DEBUG = int(os.environ.get("DEBUG", 0))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -27,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -99,6 +99,7 @@ if not DEBUG:
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -109,8 +110,7 @@ if not DEBUG:
         'tracking.middleware.SubDomainMiddleware',
     ]
 
-if not DEBUG:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'core.urls'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
@@ -148,10 +148,10 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get("PGDATABASE"),
-            'USER': os.environ.get("PGUSER"),
-            'PASSWORD': os.environ.get("PGPASSWORD"),
             'HOST': os.environ.get("PGHOST"),
+            'PASSWORD': os.environ.get("PGPASSWORD"),
             'PORT': os.environ.get("PGPORT"),
+            'USER': os.environ.get("PGUSER"),
         }
     }
 
@@ -200,8 +200,13 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/staticfiles')
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = 'static/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    '/var/www/static/'
+]
