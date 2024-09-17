@@ -2,11 +2,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from product.serializers import CategorySerializer
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 
 class GetHotCategoriesView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):
@@ -19,7 +17,6 @@ class GetHotCategoriesView(APIView):
 
 
 class GetCategoriesView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):

@@ -1,14 +1,12 @@
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer, IndividualSellerProductSerializer
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 from rest_framework.response import Response
 from django.db.models import Q
 from user.models import CustomUser
 
 
 class GetProductsView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):
@@ -63,7 +61,6 @@ class GetProductsView(APIView):
 
 
 class GetProductDetailsView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request, id):
@@ -74,7 +71,6 @@ class GetProductDetailsView(APIView):
 
 
 class GetSuperDealsView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):

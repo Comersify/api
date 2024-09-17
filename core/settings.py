@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
-DEBUG = int(os.environ.get("DEBUG", 0))
+DEBUG = int(os.environ.get("ENV", 0) == "PROD")
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 # CORS_ORIGIN_ALLOW_ALL = True
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_REGEX_WHITELIST = [

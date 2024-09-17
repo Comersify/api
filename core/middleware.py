@@ -10,23 +10,48 @@ class TokenToUserMiddleware:
 
     def __call__(self, request):
         request.owner = ''
+        refresh = False
         # Check if the authorization header is present
         if 'Authorization' in request.headers:
             # Use JWTAuthentication to authenticate the token
-            AccessTokenBackend().authenticate(request)
-
-        if 'X-Comercify-Owner' in request.headers:
-            # Use JWTAuthentication to authenticate the token
-            UserTokenBackend().authenticate(request)
+            user, refresh = AccessTokenBackend().authenticate(request)
+        
+        #if 'X-Comercify-Owner' in request.headers:
+        #    # Use JWTAuthentication to authenticate the token
+        #    UserTokenBackend().authenticate(request)
 
         try:
             if request.body:
                 request.data = json.loads(request.body)
         except:
             pass
-        # Process the request
-        response = self.get_response(request)
 
+        response = self.get_response(request)
+        if refresh:
+            response.set_cookie(
+                'cify_access',
+                str(refresh.access_token),
+                max_age=3600,
+                httponly=True,
+                secure=True,
+                samesite='None'
+            )
+            response.set_cookie(
+                'cify_refresh',
+                str(refresh),
+                max_age=3600,
+                httponly=True,
+                secure=True,
+                samesite='None'
+            )
+            response.set_cookie(
+                'cify_exp',
+                refresh.payload['exp'],
+                max_age=3600,
+                httponly=True,
+                secure=True,
+                samesite='None'
+            )
         return response
 
 

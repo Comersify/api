@@ -54,14 +54,14 @@ class Product(models.Model):
 class ProductPackage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, null=True, blank=True)
-    image = models.ImageField(upload_to=make_product_packs_image_path)
+    image = models.TextField()
     title = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
 
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=make_product_image_path)
+    image = models.TextField()
 
 
 class Review(models.Model):
