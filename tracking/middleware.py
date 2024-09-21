@@ -47,7 +47,10 @@ class SubDomainMiddleware:
         if sub_domain:
             site = Website.objects.filter(sub_domain=sub_domain)
             if site.exists():
-                request.owner = site.get().user 
+                request.owner = site.get().user
+            else:
+                request.owner = Website.objects.filter(sub_domain="demo").get().user
+
         response = self.get_response(request)
         return response
 

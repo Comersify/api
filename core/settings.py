@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
-DEBUG = int(os.environ.get("ENV", 0) == "PROD")
+DEBUG = int(os.environ.get("ENV", 0) == "DEV")
 
 ALLOWED_HOSTS = ["*"]
 
@@ -47,6 +47,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_REGEX_WHITELIST = [
     r"^http://\w+\.localhost:3000",
+    r"^https://\w+\.comercify.shop",
+    r"^http://\w+\.comercify.shop",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -136,24 +138,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {}
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("PGDATABASE"),
+        'HOST': os.environ.get("PGHOST"),
+        'PASSWORD': os.environ.get("PGPASSWORD"),
+        'PORT': os.environ.get("PGPORT"),
+        'USER': os.environ.get("PGUSER"),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get("PGDATABASE"),
-            'HOST': os.environ.get("PGHOST"),
-            'PASSWORD': os.environ.get("PGPASSWORD"),
-            'PORT': os.environ.get("PGPORT"),
-            'USER': os.environ.get("PGUSER"),
-        }
-    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

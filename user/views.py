@@ -11,6 +11,8 @@ from .models import AppReviews
 from .serializers import CustomersSerializer
 from .providers import sign_with_google
 from core.backend import UserTokenBackend
+from utils import set_cookies
+
 User = get_user_model()
 
 
@@ -127,30 +129,7 @@ class LoginView(APIView):
             if user.image:
                 response_data['image'] = user.image.url
             response = Response(response_data)
-            response.set_cookie(
-                'cify_access',
-                str(refresh.access_token),
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
-            response.set_cookie(
-                'cify_refresh',
-                str(refresh),
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
-            response.set_cookie(
-                'cify_exp',
-                refresh.payload['exp'],
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
+            set_cookies(refresh, response)
             return response
         else:
             return Response({"type": 'error', "message": 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

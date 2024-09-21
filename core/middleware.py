@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 import json
 from core.backend import AccessTokenBackend, UserTokenBackend
+from utils import set_cookies
 User = get_user_model()
-
 
 class TokenToUserMiddleware:
     def __init__(self, get_response):
@@ -11,11 +11,8 @@ class TokenToUserMiddleware:
     def __call__(self, request):
         request.owner = ''
         refresh = False
-        # Check if the authorization header is present
-        if 'Authorization' in request.headers:
-            # Use JWTAuthentication to authenticate the token
-            user, refresh = AccessTokenBackend().authenticate(request)
-        
+
+        user, refresh = AccessTokenBackend().authenticate(request)
         #if 'X-Comercify-Owner' in request.headers:
         #    # Use JWTAuthentication to authenticate the token
         #    UserTokenBackend().authenticate(request)
@@ -28,30 +25,7 @@ class TokenToUserMiddleware:
 
         response = self.get_response(request)
         if refresh:
-            response.set_cookie(
-                'cify_access',
-                str(refresh.access_token),
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
-            response.set_cookie(
-                'cify_refresh',
-                str(refresh),
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
-            response.set_cookie(
-                'cify_exp',
-                refresh.payload['exp'],
-                max_age=3600,
-                httponly=True,
-                secure=True,
-                samesite='None'
-            )
+            set_cookies(refresh,response)
         return response
 
 
