@@ -11,12 +11,12 @@ from .models import AppReviews
 from .serializers import CustomersSerializer
 from .providers import sign_with_google
 from core.backend import UserTokenBackend
-from permissions import HasOwner
+from utils import set_cookies
+
 User = get_user_model()
 
 
 class SignUpWithProviderView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
     
     def post(self, request, provider):
@@ -32,7 +32,6 @@ class SignUpWithProviderView(APIView):
 
 
 class ResetPasswordView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def post(self, request):
@@ -50,7 +49,7 @@ class ResetPasswordView(APIView):
 
 
 class SettingsView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
@@ -71,7 +70,7 @@ class SettingsView(APIView):
 
 
 class UpdateSettingsView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
@@ -115,7 +114,6 @@ class UpdateSettingsView(APIView):
 
 
 class LoginView(APIView):
-    permission_classes = [HasOwner] 
     authentication_classes = [UserTokenBackend]
 
     def post(self, request):
@@ -126,22 +124,21 @@ class LoginView(APIView):
             refresh = RefreshToken.for_user(user)
             response_data = {
                 "type": "success",
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'exp': refresh.payload['exp'],
                 "name": user.first_name
             }
             if user.image:
                 response_data['image'] = user.image.url
-            return Response(response_data)
+            response = Response(response_data)
+            set_cookies(refresh, response)
+            return response
         else:
             return Response({"type": 'error', "message": 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class RefreshTokenView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
+    
     def post(self, request):
         refresh = request.data.get('refresh')
         if refresh:
@@ -158,7 +155,6 @@ class RefreshTokenView(APIView):
 
 
 class SignupView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
     
     @csrf_exempt
@@ -193,7 +189,6 @@ class SignupView(APIView):
 
 
 class GetStoreByIDView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request, id):
@@ -205,7 +200,6 @@ class GetStoreByIDView(APIView):
 
 
 class GetTopStorseView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
     
     def get(self, request):
@@ -218,7 +212,6 @@ class GetTopStorseView(APIView):
 
 
 class GetAppReviewsView(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def get(self, request):
@@ -231,7 +224,7 @@ class GetAppReviewsView(APIView):
 
 
 class GetCustomersView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):

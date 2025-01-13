@@ -8,10 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from core.backend import AccessTokenBackend
 from .serializers import ShoppingCartSerializer
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class GetCartDetailsView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
@@ -21,7 +20,7 @@ class GetCartDetailsView(APIView):
 
 
 class AddProoductToCartView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def create_order(self, user_id, product_id, pack_id):
@@ -74,7 +73,7 @@ class AddProoductToCartView(APIView):
 
 
 class DeleteProoductFromCartView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
@@ -93,7 +92,7 @@ class DeleteProoductFromCartView(APIView):
 
 
 class UpdateProoductInCartView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
@@ -115,7 +114,7 @@ class UpdateProoductInCartView(APIView):
 
 
 class ApplyCouponView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):

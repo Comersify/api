@@ -7,10 +7,9 @@ from django.db.models.functions import Coalesce
 from django.db.models import Sum
 from order.models import Order
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class DashboardDataView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):

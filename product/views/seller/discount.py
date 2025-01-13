@@ -7,10 +7,9 @@ from core.backend import AccessTokenBackend
 from datetime import date
 from django.utils import timezone
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class DiscountView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):

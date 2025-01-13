@@ -6,7 +6,7 @@ class TrackerMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        sub_domain = request.META.get("HTTP_ORIGIN").split(".")[-3]
+        
         user_agent = request.META.get('HTTP_USER_AGENT')
         trackID = request.META.get('HTTP_X_COMERCIFY_VISITOR')
         ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '') or request.META.get(
@@ -23,7 +23,6 @@ class TrackerMiddleware:
                 Visit.objects.create(
                     tracker_id=trackID,
                     client_url=client_url,
-                    sub_domain__sub_domain=sub_domain,
                     client_path="blob",
                     api_path=api_path,
                     browser=user_agent,
@@ -43,10 +42,16 @@ class SubDomainMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        sub_domain = request.META.get("HTTP_ORIGIN").split(".")[-3]
-        request.owner = Website.objects.filter(sub_domain=sub_domain).user
-        response = self.get_response(request)
+        sub_domain = request.META.get("HTTP_ORIGIN", "").split(".")[0]
+        sub_domain = sub_domain.replace("https://", "").replace("http://", "")
+        if sub_domain:
+            site = Website.objects.filter(sub_domain=sub_domain)
+            if site.exists():
+                request.owner = site.get().user
+            else:
+                request.owner = Website.objects.filter(sub_domain="demo").get().user
 
+        response = self.get_response(request)
         return response
 
 

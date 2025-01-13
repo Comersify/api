@@ -6,10 +6,9 @@ from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 from datetime import date
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class CouponView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):

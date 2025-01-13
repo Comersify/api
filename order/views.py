@@ -5,15 +5,13 @@ from user.models import ShippingInfo
 from cart.models import ShoppingCart
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend, UserTokenBackend
-from permissions import HasOwner
 from .models import Order
 from .serializers import OrderSerializer
 from product.models import Product, ProductPackage
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class GetMyOrdersView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
@@ -27,7 +25,6 @@ class GetMyOrdersView(APIView):
 
 
 class CreateOrderForIndividualSeller(APIView):
-    permission_classes = [HasOwner]
     authentication_classes = [UserTokenBackend]
 
     def post(self, request):
@@ -84,7 +81,7 @@ class CreateOrderForIndividualSeller(APIView):
 
 
 class CreateOrderView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
@@ -138,7 +135,7 @@ class CreateOrderView(APIView):
 
 
 class VendorOrdersView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
@@ -153,7 +150,7 @@ class VendorOrdersView(APIView):
 
 
 class GetOrdersForLineChart(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):

@@ -7,10 +7,9 @@ from core.backend import AccessTokenBackend
 from .seriliazes import WishListSerializer
 from datetime import datetime
 from core.backend import UserTokenBackend
-from permissions import HasOwner
 
 class GetWishListDetailsView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request):
@@ -22,7 +21,7 @@ class GetWishListDetailsView(APIView):
 
 
 class ProductInWishListView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def get(self, request, id):
@@ -35,7 +34,7 @@ class ProductInWishListView(APIView):
 
 
 class AddProductToWishListView(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):
@@ -62,7 +61,7 @@ class AddProductToWishListView(APIView):
 
 
 class DeleteProductFromWishList(APIView):
-    permission_classes = [IsAuthenticated, HasOwner]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend, UserTokenBackend]
 
     def post(self, request):

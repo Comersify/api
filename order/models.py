@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from user.models import CustomUser
+
 
 USER = get_user_model()
 
@@ -39,7 +41,7 @@ class Order(models.Model):
         if self.coupon and self.coupon.end_date > timezone.now():
             if self.product.id and self.coupon.product.id != self.product.id:
                 raise ValidationError("Coupon is not valid")
-        if not self.user and self.product.user.user_type != "INDIVIDUAL-SELLER":
+        if not self.user and self.product.user.user_type != CustomUser.TypeChoices.INDIVIDUAL_SELLER:
             raise ValidationError("User not valid")
         self.price = self.product.current_price * self.quantity + self.shipping.price
         if self.coupon:
