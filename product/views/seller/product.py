@@ -1,12 +1,14 @@
 from core.backend import UserTokenBackend
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
-from product.models import Product, ProductImage, ProductPackage
+from product.models import Category, Product, ProductImage, ProductPackage
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
 import base64
+
+from product.serializers.category import CategorySerializer
 
 def read_image(image):
     file_data_bytes = image.read()
@@ -198,3 +200,28 @@ class ProductView(APIView):
         product.save()
 
         return Response({"type": "success", "message": "Product updated successfully"})
+
+class GetCategoriesView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+    auth_users = ["VENDOR", "INDIVIDUAL-SELLER"]
+
+    def get(self, request):
+        try:
+            serializer = CategorySerializer()
+            data = serializer.get_all_categories()
+            return Response({"type": "success", "data": data})
+        except:
+            return Response({"type": "error", "message": "Something went wrong, try later"})
+
+    def post(self, request):
+        try:
+            category = Category.objects.create(
+                user_id=request.user.id,
+                parent_id=request.data['parentID'],
+                name=request.data['name'],
+            )
+            category.save()
+            return Response({"type": "success", "message": "Category created"})
+        except:
+            return Response({"type": "error", "message": "Something went wrong, try later"})
