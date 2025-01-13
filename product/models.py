@@ -22,6 +22,8 @@ def make_product_packs_image_path(instance, filename):
 
 class Category(models.Model):
     parent = models.ForeignKey(
+        USER, on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"user_type__in":[USER.TypeChoices.INDIVIDUAL_SELLER, USER.TypeChoices.STORE_OWNER]})
+    parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"parent__isnull": True})
     name = models.CharField(max_length=100)
 
