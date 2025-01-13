@@ -37,9 +37,17 @@ ENV EMAIL_PASSWORD=${EMAIL_PASSWORD}
 ENV EMAIL_SERVER=${EMAIL_SERVER}
 ENV EMAIL_PORT=${EMAIL_PORT}
 
-COPY ./requirements.txt ./requirements.txt
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
+# Install Python dependencies
+COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . . 
 
