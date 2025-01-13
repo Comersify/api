@@ -1,10 +1,7 @@
-FROM python:latest 
+FROM python:3.11-slim
+
 WORKDIR /api
-RUN apt-get update && apt-get install -y \
-    libffi-dev \
-    gcc \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+
 ARG SECRET_KEY
 ARG ENV
 ARG STORE_NEXT_SITE
