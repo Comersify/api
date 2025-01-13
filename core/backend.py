@@ -9,26 +9,30 @@ User = get_user_model()
 
 class AccessTokenBackend(JWTAuthentication):
     def authenticate(self, request):
+        token = request.COOKIES.get('cify_access','')
+        timestamp = request.COOKIES.get('cify_exp','')
+        refresh = request.COOKIES.get('cify_refresh','')
         try:
-            token = request.COOKIES.get('cify_access','')
-            timestamp = request.COOKIES.get('cify_exp','')
-            refresh = request.COOKIES.get('cify_access','')
             exp = datetime.fromtimestamp(int(timestamp))
-            
+            if not refresh or not token:
+                return (None, None)
+                
             if exp > datetime.now() and token:
                 decoded_token = self.get_validated_token(token)
                 user = self.get_user(decoded_token)
                 request.user = user
                 return (user, None)
             
-            if exp < datetime.now() and refresh:
-                refresh = RefreshToken(refresh_token)
-                user_id = token.payload['user_id']
+        except :
+            try:
+                refresh = RefreshToken(refresh)
+                user_id = refresh.payload['user_id']
                 user = User.objects.filter(id=user_id).get()
                 request.user = user
-                return (user, token)
-        except Exception:
-            return (None, None)
+                return (user, refresh)
+            except:
+                return (None, None)
+        return (None, None)
 
 class UserTokenBackend:
 
