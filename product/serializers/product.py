@@ -23,18 +23,17 @@ class IndividualSellerProductSerializer:
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
             end_date__gt=timezone.now()
-        ).order_by("-id").values('percentage')[:1]
+        ).order_by("-id").values('discounted_price')[:1]
 
         products = Product.objects.annotate(
-            discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
+            new_price=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
             act_price=ExpressionWrapper(
-                F('price')-Coalesce(
-                    F('discount_value') * F('price')/100, 0), output_field=models.FloatField()),
+                F('price')-F('discounted_price'), output_field=models.FloatField()),
         )
 
         products = products.filter(in_stock__gt=0).values(
-            'id', 'title', 'price', 'discount_value',
+            'id', 'title', 'price', 'new_price',
             'act_price', 'image')
         return products
 
@@ -49,25 +48,24 @@ class ProductSerializer:
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
             end_date__gt=timezone.now()
-        ).order_by("-id").values('percentage')[:1]
+        ).order_by("-id").values('discounted_price')[:1]
 
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
 
         products = Product.objects.annotate(
             orders=Coalesce(Subquery(subquery_order), Value(0)),
-            discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
+            new_price=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
             reviews=Coalesce(Avg('review__stars'), Value(0.0)),
             act_price=ExpressionWrapper(
-                F('price')-Coalesce(
-                    F('discount_value') * F('price')/100, 0), output_field=models.FloatField()),
+                F('price')-F('discounted_price'), output_field=models.FloatField()),
         )
         if has_discount:
-            products = products.filter(discount_value__gt=10)
+            products = products.filter(new_price__gt=0)
 
         products = products.filter(in_stock__gt=0).values(
-            'id', 'title', 'price', 'discount_value',
+            'id', 'title', 'price', 'new_price',
             'act_price', 'orders', 'image', 'reviews')
         return products
 
@@ -89,20 +87,20 @@ class ProductSerializer:
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
             end_date__gt=timezone.now()
-        ).order_by("-id").values('percentage')[:1]
+        ).order_by("-id").values('discounted_price')[:1]
 
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
 
         products = Product.objects.annotate(
             orders=Coalesce(Subquery(subquery_order), Value(0)),
-            discount_value=Coalesce(Subquery(subquery_discount), Value(0)),
+            new_price=Coalesce(Subquery(subquery_discount), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
             reviews=Coalesce(Sum('review__stars'), Value(0)),
         )
 
         products = products.filter(id=id).values(
-            'id', 'title', 'price', 'discount_value', 'orders', 'reviews', 'description', 'reviews_avg'
+            'id', 'title', 'price', 'new_price', 'orders', 'reviews', 'description', 'reviews_avg'
         ).get()
 
         products["images"] = ProductImage.objects.filter(
@@ -125,7 +123,7 @@ class ProductSerializer:
         subquery_discount = Discount.objects.filter(
             product=OuterRef('id'),
             end_date__gt=timezone.now()
-        ).order_by("-id").values('percentage')[:1]
+        ).order_by("-id").values('discounted_price')[:1]
 
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
@@ -136,11 +134,10 @@ class ProductSerializer:
         products = Product.objects.filter(user__id=user_id).annotate(
             image=Subquery(subquery_image),
             packs=Coalesce(Subquery(subquery_packs), 0),
-            discount_value=Coalesce(Subquery(subquery_discount), 0),
+            new_price=Coalesce(Subquery(subquery_discount), 0),
             orders=Subquery(subquery_order),
             act_price=ExpressionWrapper(
-                F('price')-Coalesce(
-                    F('discount_value') * F('price')/100, 0),
+                F('price')-F('new_price'),
                 output_field=models.FloatField()
             ),
             earning=Coalesce(

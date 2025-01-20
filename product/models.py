@@ -85,7 +85,7 @@ class Coupon(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     code = models.CharField(max_length=20)
     value = models.FloatField(validators=[
-        MinValueValidator(1, message='Minimum value is 1.'),
+        MinValueValidator(0.01, message='Minimum value is 0.01.'),
     ])
     end_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -98,10 +98,8 @@ class Coupon(models.Model):
 
 class Discount(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    title = models.CharField(max_length=30)
-    percentage = models.PositiveIntegerField(validators=[
-        MinValueValidator(0, message='Minimum value is 1.'),
-        MaxValueValidator(90, message='Maximum value is 100.')
+    discounted_price = models.PositiveIntegerField(validators=[
+        MinValueValidator(0.01, message='Minimum value is 1.')
     ])
     end_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     start_date = models.DateTimeField(auto_now_add=True)

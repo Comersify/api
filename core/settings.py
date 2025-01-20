@@ -1,10 +1,8 @@
 from datetime import timedelta
 import os
-
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
@@ -12,13 +10,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 AUTH_USER_MODEL = 'user.CustomUser'
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,20 +29,10 @@ INSTALLED_APPS = [
     'cart',
     'user',
     'ads',
-    'website'
+    'website',
 ]
 
-# If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
-# CORS_ORIGIN_ALLOW_ALL = True
-DATA_UPLOAD_MAX_MEMORY_SIZE = None
 CORS_ALLOW_CREDENTIALS = True
-
-CORS_ORIGIN_REGEX_WHITELIST = [
-    r"^http://\w+\.localhost:3000",
-    r"^https://\w+\.comercify.shop",
-    r"^http://\w+\.comercify.shop",
-]
-
 CORS_ALLOWED_ORIGINS = [
     "https://api.comercify.shop",
     'http://localhost:3000',
@@ -59,33 +41,31 @@ CORS_ALLOWED_ORIGINS = [
     "https://comercify-dashboard.vercel.app",
     "https://comercify.vercel.app",
 ]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://api.comercify.shop",
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3005',
-    "https://comercify-dashboard.vercel.app",
-    "https://comercify.vercel.app",
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add custom templates directory if needed
+        'APP_DIRS': True,  # Ensure templates in app directories are loaded
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',  # Required for admin
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
-CORS_ALLOW_HEADERS = [
-    "X-Comercify-Visitor",
-    "X-Comercify-Owner",
-    "Authorization",
-    "Content-Type",
-]
-
-CORS_ALLOWED_METHODS = [
-    'GET', 'POST', 'DELETE', 'PUT'
-]
-
-CORS_ALLOW_CREDENTIALS = True
+ROOT_URLCONF = 'core.urls'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Added here
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -96,112 +76,56 @@ MIDDLEWARE = [
     'tracking.middleware.SubDomainMiddleware',
 ]
 
-if not DEBUG:
-    MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
-        'whitenoise.middleware.WhiteNoiseMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'core.middleware.TokenToUserMiddleware',
-        'tracking.middleware.TrackerMiddleware',
-        'tracking.middleware.SubDomainMiddleware',
-    ]
+# Static & Media Settings
+if DEBUG:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # Production (S3)
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_S3_REGION_NAME = os.environ['AWS_S3_REGION_NAME']
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
-ROOT_URLCONF = 'core.urls'
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-
-WSGI_APPLICATION = 'core.wsgi.application'
-
-DATABASES = {}
-
-
+# Database Configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get("PGDATABASE"),
-        'HOST': os.environ.get("PGHOST"),
-        'PASSWORD': os.environ.get("PGPASSWORD"),
-        'PORT': os.environ.get("PGPORT"),
         'USER': os.environ.get("PGUSER"),
+        'PASSWORD': os.environ.get("PGPASSWORD"),
+        'HOST': os.environ.get("PGHOST"),
+        'PORT': os.environ.get("PGPORT"),
     }
 }
 
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-""" 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_SERVER')
-EMAIL_HOST_USER = os.getenv('EMAIL_USERNAME')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = True 
-"""
-
-JWT_AUTH = {
-    'JWT_ALLOW_REFRESH': True,
-
-    # this is the maximum time AFTER the token was issued that
-    # it can be refreshed.  exprired tokens can't be refreshed.
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+# JWT Configuration
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-STATIC_ROOT = os.path.join(BASE_DIR, '/static/staticfiles')
-STATIC_URL = '/static/'
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    '/var/www/static/'
-]

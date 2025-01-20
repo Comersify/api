@@ -6,11 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from datetime import date
 from django.utils import timezone
-from core.backend import UserTokenBackend
 
 class DiscountView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend, UserTokenBackend]
+    authentication_classes = [AccessTokenBackend]
 
     def get(self, request):
         serializer = DiscountSerializer()
@@ -20,8 +19,7 @@ class DiscountView(APIView):
     def post(self, request):
         if request.user.user_type != "CUSTOMER":
             product_id = request.data.get('product_id')
-            title = request.data.get('title')
-            percentage = request.data.get('percentage')
+            discounted_price = request.data.get('discounted_price')
             end_date = request.data.get('end_date')
 
             product_runing_duscoutns = Discount.objects.filter(
@@ -34,13 +32,12 @@ class DiscountView(APIView):
                     product_runing_duscoutns[1:].delete()
                 return Response({"type": "error", "message": "Product already have runing discounts"})
 
-            if not product_id or not title or not percentage or not end_date:
+            if not product_id or not discounted_price or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
             end_date = end_date.split("-")
             discount = Discount.objects.create(
                 product_id=product_id,
-                title=title,
-                percentage=percentage,
+                discounted_price=discounted_price,
                 end_date=date(
                     int(end_date[0]),
                     int(end_date[1]),
@@ -68,10 +65,9 @@ class DiscountView(APIView):
         if request.user.user_type != "CUSTOMER":
             discount_id = request.data.get('id')
             product_id = request.data.get('product_id')
-            title = request.data.get('title')
-            percentage = request.data.get('percentage')
+            discounted_price = request.data.get('discounted_price')
             end_date = request.data.get('end_date')
-            if not discount_id or not product_id or not title or not percentage or not end_date:
+            if not discount_id or not product_id or not discounted_price or not end_date:
                 return Response({"type": "error", "message": "complete missing data"})
             end_date = end_date.split("-")
             discount = Discount.objects.filter(
@@ -80,8 +76,7 @@ class DiscountView(APIView):
                 return Response({"type": "error", "data": "discount not found"})
             discount = discount.get()
             discount.product_id = product_id
-            discount.title = title
-            discount.percentage = percentage
+            discount.discounted_price = discounted_price
             discount.end_date = date(
                 int(end_date[0]),
                 int(end_date[1]),

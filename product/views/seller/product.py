@@ -1,4 +1,3 @@
-from core.backend import UserTokenBackend
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
 from product.models import Category, Product, ProductImage, ProductPackage
@@ -17,7 +16,7 @@ def read_image(image):
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend, UserTokenBackend]
+    authentication_classes = [AccessTokenBackend]
 
     def get(self, request, id):
         if request.user.user_type != "CUSTOMER":
@@ -32,7 +31,7 @@ class ProductDetailsView(APIView):
 
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend, UserTokenBackend]
+    authentication_classes = [AccessTokenBackend]
     auth_users = ["VENDOR", "INDIVIDUAL-SELLER"]
 
     def get(self, request):

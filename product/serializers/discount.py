@@ -21,6 +21,6 @@ class DiscountSerializer:
         ).annotate(
             product_image=Subquery(product_image_subquery),
             orders=Coalesce(Subquery(order_subquery), 0)).values(
-            'id', 'title', 'percentage', 'end_date', 'product__title', 'product_image', 'product__id',
+            'id', 'discounted_price', 'end_date', 'product__title', 'product_image', 'product__id',
         )
         return discounts

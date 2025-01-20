@@ -11,6 +11,8 @@ class TokenToUserMiddleware:
     def __call__(self, request):
         request.owner = ''
         refresh = False
+        if '/admin' in request.get_full_path():
+            return self.get_response(request)
 
         _, refresh = AccessTokenBackend().authenticate(request)
         try:
