@@ -8,7 +8,7 @@ import os
 User = get_user_model()
 
 
-def sign_with_google(token):
+def sign_with_google(token, user_type):
     try:
         user_info = id_token.verify_oauth2_token(
             token, requests.Request(), os.getenv('GOOGLE_CLIENT_ID'))
@@ -25,7 +25,7 @@ def sign_with_google(token):
             return user_exist.get().token()
 
         user = User.objects.create_user(
-            user_type="CUSTOMER",
+            user_type=user_type,
             username=email.split("@")[0],
             first_name=first_name,
             last_name=last_name,
@@ -33,7 +33,7 @@ def sign_with_google(token):
             email=email,
             is_active=True,
         )
-        user.image.save("image.jpg", File(open(response[0], 'rb')), save=True)
+        #user.image.save("image.jpg", File(open(response[0], 'rb')), save=True)
 
         return user.token()
 

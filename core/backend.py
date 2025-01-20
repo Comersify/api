@@ -6,12 +6,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import datetime
 User = get_user_model()
 
-
 class AccessTokenBackend(JWTAuthentication):
     def authenticate(self, request):
-        token = request.COOKIES.get('cify_access','')
-        timestamp = request.COOKIES.get('cify_exp','')
-        refresh = request.COOKIES.get('cify_refresh','')
+        token = request.COOKIES.get('cify_access','') or request.COOKIES.get('admin_cify_access','')
+        timestamp = request.COOKIES.get('cify_exp','') or request.COOKIES.get('admin_cify_exp','')
+        refresh = request.COOKIES.get('cify_refresh','') or request.COOKIES.get('admin_cify_refresh','')
         try:
             exp = datetime.fromtimestamp(int(timestamp))
             if not refresh or not token:
@@ -23,14 +22,14 @@ class AccessTokenBackend(JWTAuthentication):
                 request.user = user
                 return (user, None)
             
-        except :
+        except Exception as e:
             try:
                 refresh = RefreshToken(refresh)
                 user_id = refresh.payload['user_id']
                 user = User.objects.filter(id=user_id).get()
                 request.user = user
                 return (user, refresh)
-            except:
+            except Exception as e:
                 return (None, None)
         return (None, None)
 

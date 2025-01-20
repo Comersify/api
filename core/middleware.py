@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 import json
-from core.backend import AccessTokenBackend, UserTokenBackend
+from core.backend import AccessTokenBackend
 from utils import set_cookies
 User = get_user_model()
 
@@ -12,11 +12,7 @@ class TokenToUserMiddleware:
         request.owner = ''
         refresh = False
 
-        user, refresh = AccessTokenBackend().authenticate(request)
-        #if 'X-Comercify-Owner' in request.headers:
-        #    # Use JWTAuthentication to authenticate the token
-        #    UserTokenBackend().authenticate(request)
-
+        _, refresh = AccessTokenBackend().authenticate(request)
         try:
             if request.body:
                 request.data = json.loads(request.body)

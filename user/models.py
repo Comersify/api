@@ -86,11 +86,8 @@ class CustomUser(AbstractUser, PermissionsMixin):
         refresh = RefreshToken.for_user(self)
         response_data = {
             "type": "success",
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'exp': refresh.payload['exp'],
+            'token': refresh,
             "name": self.first_name,
-            "image": self.image.url
         }
         return response_data
 

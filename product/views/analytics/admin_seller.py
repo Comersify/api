@@ -6,11 +6,10 @@ from core.backend import AccessTokenBackend
 from django.db.models.functions import Coalesce
 from django.db.models import Sum
 from order.models import Order
-from core.backend import UserTokenBackend
 
 class DashboardDataView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend, UserTokenBackend]
+    authentication_classes = [AccessTokenBackend]
 
     def get(self, request):
         data = {}

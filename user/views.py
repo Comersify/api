@@ -21,13 +21,15 @@ class SignUpWithProviderView(APIView):
     
     def post(self, request, provider):
         token = request.data.get("token")
+        user_type = request.data.get("userType")
         if not token:
             return Response({"type": "error", "message": "Couldn't find your email try again"})
         if provider == "google":
-            user_token = sign_with_google(token)
+            user_token = sign_with_google(token, user_type)
             if not user_token:
                 return Response({"type": "error", "message": "Couldn't find your email try again"})
-            return Response({"type": "success", "data": user_token})
+            response = Response({"type": "success", "data": {'name':user_token['name']}})
+            return set_cookies(user_token['token'],response)
         return Response({"type": "error", "message": "Provider not found"})
 
 

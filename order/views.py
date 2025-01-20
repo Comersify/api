@@ -158,3 +158,4 @@ class GetOrdersForLineChart(APIView):
             serializer = OrderSerializer()
             data = serializer.get_orders_for_analytics(request.user.id)
             return Response({"type": "success", "data": data})
+        return Response({"type": "error", "message": "User not valid"})
