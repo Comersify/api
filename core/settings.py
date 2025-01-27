@@ -33,15 +33,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "https://api.comercify.shop",
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3005',
-    "https://comercify-dashboard.vercel.app",
-    "https://comercify.vercel.app",
-]
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
