@@ -2,6 +2,10 @@ from datetime import timedelta
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
@@ -34,6 +38,11 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://api.comercify.shop",
+]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 TEMPLATES = [
     {
