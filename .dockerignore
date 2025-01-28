@@ -1,4 +1,12 @@
-./env
-./db.sqlite3
-./*/__pycache__/*
-./__pycache__/*
+env
+media
+.vscode
+.env
+db.sqlite3
+*/migrations/*
+__pycache__/*
+*/__pycache__/*.pyc
+prod.env
+dev.env
+static/
+__pycache__

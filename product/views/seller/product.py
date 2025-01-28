@@ -203,11 +203,11 @@ class ProductView(APIView):
 class GetCategoriesView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
-    auth_users = ["VENDOR", "INDIVIDUAL-SELLER"]
+    auth_users = ["INDIVIDUAL-SELLER"]
 
     def get(self, request):
         try:
-            serializer = CategorySerializer()
+            serializer = CategorySerializer(request.user.id)
             data = serializer.get_all_categories()
             return Response({"type": "success", "data": data})
         except:
@@ -215,12 +215,13 @@ class GetCategoriesView(APIView):
 
     def post(self, request):
         try:
-            category = Category.objects.create(
-                user_id=request.user.id,
-                parent_id=request.data['parentID'],
-                name=request.data['name'],
-            )
-            category.save()
+            if request.user.user_type in self.auth_users:
+                category = Category.objects.create(
+                    user_id=request.user.id,
+                    parent_id=request.data.get('parentID'),
+                    name=request.data['name'],
+                )
+                category.save()
             return Response({"type": "success", "message": "Category created"})
-        except:
-            return Response({"type": "error", "message": "Something went wrong, try later"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})

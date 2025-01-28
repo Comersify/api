@@ -5,10 +5,12 @@ from django.db import models
 
 
 class CategorySerializer:
-
+    def __init__(self, user_id):
+        self.user_id = user_id
+    
     def get_all_categories(self):
         categories = Category.objects.filter(
-            parent__isnull=True).values('id', 'name')
+            user_id=self.user_id).values('id', 'name', 'parent_id')
         return list(categories)
 
     def get_hot_categories(self):
