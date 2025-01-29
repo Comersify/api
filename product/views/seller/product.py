@@ -1,17 +1,13 @@
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
-from product.models import Category, Product, ProductImage, ProductPackage
+from product.models import Category, Product, ProductImage, ProductPackage, Packaging
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
-import base64
 
 from product.serializers.category import CategorySerializer
 
-def read_image(image):
-    file_data_bytes = image.read()
-    return base64.b64encode(file_data_bytes).decode('utf-8')
 
 
 class ProductDetailsView(APIView):
@@ -63,9 +59,6 @@ class ProductView(APIView):
         if request.data.get('image[0]') is None:
             return Response({"type": "error", "message": "Product image is missing"})
 
-        # if not store.exists():
-        #     return Response({"type": "error", "message": "Can't create product"})
-        # store = store.get()
         product = Product.objects.create(
             user_id=request.user.id,
             title=title,
@@ -75,21 +68,23 @@ class ProductView(APIView):
             description=description,
             in_stock=quantity,
         )
-
         i = 0
         total_quantity = 0
         while True:
             pack_title = request.data.get(f'title[{i}]')
             pack_image = request.data.get(f'pack[{i}]')
             pack_quantity = request.data.get(f'quantity[{i}]')
+            pack_type = request.data.get(f'packType[{i}]')
             if pack_title and pack_image:
                 product_pack = ProductPackage.objects.create(
                     product_id=product.id,
                     title=json.loads(pack_title),
-                    image=read_image(pack_image)
+                    image=pack_image,
+                    quantity=pack_quantity,
+                    packaging_id=pack_type,
                 )
                 i += 1
-                total_quantity += pack_quantity
+                total_quantity += int(pack_quantity)
             else:
                 break
         if total_quantity > 0:
@@ -99,7 +94,7 @@ class ProductView(APIView):
             if product_image:
                 image = ProductImage.objects.create(
                     product_id=product.id,
-                    image=read_image(product_image)
+                    image=product_image
                 )
             else:
                 break
@@ -107,7 +102,7 @@ class ProductView(APIView):
         return Response({"type": "success", "message": "product created successfully "})
 
     def delete(self, request):
-        if request.user.user_type != "VENDOR":
+        if request.user.user_type not in self.auth_users:
             return Response({"type": "error", "message": "user not valid"})
         product_id = request.data.get('id')
         if product_id is None:
@@ -121,7 +116,7 @@ class ProductView(APIView):
         return Response({"type": "success", "message": "Product was deleted"})
 
     def put(self, request):
-        if request.user.user_type != "VENDOR":
+        if request.user.user_type not in self.auth_users:
             return Response({"type": "error", "message": "user not valid"})
         data = request.data.get('data')
 
@@ -164,13 +159,15 @@ class ProductView(APIView):
             pack_title = request.data.get(f'title[{i}]')
             pack_image = request.data.get(f'pack[{i}]')
             pack_quantity = request.data.get(f'quantity[{i}]')
+            pack_type = request.data.get(f'packType[{i}]')
             
             if pack_title and pack_image:
                 product_pack = ProductPackage.objects.create(
                     product_id=product.id,
                     title=json.loads(pack_title),
-                    image=read_image(pack_image),
-                    quantity=pack_quantity
+                    image=pack_image,
+                    quantity=pack_quantity,
+                    packaging_id=pack_type,
                 )
                 i += 1
                 total_quantity += int(pack_quantity)
@@ -183,7 +180,7 @@ class ProductView(APIView):
             if product_image:
                 image = ProductImage.objects.create(
                     product_id=product.id,
-                    image=read_image(product_image)
+                    image=product_image
                 )
             else:
                 break
@@ -200,7 +197,7 @@ class ProductView(APIView):
 
         return Response({"type": "success", "message": "Product updated successfully"})
 
-class GetCategoriesView(APIView):
+class CategoriesView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [AccessTokenBackend]
     auth_users = ["INDIVIDUAL-SELLER"]
@@ -218,10 +215,106 @@ class GetCategoriesView(APIView):
             if request.user.user_type in self.auth_users:
                 category = Category.objects.create(
                     user_id=request.user.id,
-                    parent_id=request.data.get('parentID'),
                     name=request.data['name'],
                 )
+                if parent_id := request.data.get('parentID'):
+                    category.parent_id = int(parent_id)
                 category.save()
             return Response({"type": "success", "message": "Category created"})
         except Exception as e:
             return Response({"type": "error", "message": str(e)})
+
+    def put(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                category = Category.objects.filter(
+                    user_id=request.user.id,
+                    id=request.data['id'],
+                )
+                if not category.exists():
+                    return Response({"type": "error", "message": "user not valid"})
+                category = category.get()
+                if parent_id := request.data.get('parentID'):
+                    category.parent_id = int(parent_id)
+                category.name=request.data['name']
+                category.save()
+            return Response({"type": "success", "message": "Category updated"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})
+
+    def delete(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                category = Category.objects.filter(
+                    user_id=request.user.id,
+                    name=request.data['name'],
+                )
+                if not category.exists():
+                    return Response({"type": "error", "message": "user not valid"})
+                category = category.get()
+                category.delete()
+            return Response({"type": "success", "message": "Category delted"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})
+
+class PackageAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [AccessTokenBackend]
+    auth_users = ["INDIVIDUAL-SELLER"]
+
+    def get(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                obj = Packaging.objects.filter(user_id=request.user.id)
+                data = list(obj.values('id', 'name'))
+                return Response({"type": "success", "data": data})
+            return Response({"type": "error", "message": "user not valid"})
+        except:
+            return Response({"type": "error", "message": "Something went wrong, try later"})
+
+    def post(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                packaging = Packaging.objects.create(
+                    user_id=request.user.id,
+                    name=request.data['name'],
+                )
+                packaging.save()
+                return Response({"type": "success", "message": "Packaging created"})
+            return Response({"type": "error", "message": "user not valid"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})
+    
+    def put(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                packaging = Packaging.objects.filter(
+                    user_id=request.user.id,
+                    id=request.data['id'],
+                )
+                if not packaging.exists():
+                    return Response({"type": "error", "message": "user not valid"})
+                packaging = packaging.get()
+                packaging.name = request.data['name']
+                packaging.save()
+                return Response({"type": "success", "message": "Packaging updated"})
+            return Response({"type": "error", "message": "user not valid"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})
+
+    def delete(self, request):
+        try:
+            if request.user.user_type in self.auth_users:
+                packaging = Packaging.objects.filter(
+                    user_id=request.user.id,
+                    id=request.data['id'],
+                )
+                if not packaging.exists():
+                    return Response({"type": "error", "message": "user not valid"})
+                packaging = packaging.get()
+                packaging.delete()
+                return Response({"type": "success", "message": "Packaging deleted"})
+            return Response({"type": "error", "message": "user not valid"})
+        except Exception as e:
+            return Response({"type": "error", "message": str(e)})
+    

@@ -8,7 +8,8 @@ urlpatterns = [
     path("products/id/<int:id>/", GetProductDetailsView.as_view()),
 
     path("categories/top/", GetHotCategoriesView.as_view()),  # ver
-    path("categories/", GetCategoriesView.as_view()),  # ver
+    path("categories/", CategoriesView.as_view()),  # ver
+    path("packaging/", PackageAPIView.as_view()),  # ver
 
     path("reviews/<int:id>", GetReviewsView.as_view()),  # ver
 

@@ -152,7 +152,7 @@ class ProductSerializer:
 
     def get_product_details_for_vendor(self, user_id, product_id):
         product = Product.objects.filter(
-            user__id=user_id,
+            user_id=user_id,
             id=product_id
         )
         if not product.exists():

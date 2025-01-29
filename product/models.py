@@ -3,8 +3,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 import os
-
 USER = get_user_model()
 
 
@@ -26,18 +26,31 @@ class Category(models.Model):
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"parent__isnull": True})
     name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class Product(models.Model):
     user = models.ForeignKey(
         USER, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
+    slug = models.CharField(max_length=100)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     price = models.FloatField()
     buy_price = models.FloatField()
     in_stock = models.IntegerField()
+    slug = models.SlugField(unique=True, blank=True, null=True)  # SlugField
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     @property
     def current_price(self):
@@ -52,18 +65,31 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.title
 
+class Packaging(models.Model):
+    user = models.ForeignKey(
+        USER, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 
 class ProductPackage(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, null=True, blank=True)
-    image = models.TextField()
+        Product, on_delete=models.CASCADE)
+    packaging = models.ForeignKey(
+        Packaging, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='vendor/product')
     title = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.title
 
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.TextField()
+    image = models.ImageField(upload_to='vendor/product')
 
 
 class Review(models.Model):
