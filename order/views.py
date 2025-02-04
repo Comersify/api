@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend, UserTokenBackend
 from .models import Order
 from .serializers import OrderSerializer
-from product.models import Product, ProductPackage
+from product.models import Product
 from core.backend import UserTokenBackend
 
 class GetMyOrdersView(APIView):
@@ -32,7 +32,6 @@ class CreateOrderForIndividualSeller(APIView):
         quantity = request.data.get('quantity')
         product_id = request.data.get('productID')
         address = request.data.get('address')
-        packID = request.data.get("packID")
         phone_number = request.data.get('phoneNumber')
         postal_code = request.data.get('postalCode')
         shipping_id = request.data.get("shippingID")
@@ -50,11 +49,6 @@ class CreateOrderForIndividualSeller(APIView):
         if not product_obj.exists():
             return Response({"type": "error", "message": "Please enter all needed informations"})
         product_obj = product_obj.get()
-
-        filtred_packs = ProductPackage.objects.filter(product_id=product_id)
-        selected_pack = filtred_packs.filter(id=packID)
-        if (filtred_packs.exists() and not packID) or not selected_pack.exists():
-            return Response({"type": "error", "message": "Please enter all needed informations"})
 
         info = ShippingInfo.objects.filter(
             address=address,
@@ -75,7 +69,6 @@ class CreateOrderForIndividualSeller(APIView):
             shipping_id=shipping_obj.id,
             product_id=product_obj.id,
             status="SUBMITTED",
-            pack_id=packID,
         )
         return Response({"type": "success", "message": "Order Created"})
 

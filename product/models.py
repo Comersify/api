@@ -34,17 +34,28 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
+
+class Packaging(models.Model):
+    user = models.ForeignKey(
+        USER, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 class Product(models.Model):
     user = models.ForeignKey(
         USER, on_delete=models.CASCADE)
+    packaging = models.ManyToManyField(Packaging)
+    related_product = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     slug = models.CharField(max_length=100)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     price = models.FloatField()
-    buy_price = models.FloatField()
-    in_stock = models.IntegerField()
+    buy_price = models.FloatField(null=True, blank=True)
+    in_stock = models.IntegerField(null=True, blank=True)
     slug = models.SlugField(unique=True, blank=True, null=True)  # SlugField
 
     def save(self, *args, **kwargs):
@@ -63,27 +74,6 @@ class Product(models.Model):
         return act_price
 
     def __str__(self) -> str:
-        return self.title
-
-class Packaging(models.Model):
-    user = models.ForeignKey(
-        USER, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class ProductPackage(models.Model):
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE)
-    packaging = models.ForeignKey(
-        Packaging, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='vendor/product')
-    title = models.CharField(max_length=100)
-    quantity = models.PositiveIntegerField()
-
-    def __str__(self):
         return self.title
 
 

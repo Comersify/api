@@ -23,8 +23,6 @@ class Order(models.Model):
     product = models.ForeignKey(
         "product.Product", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    pack = models.ForeignKey('product.ProductPackage',
-                             on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(
         choices=StatusChoices.choices, default=StatusChoices.IN_CART, max_length=10)
     coupon = models.ForeignKey(
@@ -36,8 +34,6 @@ class Order(models.Model):
     created_at = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs) -> None:
-        if self.product.id and self.pack.product.id != self.product.id:
-            raise ValidationError("Pack is not valid")
         if self.coupon and self.coupon.end_date > timezone.now():
             if self.product.id and self.coupon.product.id != self.product.id:
                 raise ValidationError("Coupon is not valid")

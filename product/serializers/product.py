@@ -1,4 +1,4 @@
-from product.models import Shipping, Product, Discount, ProductImage, ProductPackage
+from product.models import Shipping, Product, Discount, ProductImage
 from django.db.models import Count, Sum, Value, OuterRef, Subquery, Q, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
@@ -106,9 +106,6 @@ class ProductSerializer:
         products["images"] = ProductImage.objects.filter(
             product_id=id).values('image')
 
-        products["packs"] = list(ProductPackage.objects.filter(
-            product_id=id).values('id', 'image', 'title', 'quantity'))
-
         products["shipping"] = Shipping.objects.filter(
             user_id=Product.objects.filter(
                 id=id).get().user.id
@@ -128,12 +125,8 @@ class ProductSerializer:
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
 
-        subquery_packs = ProductPackage.objects.filter(product_id=OuterRef('id')).values(
-            'product__id').annotate(total=Count('product__id')).values('total')[:1]
-
         products = Product.objects.filter(user__id=user_id).annotate(
             image=Subquery(subquery_image),
-            packs=Coalesce(Subquery(subquery_packs), 0),
             new_price=Coalesce(Subquery(subquery_discount), 0),
             orders=Subquery(subquery_order),
             act_price=ExpressionWrapper(
@@ -145,7 +138,7 @@ class ProductSerializer:
             reviews=Coalesce(Count('review__stars'), Value(0)),
             reviews_avg=Coalesce(Avg('review__stars'), Value(0.0)),
         ).values(
-            'id', 'image', 'title', 'price', 'buy_price', 'act_price', 'in_stock', 'packs', 'earning',
+            'id', 'image', 'title', 'price', 'buy_price', 'act_price', 'in_stock', 'earning',
             'orders', 'reviews', 'reviews_avg',
         )
         return products
@@ -163,12 +156,6 @@ class ProductSerializer:
         if not product_image.exists():
             return False
         product_image = product_image.values('id', 'image')
-        product_package = ProductPackage.objects.filter(product_id=product_id)
-        if product_package.exists():
-            product_package = product_package.values(
-                "id", "image", 'title', 'quantity')
-        else:
-            product_package = []
 
-        data = [product, list(product_image), list(product_package)]
+        data = [product, list(product_image)]
         return data

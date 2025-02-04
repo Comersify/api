@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
-from product.models import Category, Product, ProductImage, ProductPackage, Packaging
+from product.models import Category, Product, ProductImage, Packaging
 from rest_framework.permissions import IsAuthenticated
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
@@ -50,11 +50,13 @@ class ProductView(APIView):
         title = data.get('title')
         category_id = data.get('category')
         price = data.get('price')
-        buy_price = data.get('buy_price')
+        buy_price = data.get('buy_price') or None
         description = data.get('description')
-        quantity = data.get('quantity')
+        quantity = data.get('quantity') or None
+        related_product_id = data.get("relatedProductId")
+        packaging = data.get("packaging")
 
-        if not buy_price or not title or not category_id or not price or not description or not quantity:
+        if not title or not category_id or not price or not description:
             return Response({"type": "error", "message": "Pls complete your product information"})
         if request.data.get('image[0]') is None:
             return Response({"type": "error", "message": "Product image is missing"})
@@ -67,28 +69,17 @@ class ProductView(APIView):
             buy_price=buy_price,
             description=description,
             in_stock=quantity,
+            related_product_id=related_product_id
         )
-        i = 0
-        total_quantity = 0
-        while True:
-            pack_title = request.data.get(f'title[{i}]')
-            pack_image = request.data.get(f'pack[{i}]')
-            pack_quantity = request.data.get(f'quantity[{i}]')
-            pack_type = request.data.get(f'packType[{i}]')
-            if pack_title and pack_image:
-                product_pack = ProductPackage.objects.create(
-                    product_id=product.id,
-                    title=json.loads(pack_title),
-                    image=pack_image,
-                    quantity=pack_quantity,
-                    packaging_id=pack_type,
-                )
-                i += 1
-                total_quantity += int(pack_quantity)
-            else:
-                break
-        if total_quantity > 0:
-            product.in_stock = total_quantity
+        for pack_id in packaging:
+            try:
+                pack = Packaging.objects.filter(id=pack_id).get()
+                product.packaging.add(pack)
+            except:
+                pass
+        
+        product.save()
+        
         for i in range(4):
             product_image = request.data.get(f'image[{i}]')
             if product_image:
@@ -132,12 +123,11 @@ class ProductView(APIView):
         buy_price = data.get("buy_price")
         quantity = data.get("quantity")
         images = data.get("images")
-        packs = data.get("packs")
+        related_product_id = data.get("relatedProductId")
 
-        if not buy_price or not product_id or not title or not category or not description or not price:
+        if not product_id or not title or not category or not description or not price:
             return Response({"type": "error", "message": "Complete needed information"})
-        if not quantity and not request.data.get('pack_quantity[0]') and not request.data.get('title[0]') and not request.data.get('pack[0]'):
-            return Response({"type": "error", "message": "Complete needed information"})
+       
 
         product = Product.objects.filter(
             user__id=request.user.id,
@@ -149,31 +139,8 @@ class ProductView(APIView):
 
         deleted_product_images = ProductImage.objects.filter(
             product_id=product.id).exclude(id__in=images)
-        deleted_product_packs = ProductPackage.objects.filter(
-            product_id=product.id).exclude(id__in=packs)
         deleted_product_images.delete()
-        deleted_product_packs.delete()
-        i = 0
-        total_quantity = 0
-        while True:
-            pack_title = request.data.get(f'title[{i}]')
-            pack_image = request.data.get(f'pack[{i}]')
-            pack_quantity = request.data.get(f'quantity[{i}]')
-            pack_type = request.data.get(f'packType[{i}]')
-            
-            if pack_title and pack_image:
-                product_pack = ProductPackage.objects.create(
-                    product_id=product.id,
-                    title=json.loads(pack_title),
-                    image=pack_image,
-                    quantity=pack_quantity,
-                    packaging_id=pack_type,
-                )
-                i += 1
-                total_quantity += int(pack_quantity)
-            else:
-                break
-
+        
         for i in range(4):
             product_image = request.data.get(f'image[{i}]')
 
@@ -185,14 +152,12 @@ class ProductView(APIView):
             else:
                 break
         product.title = title
+        product.related_product_id = related_product_id
         product.category_id = category
         product.description = description
         product.price = price
         product.buy_price = buy_price
-        if total_quantity > 0:
-            product.in_stock = total_quantity
-        else:
-            product.in_stock = quantity
+        product.quantity = quantity
         product.save()
 
         return Response({"type": "success", "message": "Product updated successfully"})
