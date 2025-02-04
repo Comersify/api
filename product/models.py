@@ -28,6 +28,9 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -58,6 +61,9 @@ class Product(models.Model):
     in_stock = models.IntegerField(null=True, blank=True)
     slug = models.SlugField(unique=True, blank=True, null=True)  # SlugField
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -80,7 +86,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='vendor/product')
-
+    
 
 class Review(models.Model):
     class IntegerChoices(models.IntegerChoices):
