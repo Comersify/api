@@ -43,6 +43,8 @@ class SubDomainMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if '/admin' in request.get_full_path():
+            return self.get_response(request)
         domain = request.META.get("HTTP_ORIGIN", "")
         domain = domain.replace("https://", "").replace("http://", "")
         if domain:

@@ -208,20 +208,29 @@ class AttributeViewSet(viewsets.ModelViewSet):
     """API for managing Attributes (e.g., Color, Size, Month)"""
     permission_classes = [IsIndividualSeller]
     serializer_class = AttributeSerializer
+    http_method_names = ['get', 'post', 'put', 'delete']
 
     def get_queryset(self):
         return Attribute.objects.filter(user=self.request.user)
-        
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  
 
 class AttributeValueViewSet(viewsets.ModelViewSet):
     """API for managing Attribute Values (e.g., Red, Large, January)"""
     authentication_classes = [AccessTokenBackend]
     serializer_class = AttributeValueSerializer
     permission_classes = [IsIndividualSeller]
+    http_method_names = ['get', 'post', 'put', 'delete']
 
     def get_queryset(self):
-        return AttributeValue.objects.filter(attribute__user=self.request.user)
-    
+        attr_id = self.request.GET.get('attrId')
+        queryset = AttributeValue.objects.filter(attribute__user=self.request.user)
+
+        if attr_id:
+            queryset = queryset.filter(attribute_id=attr_id)
+        
+        return queryset
 
 class ProductViewSet(viewsets.ModelViewSet):
     """API for managing Products"""
@@ -246,7 +255,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         if self.request.user.user_type in self.auth_users:  # Admins get more data
             return VendorProductSerializer
         return VisitorProductSerializer
-
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  
     
 
 class ProductVariantViewSet(viewsets.ModelViewSet):
@@ -255,5 +266,18 @@ class ProductVariantViewSet(viewsets.ModelViewSet):
     authentication_classes = [AccessTokenBackend]
     serializer_class = ProductVariantSerializer
     permission_classes = [IsAuthenticated, AllowAny]
+    http_method_names = ['get', 'post', 'put', 'delete']
     auth_users = ["INDIVIDUAL-SELLER"]
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """API for managing Product Variants"""
+    queryset = ProductVariant.objects.all()
+    authentication_classes = [AccessTokenBackend]
+    serializer_class = ProductVariantSerializer
+    permission_classes = [IsAuthenticated, AllowAny]
+    http_method_names = ['get', 'post', 'put', 'delete']
+    auth_users = ["INDIVIDUAL-SELLER"]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  
     

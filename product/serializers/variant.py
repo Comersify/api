@@ -20,13 +20,6 @@ class AttributeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'values']
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    """Serializer for Products"""
-
-    class Meta:
-        model = Product
-        fields = '__all__'
-
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     """Serializer for Product Variants"""
