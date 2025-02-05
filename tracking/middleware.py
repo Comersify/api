@@ -1,5 +1,6 @@
 from .models import Visit
 from website.models import Website
+from django.db.models import Q
 
 class TrackerMiddleware:
     def __init__(self, get_response):
@@ -42,10 +43,10 @@ class SubDomainMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        sub_domain = request.META.get("HTTP_ORIGIN", "").split(".")[0]
-        sub_domain = sub_domain.replace("https://", "").replace("http://", "")
-        if sub_domain:
-            site = Website.objects.filter(domain=sub_domain)
+        domain = request.META.get("HTTP_ORIGIN", "")
+        domain = domain.replace("https://", "").replace("http://", "")
+        if domain:
+            site = Website.objects.filter(Q(domain=domain) | Q(test_domain=domain))
             if site.exists():
                 request.owner = site.get().user
             else:

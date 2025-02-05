@@ -169,9 +169,8 @@ class CategoriesView(APIView):
 
     def get(self, request):
         try:
-            print(request.user)
-            print(request.domain)
-            serializer = CategorySerializer(request.user.id or request.owner.id)
+            user_id = request.user.id if request.user else request.owner.id
+            serializer = CategorySerializer(user_id)
             data = serializer.get_all_categories()
             return Response({"type": "success", "data": data})
         except:

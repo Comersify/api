@@ -9,3 +9,6 @@ class Website(models.Model):
     test_domain = models.CharField(max_length=200, unique=True)
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
