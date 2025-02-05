@@ -1,14 +1,14 @@
 from rest_framework.views import APIView
-from product.serializers import ProductSerializer
-from product.models import Category, Product, ProductImage, Packaging
+from product.serializers import ProductSerializer, VisitorProductSerializer, VendorProductSerializer
+from product.models import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
-
+from rest_framework import viewsets
 from product.serializers.category import CategorySerializer
-
-
+from product.serializers.variant import *
+from permissions import IsIndividualSeller
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -53,8 +53,6 @@ class ProductView(APIView):
         buy_price = data.get('buy_price') or None
         description = data.get('description')
         quantity = data.get('quantity') or None
-        related_product_id = data.get("relatedProductId")
-        packaging = data.get("packaging")
 
         if not title or not category_id or not price or not description:
             return Response({"type": "error", "message": "Pls complete your product information"})
@@ -69,14 +67,7 @@ class ProductView(APIView):
             buy_price=buy_price,
             description=description,
             in_stock=quantity,
-            related_product_id=related_product_id
         )
-        for pack_id in packaging:
-            try:
-                pack = Packaging.objects.filter(id=pack_id).get()
-                product.packaging.add(pack)
-            except:
-                pass
         
         product.save()
         
@@ -123,7 +114,6 @@ class ProductView(APIView):
         buy_price = data.get("buy_price")
         quantity = data.get("quantity")
         images = data.get("images")
-        related_product_id = data.get("relatedProductId")
 
         if not product_id or not title or not category or not description or not price:
             return Response({"type": "error", "message": "Complete needed information"})
@@ -140,19 +130,8 @@ class ProductView(APIView):
         deleted_product_images = ProductImage.objects.filter(
             product_id=product.id).exclude(id__in=images)
         deleted_product_images.delete()
-        
-        for i in range(4):
-            product_image = request.data.get(f'image[{i}]')
 
-            if product_image:
-                image = ProductImage.objects.create(
-                    product_id=product.id,
-                    image=product_image
-                )
-            else:
-                break
         product.title = title
-        product.related_product_id = related_product_id
         product.category_id = category
         product.description = description
         product.price = price
@@ -223,64 +202,58 @@ class CategoriesView(APIView):
         except Exception as e:
             return Response({"type": "error", "message": str(e)})
 
-class PackageAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+
+
+class AttributeViewSet(viewsets.ModelViewSet):
+    """API for managing Attributes (e.g., Color, Size, Month)"""
+    permission_classes = [IsIndividualSeller]
+    serializer_class = AttributeSerializer
+
+    def get_queryset(self):
+        return Attribute.objects.filter(user=self.request.user)
+        
+
+class AttributeValueViewSet(viewsets.ModelViewSet):
+    """API for managing Attribute Values (e.g., Red, Large, January)"""
     authentication_classes = [AccessTokenBackend]
+    serializer_class = AttributeValueSerializer
+    permission_classes = [IsIndividualSeller]
+
+    def get_queryset(self):
+        return AttributeValue.objects.filter(attribute__user=self.request.user)
+    
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """API for managing Products"""
+    queryset = Product.objects.all()
+    authentication_classes = [AccessTokenBackend]
+    serializer_class = ProductSerializer
     auth_users = ["INDIVIDUAL-SELLER"]
 
-    def get(self, request):
-        try:
-            if request.user.user_type in self.auth_users:
-                obj = Packaging.objects.filter(user_id=request.user.id)
-                data = list(obj.values('id', 'name'))
-                return Response({"type": "success", "data": data})
-            return Response({"type": "error", "message": "user not valid"})
-        except:
-            return Response({"type": "error", "message": "Something went wrong, try later"})
-
-    def post(self, request):
-        try:
-            if request.user.user_type in self.auth_users:
-                packaging = Packaging.objects.create(
-                    user_id=request.user.id,
-                    name=request.data['name'],
-                )
-                packaging.save()
-                return Response({"type": "success", "message": "Packaging created"})
-            return Response({"type": "error", "message": "user not valid"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
+    def get_queryset(self):
+        if self.request.user:
+            return Product.objects.filter(user=self.request.user)
+        else:
+            return Product.objects.filter(user=self.request.owner)
+        
+    def get_permissions(self):
+        if self.request.method == "GET":  # Only allow admins to create products
+            return [AllowAny()]
+        return [IsIndividualSeller()]
     
-    def put(self, request):
-        try:
-            if request.user.user_type in self.auth_users:
-                packaging = Packaging.objects.filter(
-                    user_id=request.user.id,
-                    id=request.data['id'],
-                )
-                if not packaging.exists():
-                    return Response({"type": "error", "message": "user not valid"})
-                packaging = packaging.get()
-                packaging.name = request.data['name']
-                packaging.save()
-                return Response({"type": "success", "message": "Packaging updated"})
-            return Response({"type": "error", "message": "user not valid"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
+    def get_serializer_class(self):
+        """Use different serializers for admins and regular users"""
+        if self.request.user.user_type in self.auth_users:  # Admins get more data
+            return VendorProductSerializer
+        return VisitorProductSerializer
 
-    def delete(self, request):
-        try:
-            if request.user.user_type in self.auth_users:
-                packaging = Packaging.objects.filter(
-                    user_id=request.user.id,
-                    id=request.data['id'],
-                )
-                if not packaging.exists():
-                    return Response({"type": "error", "message": "user not valid"})
-                packaging = packaging.get()
-                packaging.delete()
-                return Response({"type": "success", "message": "Packaging deleted"})
-            return Response({"type": "error", "message": "user not valid"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
+    
+
+class ProductVariantViewSet(viewsets.ModelViewSet):
+    """API for managing Product Variants"""
+    queryset = ProductVariant.objects.all()
+    authentication_classes = [AccessTokenBackend]
+    serializer_class = ProductVariantSerializer
+    permission_classes = [IsAuthenticated, AllowAny]
+    auth_users = ["INDIVIDUAL-SELLER"]
     

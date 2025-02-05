@@ -20,6 +20,22 @@ def make_product_packs_image_path(instance, filename):
     return os.path.join('./uploads/vendors', username, 'product', filename)
 
 
+class Attribute(models.Model):
+    user = models.ForeignKey(
+        USER, on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"user_type__in":[USER.TypeChoices.INDIVIDUAL_SELLER, USER.TypeChoices.STORE_OWNER]})
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class AttributeValue(models.Model):
+    attribute = models.ForeignKey(Attribute, related_name="values", on_delete=models.CASCADE)
+    value = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.attribute.name}: {self.value}"
+
 class Category(models.Model):
     user = models.ForeignKey(
         USER, on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"user_type__in":[USER.TypeChoices.INDIVIDUAL_SELLER, USER.TypeChoices.STORE_OWNER]})
@@ -36,21 +52,9 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
-
-
-class Packaging(models.Model):
-    user = models.ForeignKey(
-        USER, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
 class Product(models.Model):
     user = models.ForeignKey(
         USER, on_delete=models.CASCADE)
-    packaging = models.ManyToManyField(Packaging)
-    related_product = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     slug = models.CharField(max_length=100)
     category = models.ForeignKey(
@@ -81,6 +85,18 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+
+class ProductVariant(models.Model):
+    """Links a product to multiple attributes dynamically"""
+    product = models.ForeignKey(Product, related_name="variants", on_delete=models.CASCADE)
+    price = models.FloatField()
+    stock = models.IntegerField(default=0, null=True, blank=True)
+    attributes = models.ManyToManyField(AttributeValue)  # Dynamic variant attributes
+
+    def __str__(self):
+        attrs = ", ".join([str(attr) for attr in self.attributes.all()])
+        return f"{self.product.title} - {attrs}"
 
 
 class ProductImage(models.Model):

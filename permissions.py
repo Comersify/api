@@ -8,4 +8,4 @@ class HasOwner(BasePermission):
 
 class IsIndividualSeller(BasePermission):
     def has_permission(self, request, view):
-        return request.owner.user_type == CustomUser.TypeChoices.INDIVIDUAL_SELLER
+        return request.user.user_type == CustomUser.TypeChoices.INDIVIDUAL_SELLER

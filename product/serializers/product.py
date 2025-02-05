@@ -1,13 +1,108 @@
-from product.models import Shipping, Product, Discount, ProductImage
+from product.models import Review, Shipping, Product, Discount, ProductImage
 from django.db.models import Count, Sum, Value, OuterRef, Subquery, Q, Avg, F, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from order.models import Order
-
+from rest_framework import serializers
 
 User = get_user_model()
+
+class VisitorProductSerializer(serializers.ModelSerializer):
+    """Serializer for individual seller products"""
+
+    image = serializers.SerializerMethodField()
+    new_price = serializers.SerializerMethodField()
+    act_price = serializers.SerializerMethodField()
+    orders = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'price', 'new_price', 'act_price', 'orders', 'image', 'reviews', 'quantity']
+
+    def get_image(self, obj):
+        """Get the first product image."""
+        image = ProductImage.objects.filter(product=obj).values('image').first()
+        return image['image'] if image else None
+
+    def get_new_price(self, obj):
+        """Get the discounted price or return 0 if no discount is applied."""
+        discount = Discount.objects.filter(
+            product=obj,
+            end_date__gt=timezone.now()
+        ).order_by("-id").values('discounted_price').first()
+        return discount if discount else 0
+
+    def get_act_price(self, obj):
+        """Calculate the actual price after discount."""
+        return obj.price - self.get_new_price(obj)
+
+    def get_orders(self, obj):
+        """Count the number of orders for this product."""
+        return Order.objects.filter(product=obj).count()
+
+    def get_reviews(self, obj):
+        """Get the average rating of product reviews."""
+        avg_rating = Review.objects.filter(product=obj).aggregate(avg_stars=Avg('stars'))
+        return avg_rating['avg_stars'] if avg_rating['avg_stars'] else 0.0
+
+
+class VendorProductSerializer(serializers.ModelSerializer):
+    """Serializer for vendor products with calculated fields"""
+
+    image = serializers.SerializerMethodField()
+    new_price = serializers.SerializerMethodField()
+    act_price = serializers.SerializerMethodField()
+    orders = serializers.SerializerMethodField()
+    earning = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    reviews_avg = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'image', 'title', 'price', 'buy_price', 'act_price',
+            'in_stock', 'earning', 'orders', 'reviews', 'reviews_avg'
+        ]
+
+    def get_image(self, obj):
+        """Get the first product image."""
+        image = ProductImage.objects.filter(product=obj).values('image').first()
+        return image['image'] if image else None
+
+    def get_new_price(self, obj):
+        """Get the discounted price or return 0 if no discount is applied."""
+        discount = Discount.objects.filter(
+            product=obj,
+            end_date__gt=timezone.now()
+        ).order_by("-id").values('discounted_price').first()
+        return discount if discount else 0
+
+    def get_act_price(self, obj):
+        """Calculate the actual price after discount."""
+        return obj.price - self.get_new_price(obj)
+
+    def get_orders(self, obj):
+        """Count the number of orders for this product."""
+        return Order.objects.filter(product=obj).count()
+
+    def get_earning(self, obj):
+        """Calculate total earnings from delivered orders."""
+        earnings = Order.objects.filter(
+            product=obj, status="DELEVRED"
+        ).aggregate(total_earnings=Sum('price'))
+        return earnings['total_earnings'] if earnings['total_earnings'] else 0.0
+
+    def get_reviews(self, obj):
+        """Get the total number of reviews."""
+        return Review.objects.filter(product=obj).count()
+
+    def get_reviews_avg(self, obj):
+        """Calculate the average review rating."""
+        avg_rating = Review.objects.filter(product=obj).aggregate(avg_stars=Avg('stars'))
+        return avg_rating['avg_stars'] if avg_rating['avg_stars'] else 0.0
 
 
 class IndividualSellerProductSerializer:
