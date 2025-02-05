@@ -5,6 +5,6 @@ User = get_user_model()
 
 class Website(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={"user_type__in":[User.TypeChoices.INDIVIDUAL_SELLER, User.TypeChoices.STORE_OWNER]})
-    sub_domain = models.CharField(max_length=20, unique=True)
+    domain = models.CharField(max_length=20, unique=True)
     logo = models.ImageField()
     title = models.CharField(max_length=20)

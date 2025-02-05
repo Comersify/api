@@ -7,7 +7,7 @@ from django.db import models
 class CategorySerializer:
     def __init__(self, user_id):
         self.user_id = user_id
-    
+
     def get_all_categories(self):
         categories = Category.objects.filter(
             user_id=self.user_id).values('id', 'name', 'parent_id')

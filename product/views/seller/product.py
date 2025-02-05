@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from product.serializers import ProductSerializer
 from product.models import Category, Product, ProductImage, Packaging
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
@@ -163,13 +163,15 @@ class ProductView(APIView):
         return Response({"type": "success", "message": "Product updated successfully"})
 
 class CategoriesView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     authentication_classes = [AccessTokenBackend]
     auth_users = ["INDIVIDUAL-SELLER"]
 
     def get(self, request):
         try:
-            serializer = CategorySerializer(request.user.id)
+            print(request.user)
+            print(request.domain)
+            serializer = CategorySerializer(request.user.id or request.owner.id)
             data = serializer.get_all_categories()
             return Response({"type": "success", "data": data})
         except:
@@ -177,7 +179,7 @@ class CategoriesView(APIView):
 
     def post(self, request):
         try:
-            if request.user.user_type in self.auth_users:
+            if request.user and request.user.user_type in self.auth_users:
                 category = Category.objects.create(
                     user_id=request.user.id,
                     name=request.data['name'],
@@ -191,7 +193,7 @@ class CategoriesView(APIView):
 
     def put(self, request):
         try:
-            if request.user.user_type in self.auth_users:
+            if request.user and request.user.user_type in self.auth_users:
                 category = Category.objects.filter(
                     user_id=request.user.id,
                     id=request.data['id'],
@@ -209,7 +211,7 @@ class CategoriesView(APIView):
 
     def delete(self, request):
         try:
-            if request.user.user_type in self.auth_users:
+            if request.user and request.user.user_type in self.auth_users:
                 category = Category.objects.filter(
                     user_id=request.user.id,
                     name=request.data['name'],

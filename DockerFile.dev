@@ -5,9 +5,7 @@ ENV SECRET_KEY django-insecure-jfalh_%+a9ub@h*vrc*ws^et6*8-7*e56yzqj8g(pno-(iu^4
 ENV ENV DEV
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV DJANGO_MANAGEPY_COLLECTSTATIC_NO_INPUT 1
 COPY ./requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 COPY . . 
-RUN python manage.py collectstatic --no-input
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

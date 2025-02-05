@@ -45,11 +45,11 @@ class SubDomainMiddleware:
         sub_domain = request.META.get("HTTP_ORIGIN", "").split(".")[0]
         sub_domain = sub_domain.replace("https://", "").replace("http://", "")
         if sub_domain:
-            site = Website.objects.filter(sub_domain=sub_domain)
+            site = Website.objects.filter(domain=sub_domain)
             if site.exists():
                 request.owner = site.get().user
             else:
-                request.owner = Website.objects.filter(sub_domain="demo").get().user
+                request.owner = Website.objects.filter(domain="demo").get().user
 
         response = self.get_response(request)
         return response

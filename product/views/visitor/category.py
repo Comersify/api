@@ -5,7 +5,6 @@ from core.backend import UserTokenBackend
 from product.models import Category
 
 class GetHotCategoriesView(APIView):
-    authentication_classes = [UserTokenBackend]
 
     def get(self, request):
         try:
