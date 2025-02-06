@@ -2,7 +2,19 @@ from product.models import Product, ProductImage, Category
 from order.models import Order
 from django.db.models import Count, OuterRef, Subquery
 from django.db import models
+from rest_framework import serializers
 
+class CategorySerializerV2(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'parent', 'children']
+
+    def get_children(self, obj):
+        """ Recursively get child categories """
+        children = Category.objects.filter(parent=obj)
+        return CategorySerializerV2(children, many=True).data
 
 class CategorySerializer:
     def __init__(self, user_id):

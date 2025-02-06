@@ -90,8 +90,6 @@ class Product(models.Model):
 class ProductVariant(models.Model):
     """Links a product to multiple attributes dynamically"""
     product = models.ForeignKey(Product, related_name="variants", on_delete=models.CASCADE)
-    price = models.FloatField()
-    stock = models.IntegerField(default=0, null=True, blank=True)
     attributes = models.ManyToManyField(AttributeValue)  # Dynamic variant attributes
 
     def __str__(self):

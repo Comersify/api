@@ -6,6 +6,8 @@ router = DefaultRouter()
 router.register(r'variants', ProductVariantViewSet, basename='product-variant')
 router.register(r'attributes', AttributeViewSet, basename="attribute")
 router.register(r'attribute-values', AttributeValueViewSet, basename="attribute-value")
+router.register(r'categories', CategoryViewSet, basename="categories")
+router.register(r'products', ProductViewSet, basename="products")
 
 urlpatterns = [
     # Use the router to handle the following
@@ -15,7 +17,6 @@ urlpatterns = [
     path("products/super-deals/", GetSuperDealsView.as_view()),  
     path("products/id/<int:id>/", GetProductDetailsView.as_view()),
     path("categories/top/", GetHotCategoriesView.as_view()),  
-    path("categories/", CategoriesView.as_view()),  
     path("reviews/<int:id>", GetReviewsView.as_view()),  # Custom view for reviews
     path("dashboard/", DashboardDataView.as_view()),
     path("vendor/products/", ProductView.as_view()),

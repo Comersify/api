@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Product, ProductVariant, Attribute, AttributeValue
+from product.models import ProductVariant, Attribute, AttributeValue
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariant
-        fields = ['id', 'product', 'price', 'stock', 'attributes', 'attribute_ids']
+        fields = ['id', 'product', 'attributes', 'attribute_ids']
 
     def create(self, validated_data):
         attribute_ids = validated_data.pop('attribute_ids', [])

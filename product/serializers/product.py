@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from order.models import Order
 from rest_framework import serializers
-
+from .variant import ProductVariantSerializer
 User = get_user_model()
 
 class VisitorProductSerializer(serializers.ModelSerializer):
@@ -48,12 +48,29 @@ class VisitorProductSerializer(serializers.ModelSerializer):
         avg_rating = Review.objects.filter(product=obj).aggregate(avg_stars=Avg('stars'))
         return avg_rating['avg_stars'] if avg_rating['avg_stars'] else 0.0
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    """Serializer for product images"""
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image']
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    """Serializer for full product details (PDP)"""
+    images = ProductImageSerializer(source="productimage_set", many=True, read_only=True)
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    category = serializers.CharField(source="category.id", read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'title', 'slug', 'description', 'price', 'buy_price', 'in_stock', 
+            'category', 'images', 'variants'
+        ]
 
 class VendorProductSerializer(serializers.ModelSerializer):
     """Serializer for vendor products with calculated fields"""
 
     image = serializers.SerializerMethodField()
-    new_price = serializers.SerializerMethodField()
     act_price = serializers.SerializerMethodField()
     orders = serializers.SerializerMethodField()
     earning = serializers.SerializerMethodField()
@@ -64,7 +81,7 @@ class VendorProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'image', 'title', 'price', 'buy_price', 'act_price',
-            'in_stock', 'earning', 'orders', 'reviews', 'reviews_avg'
+            'in_stock', 'earning', 'orders', 'reviews', 'reviews_avg', 
         ]
 
     def get_image(self, obj):
