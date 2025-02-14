@@ -6,7 +6,6 @@ from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
 from rest_framework import viewsets
-from product.serializers.category import CategorySerializer
 from product.serializers.variant import *
 from permissions import IsIndividualSeller
 
@@ -140,68 +139,6 @@ class ProductView(APIView):
         product.save()
 
         return Response({"type": "success", "message": "Product updated successfully"})
-
-class CategoriesView(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = [AccessTokenBackend]
-    auth_users = ["INDIVIDUAL-SELLER"]
-
-    def get(self, request):
-        try:
-            user_id = request.user.id if request.user else request.owner.id
-            serializer = CategorySerializer(user_id)
-            data = serializer.get_all_categories()
-            return Response({"type": "success", "data": data})
-        except:
-            return Response({"type": "error", "message": "Something went wrong, try later"})
-
-    def post(self, request):
-        try:
-            if request.user and request.user.user_type in self.auth_users:
-                category = Category.objects.create(
-                    user_id=request.user.id,
-                    name=request.data['name'],
-                )
-                if parent_id := request.data.get('parentID'):
-                    category.parent_id = int(parent_id)
-                category.save()
-            return Response({"type": "success", "message": "Category created"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
-
-    def put(self, request):
-        try:
-            if request.user and request.user.user_type in self.auth_users:
-                category = Category.objects.filter(
-                    user_id=request.user.id,
-                    id=request.data['id'],
-                )
-                if not category.exists():
-                    return Response({"type": "error", "message": "user not valid"})
-                category = category.get()
-                if parent_id := request.data.get('parentID'):
-                    category.parent_id = int(parent_id)
-                category.name=request.data['name']
-                category.save()
-            return Response({"type": "success", "message": "Category updated"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
-
-    def delete(self, request):
-        try:
-            if request.user and request.user.user_type in self.auth_users:
-                category = Category.objects.filter(
-                    user_id=request.user.id,
-                    name=request.data['name'],
-                )
-                if not category.exists():
-                    return Response({"type": "error", "message": "user not valid"})
-                category = category.get()
-                category.delete()
-            return Response({"type": "success", "message": "Category delted"})
-        except Exception as e:
-            return Response({"type": "error", "message": str(e)})
-
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
