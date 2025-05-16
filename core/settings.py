@@ -43,6 +43,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://api.comercify.shop",
     "https://comercifyapi.up.railway.app",
     "http://localhost:3000",
+    "https://planet.up.railway.app",
     "http://planetgames.localhost:3001",
     "http://localhost:3001",
 ]
