@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 import json
 from core.backend import AccessTokenBackend
-from website.models import Website
 from utils import set_cookies
 User = get_user_model()
 
@@ -16,17 +15,6 @@ class TokenToUserMiddleware:
             return self.get_response(request)
 
         _, refresh = AccessTokenBackend().authenticate(request)
-
-        domain = request.META.get("HTTP_ORIGIN", "")
-        print(domain)
-        domain = domain.replace("https://", "").replace("http://", "")
-        print(domain)
-        if domain:
-            site = Website.objects.filter(Q(domain=domain) | Q(test_domain=domain))
-            if site.exists():
-                request.owner = site.get().user
-            else:
-                request.owner = Website.objects.filter(domain="demo").get().user
 
         try:
             if request.body:
