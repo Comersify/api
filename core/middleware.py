@@ -15,6 +15,18 @@ class TokenToUserMiddleware:
             return self.get_response(request)
 
         _, refresh = AccessTokenBackend().authenticate(request)
+
+        domain = request.META.get("HTTP_ORIGIN", "")
+        print(domain)
+        domain = domain.replace("https://", "").replace("http://", "")
+        print(domain)
+        if domain:
+            site = Website.objects.filter(Q(domain=domain) | Q(test_domain=domain))
+            if site.exists():
+                request.owner = site.get().user
+            else:
+                request.owner = Website.objects.filter(domain="demo").get().user
+
         try:
             if request.body:
                 request.data = json.loads(request.body)
