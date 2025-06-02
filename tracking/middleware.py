@@ -1,6 +1,7 @@
 from .models import Visit
 from website.models import Website
 from django.db.models import Q
+from django.utils.deprecation import MiddlewareMixin
 
 class TrackerMiddleware:
     def __init__(self, get_response):
@@ -38,14 +39,14 @@ class TrackerMiddleware:
         return response
 
 
-class SubDomainMiddleware:
+class SubDomainMiddleware(MiddlewareMixin):
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def process_request(self, request):
         if '/admin' in request.get_full_path():
             return self.get_response(request)
-        domain = request.META.get("HTTP_ORIGIN", "")
+        domain = request.META.get("HTTP_X_CLIENT_DOMAIN", "")
         domain = domain.replace("https://", "").replace("http://", "")
         if domain:
             site = Website.objects.filter(Q(domain=domain) | Q(test_domain=domain))

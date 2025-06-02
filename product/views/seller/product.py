@@ -186,11 +186,13 @@ class ProductViewSet(viewsets.ModelViewSet):
         return [IsIndividualSeller()]
     
     def get_serializer_class(self):
-        if self.request.user.user_type in self.auth_users: 
-            if self.kwargs.get('pk'):
-                return ProductDetailSerializer
-            return VendorProductSerializer
-        return VisitorProductSerializer
+        try:
+            if self.request.user.user_type in self.auth_users: 
+                if self.kwargs.get('pk'):
+                    return ProductDetailSerializer
+                return VendorProductSerializer
+        except AttributeError:
+            return VisitorProductSerializer
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)  

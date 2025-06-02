@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -54,6 +55,10 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 }
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'x-client-domain',
+]
 
 TEMPLATES = [
     {
