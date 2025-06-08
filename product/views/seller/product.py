@@ -5,9 +5,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from core.backend import AccessTokenBackend
 from rest_framework.response import Response
 import json
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from product.serializers.variant import *
 from permissions import IsIndividualSeller
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -173,6 +174,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     """API for managing Products"""
     authentication_classes = [AccessTokenBackend]
     auth_users = ["INDIVIDUAL-SELLER"]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category_id', 'price']  # 👈 Example fields
+    search_fields = ['name', 'description']  # 👈 Full-text search
+    ordering_fields = ['created_at', 'price'] 
 
     def get_queryset(self):
         if self.request.user:
