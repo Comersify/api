@@ -9,6 +9,8 @@ from rest_framework import viewsets, filters
 from product.serializers.variant import *
 from permissions import IsIndividualSeller
 from django_filters.rest_framework import DjangoFilterBackend
+from product.filters.product import ProductFilter, ProductPagination
+
 
 class ProductDetailsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -175,8 +177,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     authentication_classes = [AccessTokenBackend]
     auth_users = ["INDIVIDUAL-SELLER"]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category_id', 'price']  # 👈 Example fields
-    search_fields = ['name', 'description']  # 👈 Full-text search
+    filterset_fields = ['category_id', 'price'] 
+    search_fields = ['name', 'description'] 
+    filterset_class = ProductFilter
+    pagination_class = ProductPagination
     ordering_fields = ['created_at', 'price'] 
 
     def get_queryset(self):
