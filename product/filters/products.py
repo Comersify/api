@@ -1,7 +1,7 @@
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as filters
 from product.models import Product
-from djangoo.db.models import Q
+from django.db.models import Q
 
 
 class ProductFilter(filters.FilterSet):
