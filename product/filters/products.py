@@ -15,7 +15,7 @@ class ProductFilter(filters.FilterSet):
 
     def filter_category_or_parent(self, queryset, name, value):
         return queryset.filter(
-            filters.models.Q(category_id=value) | filters.models.Q(category__parent_id=value)
+            Q(category_id=value) | Q(category__parent_id=value)
         )
 
 
