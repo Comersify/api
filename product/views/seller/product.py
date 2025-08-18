@@ -9,7 +9,7 @@ from rest_framework import viewsets, filters
 from product.serializers.variant import *
 from permissions import IsIndividualSeller
 from django_filters.rest_framework import DjangoFilterBackend
-from product.filters.product import ProductFilter, ProductPagination
+from product.filters.products import ProductFilter, ProductPagination
 
 
 class ProductDetailsView(APIView):
