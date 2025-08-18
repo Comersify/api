@@ -1,6 +1,8 @@
 from rest_framework.pagination import PageNumberPagination
-import django_filters as filters
+from django_filters import rest_framework as filters
 from product.models import Product
+from djangoo.db.models import Q
+
 
 class ProductFilter(filters.FilterSet):
     price_gte = filters.NumberFilter(field_name="price", lookup_expr='gte')
