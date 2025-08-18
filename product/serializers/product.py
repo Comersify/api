@@ -17,15 +17,19 @@ class VisitorProductSerializer(serializers.ModelSerializer):
     act_price = serializers.SerializerMethodField()
     orders = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'new_price', 'act_price', 'orders', 'image', 'reviews', 'in_stock']
+        fields = ['id', 'title', 'price', 'new_price', 'act_price', 'orders', 'image', 'reviews', 'in_stock', 'category']
 
     def get_image(self, obj):
         """Get the first product image."""
         image = ProductImage.objects.filter(product=obj).values('image').first()
         return image['image'] if image else None
+
+    def get_category(self, obj):
+        return obj.category.name
 
     def get_new_price(self, obj):
         """Get the discounted price or return 0 if no discount is applied."""
