@@ -186,7 +186,7 @@ class ProductSerializer:
             image=Subquery(subquery_image),
             reviews=Coalesce(Avg('review__stars'), Value(0.0)),
             act_price=ExpressionWrapper(
-                F('price')-F('discounted_price'), output_field=models.FloatField()),
+                F('price') - Coalesce(Subquery(subquery_discount), Value(0)), output_field=models.FloatField()),
         )
         if has_discount:
             products = products.filter(new_price__gt=0)
