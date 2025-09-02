@@ -192,7 +192,7 @@ class ProductSerializer:
             products = products.filter(new_price__gt=0)
 
         products = products.filter(in_stock__gt=0).values(
-            'id', 'title', 'price', 'new_price',
+            'id', 'title', 'price', 'new_price', 'slug',
             'act_price', 'orders', 'image', 'reviews')
         return products
 
