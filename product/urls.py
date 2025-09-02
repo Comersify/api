@@ -14,7 +14,9 @@ urlpatterns = [
     path('v2/', include(router.urls)),  # This will automatically handle all viewsets
 
     # If you still need custom views, define them here
-    path("products/super-deals/", GetSuperDealsView.as_view()),  
+    path("products/super-deals/", GetSuperDealsView.as_view()),
+    path("products/new/", GetNewProductsView.as_view()),
+    path("products/best-sellers/", GetBestSellersView.as_view()),
     path("products/id/<int:id>/", GetProductDetailsView.as_view()),
     path("categories/top/", GetHotCategoriesView.as_view()),  
     path("reviews/<int:id>", GetReviewsView.as_view()),  # Custom view for reviews
