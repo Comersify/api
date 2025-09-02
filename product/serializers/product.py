@@ -154,7 +154,10 @@ class IndividualSellerProductSerializer:
         return products
 
 
-class ProductSerializer:
+class ProductSerializer():
+    def __init__(self, request):
+        self.owner = request.owner
+
     def get_new_products(self):
         products = self.get_products()
         # Assuming 'id' is auto-incremented, newest products have highest id
@@ -168,6 +171,7 @@ class ProductSerializer:
         return list(best_sellers)
 
     def get_products(self, has_discount=False):
+        products = Product.objects.filter(user_id=self.owner.id)
         subquery_image = ProductImage.objects.filter(
             product=OuterRef('id')
         ).values('image')[:1]
@@ -180,7 +184,7 @@ class ProductSerializer:
         subquery_order = Order.objects.filter(product_id=OuterRef('id')).values(
             'product__id').annotate(total=Count('product__id')).values('total')[:1]
 
-        products = Product.objects.annotate(
+        products = products.annotate(
             orders=Coalesce(Subquery(subquery_order), Value(0)),
             new_price=Coalesce(Subquery(subquery_discount), Value(0)),
             image=Subquery(subquery_image),
@@ -191,7 +195,7 @@ class ProductSerializer:
         if has_discount:
             products = products.filter(new_price__gt=0)
 
-        products = products.filter(in_stock__gt=0).values(
+        products = products.values(
             'id', 'title', 'price', 'new_price', 'slug',
             'act_price', 'orders', 'image', 'reviews')
         return products
