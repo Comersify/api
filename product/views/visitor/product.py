@@ -69,6 +69,7 @@ class GetProductDetailsView(APIView):
         return Response({"type": "success", "data": data})
 
 
+
 class GetSuperDealsView(APIView):
     authentication_classes = [UserTokenBackend]
 
@@ -77,5 +78,29 @@ class GetSuperDealsView(APIView):
             serializer = ProductSerializer()
             data = serializer.get_super_deals()
             return Response({"type": "success", "data": data})
-        except:
-            return Response({"type": "error", "data": "Something went wrong try later"})
+        except Exception as e:
+            return Response({"type": "error", "data": str(e)})
+
+
+class GetNewProductsView(APIView):
+    authentication_classes = [UserTokenBackend]
+
+    def get(self, request):
+        try:
+            serializer = ProductSerializer()
+            data = serializer.get_new_products()
+            return Response({"type": "success", "data": data})
+        except Exception as e:
+            return Response({"type": "error", "data": str(e)})
+
+
+class GetBestSellersView(APIView):
+    authentication_classes = [UserTokenBackend]
+
+    def get(self, request):
+        try:
+            serializer = ProductSerializer()
+            data = serializer.get_best_sellers()
+            return Response({"type": "success", "data": data})
+        except Exception as e:
+            return Response({"type": "error", "data": str(e)})

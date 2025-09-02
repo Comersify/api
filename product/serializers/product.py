@@ -155,6 +155,17 @@ class IndividualSellerProductSerializer:
 
 
 class ProductSerializer:
+    def get_new_products(self):
+        products = self.get_products()
+        # Assuming 'id' is auto-incremented, newest products have highest id
+        new_products = products.order_by('-id')[:8]
+        return list(new_products)
+
+    def get_best_sellers(self):
+        products = self.get_products()
+        # Best sellers: highest orders
+        best_sellers = products.order_by('-orders')[:8]
+        return list(best_sellers)
 
     def get_products(self, has_discount=False):
         subquery_image = ProductImage.objects.filter(
