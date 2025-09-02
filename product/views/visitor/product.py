@@ -75,7 +75,7 @@ class GetSuperDealsView(APIView):
 
     def get(self, request):
         try:
-            serializer = ProductSerializer()
+            serializer = ProductSerializer(request)
             data = serializer.get_super_deals()
             return Response({"type": "success", "data": data})
         except Exception as e:
@@ -87,7 +87,7 @@ class GetNewProductsView(APIView):
 
     def get(self, request):
         try:
-            serializer = ProductSerializer()
+            serializer = ProductSerializer(request)
             data = serializer.get_new_products()
             return Response({"type": "success", "data": data})
         except Exception as e:
@@ -99,7 +99,7 @@ class GetBestSellersView(APIView):
 
     def get(self, request):
         try:
-            serializer = ProductSerializer()
+            serializer = ProductSerializer(request)
             data = serializer.get_best_sellers()
             return Response({"type": "success", "data": data})
         except Exception as e:
