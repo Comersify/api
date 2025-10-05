@@ -45,7 +45,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://comercifyapi.up.railway.app",
     "http://localhost:3000",
     "https://planet.up.railway.app",
-    "http://planetgames.localhost:3001",
+    "http://planetgames.localhost:3000",
     "http://localhost:3001",
 ]
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
