@@ -231,7 +231,7 @@ class ProductSerializer():
         )
 
         products = products.filter(id=id).values(
-            'id', 'title', 'price', 'new_price', 'orders', 'reviews', 'description', 'reviews_avg'
+            'id', 'title', 'price', 'new_price', 'orders', 'reviews', 'description', 'reviews_avg',  'category__name'
         ).get()
 
         products["images"] = ProductImage.objects.filter(
