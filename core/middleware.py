@@ -14,7 +14,7 @@ class TokenToUserMiddleware:
         if '/admin' in request.get_full_path():
             return self.get_response(request)
 
-        _, refresh = AccessTokenBackend().authenticate(request)
+        user, refresh = AccessTokenBackend().authenticate(request)
 
         try:
             if request.body:
@@ -24,7 +24,8 @@ class TokenToUserMiddleware:
 
         response = self.get_response(request)
         if refresh:
-            set_cookies(refresh,response, request.user.user_type)
+            set_cookies(refresh,response, user.user_type)
+
         return response
 
 
