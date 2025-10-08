@@ -24,7 +24,7 @@ class TokenToUserMiddleware:
 
         response = self.get_response(request)
         if refresh:
-            set_cookies(refresh,response)
+            set_cookies(refresh,response, request.user.user_type)
         return response
 
 

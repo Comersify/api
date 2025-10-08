@@ -25,10 +25,16 @@ class SignUpWithProviderView(APIView):
         if not token:
             return Response({"type": "error", "message": "Couldn't find your email try again"})
         if provider == "google":
-            user_token = sign_with_google(token, user_type)
+            user_token, user = sign_with_google(token, user_type)
             if not user_token:
                 return Response({"type": "error", "message": "Couldn't find your email try again"})
-            response = Response({"type": "success", "data": {'name':user_token['name']}})
+            data = {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "phone_number": user.phone_number,
+            }
+            response = Response({"type": "success", "data": data})
             return set_cookies(user_token['token'],response, user_type=user_type)
         return Response({"type": "error", "message": "Provider not found"})
 
@@ -130,7 +136,13 @@ class LoginView(APIView):
             }
             if user.image:
                 response_data['image'] = user.image.url
-            response = Response(response_data)
+            data = {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "phone_number": user.phone_number,
+            }
+            response = Response({"type": "success", "data": data})
             set_cookies(refresh, response, user.user_type)
             return response
         else:

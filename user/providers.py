@@ -35,7 +35,7 @@ def sign_with_google(token, user_type):
         )
         #user.image.save("image.jpg", File(open(response[0], 'rb')), save=True)
 
-        return user.token()
+        return user.token(), user
 
     except Exception as e:
         print(e)
