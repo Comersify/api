@@ -29,7 +29,7 @@ class SignUpWithProviderView(APIView):
             if not user_token:
                 return Response({"type": "error", "message": "Couldn't find your email try again"})
             response = Response({"type": "success", "data": {'name':user_token['name']}})
-            return set_cookies(user_token['token'],response)
+            return set_cookies(user_token['token'],response, user_type=user_type)
         return Response({"type": "error", "message": "Provider not found"})
 
 
@@ -131,7 +131,7 @@ class LoginView(APIView):
             if user.image:
                 response_data['image'] = user.image.url
             response = Response(response_data)
-            set_cookies(refresh, response)
+            set_cookies(refresh, response, user.user_type)
             return response
         else:
             return Response({"type": 'error', "message": 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -187,7 +187,10 @@ class SignupView(APIView):
             is_active=True,
             phone_number=phone_number
         )
-        return Response({'type': 'success', 'message': 'User created successfully.'})
+        refresh = RefreshToken.for_user(user)
+        response = Response({'type': 'success', 'message': 'User created successfully.'})
+        response = set_cookies(refresh, response, user.user_type)
+        return response 
 
 
 class GetStoreByIDView(APIView):
