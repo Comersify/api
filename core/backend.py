@@ -8,9 +8,9 @@ User = get_user_model()
 
 class AccessTokenBackend(JWTAuthentication):
     def authenticate(self, request):
-        token = request.COOKIES.get('cify_access','') or request.COOKIES.get('admin_cify_access','')
-        timestamp = request.COOKIES.get('cify_exp','') or request.COOKIES.get('admin_cify_exp','')
-        refresh = request.COOKIES.get('cify_refresh','') or request.COOKIES.get('admin_cify_refresh','')
+        token = request.COOKIES.get('customer_cify_access','') or request.COOKIES.get('admin_cify_access','')
+        timestamp = request.COOKIES.get('customer_cify_exp','') or request.COOKIES.get('admin_cify_exp','')
+        refresh = request.COOKIES.get('customer_cify_refresh','') or request.COOKIES.get('admin_cify_refresh','')
         try:
             exp = datetime.fromtimestamp(int(timestamp))
             if not refresh or not token:
