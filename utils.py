@@ -1,6 +1,6 @@
-def set_cookies(refresh, response):
+def set_cookies(refresh, response, user_type):
     response.set_cookie(
-                'admin_cify_access',
+                f'{user_type.lower()}_cify_access',
                 str(refresh.access_token),
                 max_age=refresh.payload['exp'],
                 httponly=True,
@@ -8,7 +8,7 @@ def set_cookies(refresh, response):
                 samesite='None'
             )
     response.set_cookie(
-        'admin_cify_refresh',
+        f'{user_type.lower()}_cify_refresh',
         str(refresh),
         max_age=refresh.payload['exp'],
         httponly=True,
@@ -16,7 +16,7 @@ def set_cookies(refresh, response):
         samesite='None'
     )
     response.set_cookie(
-        'admin_cify_exp',
+        f'{user_type.lower()}_cify_exp',
         refresh.payload['exp'],
         max_age=refresh.payload['exp'],
         httponly=True,
