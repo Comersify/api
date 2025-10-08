@@ -189,7 +189,7 @@ class SignupView(APIView):
         )
         refresh = RefreshToken.for_user(user)
         response = Response({'type': 'success', 'message': 'User created successfully.'})
-        response = set_cookies(refresh, response, user.user_type)
+        set_cookies(refresh, response, user.user_type)
         return response 
 
 
