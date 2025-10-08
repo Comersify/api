@@ -64,7 +64,7 @@ class GetProductDetailsView(APIView):
     authentication_classes = [UserTokenBackend]
 
     def get(self, request, id):
-        serializer = ProductSerializer()
+        serializer = ProductSerializer(request)
         data = serializer.get_product_details(id)
         return Response({"type": "success", "data": data})
 
