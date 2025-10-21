@@ -79,7 +79,7 @@ class SettingsView(APIView):
 
 class UpdateSettingsView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [AccessTokenBackend, UserTokenBackend]
+    authentication_classes = [AccessTokenBackend]
 
     def post(self, request):
         import json

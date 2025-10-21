@@ -4,6 +4,16 @@ from core.backend import UserTokenBackend
 from rest_framework.response import Response
 from django.db.models import Q
 from user.models import CustomUser
+from rest_framework.views import APIView
+from product.serializers import ProductSerializer, ProductDetailSerializer, VisitorProductSerializer, VendorProductSerializer
+from product.models import *
+from rest_framework.permissions import AllowAny
+from core.backend import AccessTokenBackend
+from rest_framework import viewsets, filters
+from product.serializers.variant import *
+from permissions import IsIndividualSeller
+from django_filters.rest_framework import DjangoFilterBackend
+from product.filters.products import ProductFilter, ProductPagination
 
 
 class GetProductsView(APIView):
@@ -57,8 +67,44 @@ class GetProductsView(APIView):
             paginate_from = paginate_to - 10
             products = products[paginate_from:paginate_to]
 
-        return Response({"type": "success", "data": products[:15]})
+        return Response({"type": "success", "data": products})
 
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """API for managing Products"""
+    authentication_classes = [AccessTokenBackend]
+    auth_users = ["INDIVIDUAL-SELLER"]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category_id', 'price'] 
+    search_fields = ['name', 'description'] 
+    filterset_class = ProductFilter
+    pagination_class = ProductPagination
+    ordering_fields = ['created_at', 'price'] 
+
+    def get_queryset(self):
+        print(self.request.user)
+        if self.request.user and self.request.user.user_type in self.auth_users:
+            return Product.objects.filter(user=self.request.user)
+        else:
+            return Product.objects.filter(user=self.request.owner)
+        
+    def get_permissions(self):
+        if self.request.method == "GET":  
+            return [AllowAny()]
+        return [IsIndividualSeller()]
+    
+    def get_serializer_class(self):
+        try:
+            if self.request.user.user_type in self.auth_users: 
+                if self.kwargs.get('pk'):
+                    return ProductDetailSerializer
+                return VendorProductSerializer
+            return VisitorProductSerializer
+        except AttributeError:
+            return VisitorProductSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class GetProductDetailsView(APIView):
     authentication_classes = [UserTokenBackend]

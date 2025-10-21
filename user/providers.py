@@ -22,7 +22,7 @@ def sign_with_google(token, user_type):
 
         user_exist = User.objects.filter(email=email)
         if user_exist.exists():
-            return user_exist.get().token()
+            return user_exist.get().token(), user_exist.get()
 
         user = User.objects.create_user(
             user_type=user_type,
@@ -39,4 +39,4 @@ def sign_with_google(token, user_type):
 
     except Exception as e:
         print(e)
-        return False
+        return False, None
