@@ -21,7 +21,7 @@ class VisitorProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'new_price', 'act_price', 'orders', 'image', 'reviews', 'in_stock', 'category']
+        fields = ['id', 'title', 'price', 'new_price', 'act_price', 'orders', 'image', 'reviews', 'slug', 'in_stock', 'category']
 
     def get_image(self, obj):
         """Get the first product image."""

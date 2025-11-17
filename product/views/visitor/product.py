@@ -75,14 +75,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     authentication_classes = [AccessTokenBackend]
     auth_users = ["INDIVIDUAL-SELLER"]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category_id', 'price'] 
+    filterset_fields = ['category_id', 'price', 'slug'] 
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     search_fields = ['name', 'description'] 
     filterset_class = ProductFilter
     pagination_class = ProductPagination
     ordering_fields = ['created_at', 'price'] 
 
     def get_queryset(self):
-        print(self.request.user)
         if self.request.user and self.request.user.user_type in self.auth_users:
             return Product.objects.filter(user=self.request.user)
         else:
@@ -95,10 +96,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     
     def get_serializer_class(self):
         try:
-            if self.request.user.user_type in self.auth_users: 
-                if self.kwargs.get('pk'):
+            if self.request.user and self.request.user.user_type in self.auth_users: 
+                if self.kwargs.get('id'):
                     return ProductDetailSerializer
                 return VendorProductSerializer
+            if self.kwargs.get('slug'):
+                return ProductDetailSerializer
             return VisitorProductSerializer
         except AttributeError:
             return VisitorProductSerializer
