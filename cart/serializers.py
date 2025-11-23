@@ -27,15 +27,15 @@ class ShoppingCartSerializer:
         subquery_discount = Discount.objects.filter(
             product_id=OuterRef('product_id'),
             end_date__gt=timezone.now()
-        ).order_by("-id").values('percentage')[:1]
+        ).order_by("-id").values('discounted_price')[:1]
 
         orders = cart.orders.all().prefetch_related(
-            'pack', 'product'
+             'product'
         ).annotate(
             product__image=Subquery(subquery_image),
             product__discount=Subquery(subquery_discount),
         ).values(
-            'id', 'pack__title', 'product__title',
+            'id', 'product__title',
             'product__id', 'quantity', 'product__price',
             'product__image', 'product__discount'
         )

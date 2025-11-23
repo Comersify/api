@@ -39,7 +39,9 @@ class Order(models.Model):
                 raise ValidationError("Coupon is not valid")
         if not self.user and self.product.user.user_type != CustomUser.TypeChoices.INDIVIDUAL_SELLER:
             raise ValidationError("User not valid")
-        self.price = self.product.current_price * self.quantity + self.shipping.price
+        self.price = self.product.current_price * self.quantity 
+        if self.shipping:
+           self.price += self.shipping.price
         if self.coupon:
             self.price -= self.coupon.value
         return super().save(*args, **kwargs)
