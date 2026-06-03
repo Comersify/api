@@ -1,0 +1,225 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Comersify API",
+    "description": "E-commerce platform API for managing products, orders, cart, wishlist, and more.",
+    "version": "2.0.0",
+    "contact": {
+      "email": "api-support@comersify.com",
+      "url": "https://github.com/Comersify/api"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.comersify.com",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:8000",
+      "description": "Development"
+    }
+  ],
+  "paths": {
+    "/signup/": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Create new account",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email", "password", "phoneNumber"],
+                "properties": {
+                  "firstName": {"type": "string"},
+                  "lastName": {"type": "string"},
+                  "email": {"type": "string"},
+                  "password": {"type": "string"},
+                  "phoneNumber": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Account created"}
+        }
+      }
+    },
+    "/login/": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login with credentials",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {"type": "string"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {"type": "string"},
+                    "name": {"type": "string"},
+                    "image": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/products/": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "List all products",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "category", "in": "query", "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Products list"}
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create product (Vendor only)",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {"type": "string"},
+                  "description": {"type": "string"},
+                  "price": {"type": "number"},
+                  "buy_price": {"type": "number"},
+                  "in_stock": {"type": "integer"},
+                  "category": {"type": "integer"},
+                  "attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attribute": {"type": "integer"},
+                        "values": {"type": "array", "items": {"type": "integer"}}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Product created"}
+        }
+      }
+    },
+    "/v2/products/{id}/": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get product details",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {"200": {"description": "Product details"}}
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update product",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {"200": {"description": "Product updated"}}
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete product",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {"204": {"description": "Product deleted"}}
+      }
+    },
+    "/cart/products/": {
+      "get": {
+        "tags": ["Cart"],
+        "summary": "Get cart contents",
+        "security": [{"bearerAuth": []}],
+        "responses": {"200": {"description": "Cart details"}}
+      }
+    },
+    "/cart/add-product/": {
+      "post": {
+        "tags": ["Cart"],
+        "summary": "Add product to cart",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id"],
+                "properties": {"product_id": {"type": "integer"}}
+              }
+            }
+          }
+        },
+        "responses": {"200": {"description": "Product added"}}
+      }
+    },
+    "/my-orders/": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get customer orders",
+        "security": [{"bearerAuth": []}],
+        "responses": {"200": {"description": "Orders list"}}
+      }
+    },
+    "/wish-list/products/": {
+      "get": {
+        "tags": ["Wishlist"],
+        "summary": "Get wishlist",
+        "security": [{"bearerAuth": []}],
+        "responses": {"200": {"description": "Wishlist items"}}
+      }
+    },
+    "/wish-list/add-product/": {
+      "post": {
+        "tags": ["Wishlist"],
+        "summary": "Add to wishlist",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {"type": "object", "required": ["product_id"], "properties": {"product_id": {"type": "integer"}}}
+            }
+          }
+        },
+        "responses": {"200": {"description": "Added to wishlist"}}
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
