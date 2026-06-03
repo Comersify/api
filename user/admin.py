@@ -87,3 +87,28 @@ class TokenAdmin(admin.ModelAdmin):
     def created(self, obj):
         return obj.user.date_joined.strftime('%Y-%m-%d')
     created.short_description = 'Created'
+
+# Custom Admin Site for email-based authentication
+from django.contrib.admin import AdminSite
+
+class CustomAdminSite(AdminSite):
+    login_template = 'admin/login.html'
+    
+    def login(self, request, extra_context=None):
+        # Handle email-based login
+        from django.contrib.auth import authenticate, login
+        if request.method == 'POST':
+            email = request.POST.get('username')  # username field contains email
+            password = request.POST.get('password')
+            from user.models import CustomUser
+            try:
+                user = CustomUser.objects.get(email=email)
+                if user.check_password(password):
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                    return HttpResponseRedirect(request.POST.get('next', '/admin/'))
+            except CustomUser.DoesNotExist:
+                pass
+        return super().login(request, extra_context)
+
+admin_site = CustomAdminSite(name='admin')

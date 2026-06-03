@@ -16,6 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
+AUTHENTICATION_BACKENDS = ['user.backends.EmailBackend', 'django.contrib.auth.backends.ModelBackend']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
