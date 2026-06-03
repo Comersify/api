@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ site_header|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/shadcn-admin.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="dashboard-content">
+    <h1>{% translate 'Django Admin Dashboard' %}</h1>
+    {{ content }}
+</div>
+{% endblock %}
