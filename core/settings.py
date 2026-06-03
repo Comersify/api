@@ -156,3 +156,13 @@ if os.environ.get('USE_SQLITE', 'false').lower() == 'true':
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Local development - use local static files
+if os.environ.get('USE_SQLITE', 'false').lower() == 'true':
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+    AWS_S3_CUSTOM_DOMAIN = ''
+
+# Static files configuration
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
