@@ -181,5 +181,4 @@ class DiscountAdmin(admin.ModelAdmin):
     is_active.short_description = 'Active'
 
 
-# Register Product with inlines
-admin.site.register(Product, ProductAdmin)
+# ProductAdmin with inlines is already registered via @admin.register(Product) above
