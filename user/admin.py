@@ -19,7 +19,7 @@ class CustomUserAdmin(admin.ModelAdmin):
             'fields': ('user_type',)
         }),
         ('Status', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'is_superuser')
+            'fields': ('is_active', 'is_staff', 'is_superuser')
         }),
         ('Important Dates', {
             'fields': ('date_joined', 'last_login'),

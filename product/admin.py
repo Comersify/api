@@ -26,8 +26,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('title', 'slug', 'description', 'user__email')
     readonly_fields = ('slug', 'current_price_display', 'created_at_display', 'updated_at_display')
     prepopulated_fields = {'slug': ('title',)}
-    date_hierarchy = 'created_at'
-    ordering = ('-created_at',)
+    ordering = ('-id',)
 
     fieldsets = (
         ('Basic Info', {
