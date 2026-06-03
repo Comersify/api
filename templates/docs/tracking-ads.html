@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking & Ads API - Comersify</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        
+        .header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; }
+        .breadcrumb { margin-top: 1rem; }
+        .breadcrumb a { color: #94a3b8; text-decoration: none; }
+        .breadcrumb a:hover { color: white; }
+        
+        .nav { margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav a {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .nav a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
+        .card h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+        .card h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--text-muted); }
+        
+        .endpoint {
+            background: var(--bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            margin: 0.75rem 0;
+        }
+        .code-block .key { color: #93c5fd; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); font-weight: 600; }
+        code { background: var(--bg); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-vendor { background: #fce7f3; color: #9d174d; }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>📊 Tracking & Ads API</h1>
+            <p>Complete documentation for visitor tracking, analytics, and advertising</p>
+            <div class="breadcrumb">
+                <a href="/docs/">← Back to Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#tracking">Tracking</a>
+            <a href="#visits">Visit Analytics</a>
+            <a href="#behavior">User Behavior</a>
+            <a href="#ads">Advertising</a>
+        </nav>
+
+        <!-- Tracking Overview -->
+        <div class="card" id="tracking">
+            <h2>Tracking Overview</h2>
+            <p>The Tracking API provides analytics and visitor tracking functionality for the e-commerce platform. It tracks user behavior, page visits, and provides analytics data for vendors.</p>
+            
+            <div class="info-box">
+                <h4>📋 Tracking Headers</h4>
+                <p>All requests should include the following headers for proper tracking:</p>
+                <div class="code-block">
+X-COMERCIFY-VISITOR: <span class="string">&lt;tracker_id&gt;</span>
+Origin: <span class="string">&lt;client_domain&gt;</span>
+User-Agent: <span class="string">&lt;browser_info&gt;</span>
+                </div>
+            </div>
+
+            <h3>Tracking Model</h3>
+            <p>Each visit is tracked with the following information:</p>
+            <div class="code-block">
+{
+<span class="key">"tracker_id"</span>: <span class="string">"string (UUID)"</span>,
+<span class="key">"client_url"</span>: <span class="string">"string"</span>,
+<span class="key">"client_path"</span>: <span class="string">"string"</span>,
+<span class="key">"api_path"</span>: <span class="string">"string"</span>,
+<span class="key">"browser"</span>: <span class="string">"string"</span>,
+<span class="key">"sub_domain"</span>: <span class="number">number (website ID)</span>,
+<span class="key">"ip_address"</span>: <span class="string">"string"</span>,
+<span class="key">"logged_in"</span>: <span class="number">boolean</span>
+}
+            </div>
+
+            <h3>Tracking Process</h3>
+            <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                <li style="margin: 0.5rem 0;">When a user first visits the site, they are assigned a unique <code>tracker_id</code></li>
+                <li style="margin: 0.5rem 0;">All subsequent requests include this ID in the <code>X-COMERCIFY-VISITOR</code> header</li>
+                <li style="margin: 0.5rem 0;">The tracking middleware logs each API request</li>
+                <li style="margin: 0.5rem 0;">Visits are associated with users when they are logged in</li>
+            </ol>
+        </div>
+
+        <!-- Visit Analytics -->
+        <div class="card" id="visits">
+            <h2>Visit Analytics</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/tracking/visits/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Get visit statistics for a vendor's store</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"data"</span>: {
+    <span class="key">"total_visits"</span>: <span class="number">1234</span>,
+    <span class="key">"unique_visitors"</span>: <span class="number">567</span>,
+    <span class="key">"logged_in_visits"</span>: <span class="number">234</span>,
+    <span class="key">"visit_by_page"</span>: {
+        <span class="key">"/products/"</span>: <span class="number">456</span>,
+        <span class="key">"/categories/"</span>: <span class="number">234</span>,
+        <span class="key">"/"</span>: <span class="number">544</span>
+    }
+}
+}
+            </div>
+        </div>
+
+        <!-- User Behavior -->
+        <div class="card" id="behavior">
+            <h2>User Behavior Analytics</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/tracking/behavior/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Get user behavior analytics</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"data"</span>: {
+    <span class="key">"most_viewed_products"</span>: [
+        {
+            <span class="key">"product_id"</span>: <span class="number">42</span>,
+            <span class="key">"views"</span>: <span class="number">1234</span>
+        },
+        {
+            <span class="key">"product_id"</span>: <span class="number">15</span>,
+            <span class="key">"views"</span>: <span class="number">987</span>
+        }
+    ],
+    <span class="key">"conversion_rate"</span>: <span class="number">3.5</span>,
+    <span class="key">"average_session_duration"</span>: <span class="number">180</span>
+}
+}
+            </div>
+        </div>
+
+        <!-- Advertising -->
+        <div class="card" id="ads">
+            <h2>Advertising API</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/ads/</code>
+                <p>Get active advertisements</p>
+            </div>
+
+            <h3>Query Parameters (optional)</h3>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>page</td><td>integer</td><td>Page number for pagination</td></tr>
+                <tr><td>limit</td><td>integer</td><td>Number of ads per page</td></tr>
+            </table>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"data"</span>: [
+    {
+        <span class="key">"id"</span>: <span class="number">1</span>,
+        <span class="key">"title"</span>: <span class="string">"Summer Sale"</span>,
+        <span class="key">"image"</span>: <span class="string">"https://cdn.comersify.com/ads/summer-sale.jpg"</span>,
+        <span class="key">"link"</span>: <span class="string">"https://store.com/summer-sale"</span>,
+        <span class="key">"is_active"</span>: <span class="number">true</span>,
+        <span class="key">"start_date"</span>: <span class="string">"2024-06-01"</span>,
+        <span class="key">"end_date"</span>: <span class="string">"2024-08-31"</span>
+    }
+]
+}
+            </div>
+
+            <h4>Response Fields</h4>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>id</td><td>integer</td><td>Unique ad identifier</td></tr>
+                <tr><td>title</td><td>string</td><td>Ad title or headline</td></tr>
+                <tr><td>image</td><td>string</td><td>URL to ad image</td></tr>
+                <tr><td>link</td><td>string</td><td>URL to redirect when clicked</td></tr>
+                <tr><td>is_active</td><td>boolean</td><td>Whether ad is currently active</td></tr>
+                <tr><td>start_date</td><td>datetime</td><td>Campaign start date (optional)</td></tr>
+                <tr><td>end_date</td><td>datetime</td><td>Campaign end date (optional)</td></tr>
+            </table>
+        </div>
+
+        <!-- Privacy Considerations -->
+        <div class="card">
+            <h2>🔒 Privacy Considerations</h2>
+            <ul style="margin-left: 1.5rem;">
+                <li style="margin: 0.5rem 0;">IP addresses are stored but not exposed through the API</li>
+                <li style="margin: 0.5rem 0;">User tracking IDs are randomly generated UUIDs</li>
+                <li style="margin: 0.5rem 0;">Personal information is only associated when users are logged in</li>
+                <li style="margin: 0.5rem 0;">Tracking data is scoped to individual vendor stores</li>
+            </ul>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="card">
+            <h2>💡 Best Practices</h2>
+            <h3>For Ads</h3>
+            <ul style="margin-left: 1.5rem;">
+                <li style="margin: 0.5rem 0;"><strong>Cache ads locally</strong> - Don't fetch on every page load</li>
+                <li style="margin: 0.5rem 0;"><strong>Handle missing images</strong> - Show fallback for broken images</li>
+                <li style="margin: 0.5rem 0;"><strong>Track impressions</strong> - Log when ads are displayed</li>
+                <li style="margin: 0.5rem 0;"><strong>Track clicks</strong> - Log when ads are clicked</li>
+                <li style="margin: 0.5rem 0;"><strong>Respect timing</strong> - Don't show expired campaigns</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><a href="/docs/">← Back to API Documentation</a></p>
+        <p>📧 api-support@comersify.com | © 2024 Comersify</p>
+    </div>
+</body>
+</html>

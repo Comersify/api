@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication API - Comersify</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        
+        .header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; }
+        .breadcrumb { margin-top: 1rem; }
+        .breadcrumb a { color: #94a3b8; text-decoration: none; }
+        .breadcrumb a:hover { color: white; }
+        
+        .nav { margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav a {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .nav a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
+        .card h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+        .card h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--text-muted); }
+        
+        .endpoint {
+            background: var(--bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+        .method-post { background: #dcfce7; color: #15803d; }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-put { background: #fef3c7; color: #b45309; }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            margin: 0.75rem 0;
+        }
+        .code-block .key { color: #93c5fd; }
+        .code-block .string { color: #86efac; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); font-weight: 600; }
+        code { background: var(--bg); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🔐 Authentication & User API</h1>
+            <p>Complete documentation for user authentication, registration, and account management</p>
+            <div class="breadcrumb">
+                <a href="/docs/">← Back to Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#signup">Sign Up</a>
+            <a href="#login">Login</a>
+            <a href="#refresh">Refresh Token</a>
+            <a href="#settings">Settings</a>
+            <a href="#stores">Stores</a>
+            <a href="#password">Password</a>
+        </nav>
+
+        <!-- Sign Up -->
+        <div class="card" id="signup">
+            <h2>Sign Up</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/signup/</code>
+                <p>Create a new customer account</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"firstName"</span>: <span class="string">"John"</span>,
+<span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
+<span class="key">"email"</span>: <span class="string">"john@example.com"</span>,
+<span class="key">"phoneNumber"</span>: <span class="string">"+1234567890"</span>,
+<span class="key">"password"</span>: <span class="string">"securepassword"</span>,
+<span class="key">"passwordConfermation"</span>: <span class="string">"securepassword"</span>
+}
+            </div>
+
+            <h4>Parameters</h4>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>firstName</td><td>string</td><td>User's first name</td></tr>
+                <tr><td>lastName</td><td>string</td><td>User's last name</td></tr>
+                <tr><td>email</td><td>string</td><td>Valid email address</td></tr>
+                <tr><td>phoneNumber</td><td>string</td><td>Contact phone number</td></tr>
+                <tr><td>password</td><td>string</td><td>Account password (min 8 chars)</td></tr>
+                <tr><td>passwordConfermation</td><td>string</td><td>Must match password</td></tr>
+            </table>
+        </div>
+
+        <!-- Sign Up with Provider -->
+        <div class="card" id="provider">
+            <h2>Sign Up with Provider</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/signup/{provider}/</code>
+                <p>Sign up using a third-party provider (Google)</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"token"</span>: <span class="string">"google-oauth-token"</span>,
+<span class="key">"userType"</span>: <span class="string">"CUSTOMER"</span>
+}
+            </div>
+
+            <h4>Supported Providers</h4>
+            <table>
+                <tr><th>Provider</th><th>Description</th></tr>
+                <tr><td><code>google</code></td><td>Google OAuth sign up</td></tr>
+            </table>
+        </div>
+
+        <!-- Login -->
+        <div class="card" id="login">
+            <h2>Login</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/login/</code>
+                <p>Login with email and password</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"username"</span>: <span class="string">"john@example.com"</span>,
+<span class="key">"password"</span>: <span class="string">"securepassword"</span>
+}
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"name"</span>: <span class="string">"John Doe"</span>,
+<span class="key">"image"</span>: <span class="string">"https://..."</span>
+}
+            </div>
+        </div>
+
+        <!-- Refresh Token -->
+        <div class="card" id="refresh">
+            <h2>Refresh Token</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/refresh-token/</code>
+                <p>Get a new access token using refresh token</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"refresh"</span>: <span class="string">"your-refresh-token"</span>
+}
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"access"</span>: <span class="string">"new-access-token"</span>,
+<span class="key">"refresh"</span>: <span class="string">"new-refresh-token"</span>
+}
+            </div>
+        </div>
+
+        <!-- User Settings -->
+        <div class="card" id="settings">
+            <h2>User Settings</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/settings/</code>
+                <p>Get current user's settings (Auth required)</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"data"</span>: {
+    <span class="key">"first_name"</span>: <span class="string">"John"</span>,
+    <span class="key">"last_name"</span>: <span class="string">"Doe"</span>,
+    <span class="key">"email"</span>: <span class="string">"john@example.com"</span>,
+    <span class="key">"phone_number"</span>: <span class="string">"+1234567890"</span>,
+    <span class="key">"image"</span>: <span class="string">"https://..."</span>
+}
+}
+            </div>
+
+            <div class="endpoint" style="margin-top: 2rem;">
+                <span class="method method-post">POST</span>
+                <code>/settings/update/</code>
+                <p>Update user settings (Auth required)</p>
+            </div>
+
+            <h3>Request Body (all optional)</h3>
+            <div class="code-block">
+{
+<span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+<span class="key">"lastName"</span>: <span class="string">"Smith"</span>,
+<span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
+<span class="key">"phoneNumber"</span>: <span class="string">"+0987654321"</span>,
+<span class="key">"oldPassword"</span>: <span class="string">"current-password"</span>,
+<span class="key">"password"</span>: <span class="string">"new-password"</span>,
+<span class="key">"passwordConfermation"</span>: <span class="string">"new-password"</span>,
+<span class="key">"file"</span>: <span class="string">"profile-image"</span>
+}
+            </div>
+        </div>
+
+        <!-- Store Management -->
+        <div class="card" id="stores">
+            <h2>Store Management</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/store/{id}/</code>
+                <p>Get store details by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/stores/top/</code>
+                <p>Get list of top-performing stores</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/customers/</code>
+                <p>Get list of customers (Vendor/Admin only)</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/reviews/</code>
+                <p>Get recent app reviews</p>
+            </div>
+        </div>
+
+        <!-- Password Reset -->
+        <div class="card" id="password">
+            <h2>Password Management</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/reset-password/</code>
+                <p>Request password reset email</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"email"</span>: <span class="string">"john@example.com"</span>
+}
+            </div>
+        </div>
+
+        <!-- Error Responses -->
+        <div class="card">
+            <h2>Error Responses</h2>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"error"</span>,
+<span class="key">"message"</span>: <span class="string">"Error description"</span>
+}
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="card">
+            <h2>Authentication</h2>
+            <p>Most endpoints require JWT authentication:</p>
+            <div class="code-block">
+Authorization: Bearer <span class="string">&lt;access_token&gt;</span>
+            </div>
+            <p style="margin-top: 1rem; color: var(--text-muted);">Public endpoints: Sign Up, Login, Reset Password</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><a href="/docs/">← Back to API Documentation</a></p>
+        <p>📧 api-support@comersify.com | © 2024 Comersify</p>
+    </div>
+</body>
+</html>

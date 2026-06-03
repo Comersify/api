@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +32,16 @@ urlpatterns = [
     path("site/", include("website.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve documentation HTML files from /docs/ path
+docs_dir = os.path.join(settings.BASE_DIR, 'templates', 'docs')
+if os.path.exists(docs_dir):
+    # Serve individual HTML doc pages
+    html_files = ['authentication.html', 'products.html', 'cart-orders.html', 'wishlist.html', 'tracking-ads.html']
+    for html_file in html_files:
+        file_path = os.path.join(docs_dir, html_file)
+        if os.path.exists(file_path):
+            urlpatterns.append(path(f'docs/{html_file}', TemplateView.as_view(template_name=f'docs/{html_file}')))
+    
+    # Serve the index
+    urlpatterns.append(path('docs/', TemplateView.as_view(template_name='docs/index.html')))

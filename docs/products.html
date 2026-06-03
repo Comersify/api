@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products API - Comersify</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        
+        .header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; }
+        .breadcrumb { margin-top: 1rem; }
+        .breadcrumb a { color: #94a3b8; text-decoration: none; }
+        .breadcrumb a:hover { color: white; }
+        
+        .nav { margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav a {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .nav a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
+        .card h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+        .card h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--text-muted); }
+        
+        .endpoint {
+            background: var(--bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+        .method-post { background: #dcfce7; color: #15803d; }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-put { background: #fef3c7; color: #b45309; }
+        .method-delete { background: #fee2e2; color: #b91c1c; }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            margin: 0.75rem 0;
+        }
+        .code-block .key { color: #93c5fd; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); font-weight: 600; }
+        code { background: var(--bg); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-vendor { background: #fce7f3; color: #9d174d; }
+        .badge-auth { background: #fef3c7; color: #92400e; }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>📦 Products & Categories API</h1>
+            <p>Complete documentation for product management, categories, and variants</p>
+            <div class="breadcrumb">
+                <a href="/docs/">← Back to Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#products">Products</a>
+            <a href="#categories">Categories</a>
+            <a href="#attributes">Attributes</a>
+            <a href="#variants">Variants</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#coupons">Coupons</a>
+        </nav>
+
+        <!-- Products -->
+        <div class="card" id="products">
+            <h2>Products</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/v2/products/</code>
+                <span class="badge badge-auth">Auth</span>
+                <p>List all products with pagination and filtering</p>
+            </div>
+
+            <h4>Query Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>page</td><td>integer</td><td>Page number for pagination</td></tr>
+                <tr><td>category</td><td>integer</td><td>Filter by category ID</td></tr>
+                <tr><td>search</td><td>string</td><td>Search term</td></tr>
+            </table>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/v2/products/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new product</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"title"</span>: <span class="string">"Premium Headphones"</span>,
+<span class="key">"description"</span>: <span class="string">"High-quality wireless headphones"</span>,
+<span class="key">"price"</span>: <span class="number">199.99</span>,
+<span class="key">"buy_price"</span>: <span class="number">149.99</span>,
+<span class="key">"in_stock"</span>: <span class="number">100</span>,
+<span class="key">"category"</span>: <span class="number">1</span>,
+<span class="key">"attributes"</span>: [
+    {
+        <span class="key">"attribute"</span>: <span class="number">1</span>,
+        <span class="key">"values"</span>: [<span class="number">1</span>, <span class="number">2</span>]
+    }
+]
+}
+            </div>
+
+            <div class="endpoint" style="margin-top: 1.5rem;">
+                <span class="method method-get">GET</span>
+                <code>/v2/products/{id}/</code>
+                <p>Get product details</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <code>/v2/products/{id}/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Update product</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <code>/v2/products/{id}/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Delete product</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/products/id/{id}/</code>
+                <p>Get product by ID (alternative)</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/products/super-deals/</code>
+                <p>Get products with special deals/discounts</p>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="card" id="categories">
+            <h2>Categories</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/v2/categories/</code>
+                <p>List all categories</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/v2/categories/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new category</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"name"</span>: <span class="string">"Electronics"</span>,
+<span class="key">"parent"</span>: <span class="number">null</span>
+}
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/categories/top/</code>
+                <p>Get hot/popular categories</p>
+            </div>
+        </div>
+
+        <!-- Attributes -->
+        <div class="card" id="attributes">
+            <h2>Attributes</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/v2/attributes/</code>
+                <p>List all attributes</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/v2/attributes/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new attribute</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"name"</span>: <span class="string">"Color"</span>
+}
+            </div>
+
+            <h3 style="margin-top: 1.5rem;">Attribute Values</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/v2/attribute-values/</code>
+                <p>List all attribute values</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/v2/attribute-values/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new attribute value</p>
+            </div>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+<span class="key">"attribute"</span>: <span class="number">1</span>,
+<span class="key">"value"</span>: <span class="string">"Red"</span>
+}
+            </div>
+        </div>
+
+        <!-- Variants -->
+        <div class="card" id="variants">
+            <h2>Product Variants</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/v2/variants/</code>
+                <p>List all product variants</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/v2/variants/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new product variant</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"product"</span>: <span class="number">1</span>,
+<span class="key">"attributes"</span>: [<span class="number">1</span>, <span class="number">3</span>]
+}
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="card" id="reviews">
+            <h2>Reviews</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/reviews/{id}</code>
+                <p>Get product reviews by product ID</p>
+            </div>
+        </div>
+
+        <!-- Vendor Dashboard -->
+        <div class="card" id="vendor">
+            <h2>Vendor Dashboard</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/dashboard/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Get vendor dashboard statistics</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/vendor/products/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>List vendor's products</p>
+            </div>
+        </div>
+
+        <!-- Coupons -->
+        <div class="card" id="coupons">
+            <h2>Coupons & Discounts</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/vendor/coupons/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>List vendor's coupons</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/vendor/coupons/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new coupon</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"product"</span>: <span class="number">1</span>,
+<span class="key">"code"</span>: <span class="string">"SUMMER20"</span>,
+<span class="key">"value"</span>: <span class="number">20</span>,
+<span class="key">"end_date"</span>: <span class="string">"2024-12-31"</span>
+}
+            </div>
+
+            <h3 style="margin-top: 1.5rem;">Discounts</h3>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/vendor/discounts/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>List vendor's discounts</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/vendor/discounts/</code>
+                <span class="badge badge-vendor">Vendor</span>
+                <p>Create a new discount</p>
+            </div>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+<span class="key">"product"</span>: <span class="number">1</span>,
+<span class="key">"discounted_price"</span>: <span class="number">79.99</span>,
+<span class="key">"end_date"</span>: <span class="string">"2024-12-31"</span>
+}
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><a href="/docs/">← Back to API Documentation</a></p>
+        <p>📧 api-support@comersify.com | © 2024 Comersify</p>
+    </div>
+</body>
+</html>

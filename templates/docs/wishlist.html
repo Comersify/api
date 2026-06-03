@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist API - Comersify</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        
+        .header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; }
+        .breadcrumb { margin-top: 1rem; }
+        .breadcrumb a { color: #94a3b8; text-decoration: none; }
+        .breadcrumb a:hover { color: white; }
+        
+        .nav { margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav a {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .nav a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
+        .card h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+        
+        .endpoint {
+            background: var(--bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+        .method-post { background: #dcfce7; color: #15803d; }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            margin: 0.75rem 0;
+        }
+        .code-block .key { color: #93c5fd; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+        
+        code { background: var(--bg); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .example-box {
+            background: var(--bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>❤️ Wishlist API</h1>
+            <p>Complete documentation for user wishlist management</p>
+            <div class="breadcrumb">
+                <a href="/docs/">← Back to Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#get-wishlist">Get Wishlist</a>
+            <a href="#check-item">Check Item</a>
+            <a href="#add-item">Add Item</a>
+            <a href="#remove-item">Remove Item</a>
+        </nav>
+
+        <!-- Get Wishlist -->
+        <div class="card" id="get-wishlist">
+            <h2>Get Wishlist</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/wish-list/products/</code>
+                <span class="badge">Auth</span>
+                <p>Get current user's wishlist items</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"data"</span>: {
+    <span class="key">"wishlists"</span>: [
+        {
+            <span class="key">"id"</span>: <span class="number">1</span>,
+            <span class="key">"product"</span>: {
+                <span class="key">"id"</span>: <span class="number">42</span>,
+                <span class="key">"title"</span>: <span class="string">"Premium Headphones"</span>,
+                <span class="key">"price"</span>: <span class="number">199.99</span>,
+                <span class="key">"image"</span>: <span class="string">"https://cdn.comersify.com/products/headphones.jpg"</span>,
+                <span class="key">"description"</span>: <span class="string">"High-quality wireless headphones"</span>
+            },
+            <span class="key">"created_at"</span>: <span class="string">"2024-01-15T10:30:00Z"</span>
+        }
+    ],
+    <span class="key">"count"</span>: <span class="number">1</span>
+}
+}
+            </div>
+        </div>
+
+        <!-- Check Item -->
+        <div class="card" id="check-item">
+            <h2>Check Product in Wishlist</h2>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <code>/wish-list/has-product/{id}/</code>
+                <span class="badge">Auth</span>
+                <p>Check if a product is in the user's wishlist</p>
+            </div>
+
+            <h3>Response (In Wishlist)</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"inWishList"</span>: <span class="number">true</span>
+}
+            </div>
+
+            <h3>Response (Not in Wishlist)</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"inWishList"</span>: <span class="number">false</span>
+}
+            </div>
+        </div>
+
+        <!-- Add Item -->
+        <div class="card" id="add-item">
+            <h2>Add to Wishlist</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/wish-list/add-product/</code>
+                <span class="badge">Auth</span>
+                <p>Add a product to the wishlist</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"product_id"</span>: <span class="number">42</span>
+}
+            </div>
+
+            <h3>Example cURL</h3>
+            <div class="code-block">
+curl -X POST https://api.comersify.com/wish-list/add-product/ \
+  -H <span class="string">"Authorization: Bearer &lt;token&gt;"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '<span class="string">'{"product_id": 42}'</span>'
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"message"</span>: <span class="string">"Product added to wishlist"</span>
+}
+            </div>
+        </div>
+
+        <!-- Remove Item -->
+        <div class="card" id="remove-item">
+            <h2>Remove from Wishlist</h2>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <code>/wish-list/delete-product/</code>
+                <span class="badge">Auth</span>
+                <p>Remove a product from the wishlist</p>
+            </div>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+{
+<span class="key">"product_id"</span>: <span class="number">42</span>
+}
+            </div>
+
+            <h3>Response</h3>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"success"</span>,
+<span class="key">"message"</span>: <span class="string">"Product removed from wishlist"</span>
+}
+            </div>
+        </div>
+
+        <!-- Implementation Examples -->
+        <div class="card">
+            <h2>Implementation Examples</h2>
+            
+            <h3>JavaScript - Add to Wishlist</h3>
+            <div class="code-block">
+async function addToWishlist(productId) {
+    const response = await fetch('/wish-list/add-product/', {
+        method: 'POST',
+        headers: {
+            <span class="key">'Authorization'</span>: <span class="string">`Bearer ${accessToken}`</span>,
+            <span class="key">'Content-Type'</span>: <span class="string">'application/json'</span>
+        },
+        body: JSON.stringify({ product_id: productId })
+    });
+    
+    const data = await response.json();
+    if (data.type === 'success') {
+        updateWishlistIcon(true);
+        showNotification('Added to wishlist!');
+    }
+}
+            </div>
+
+            <h3>React Component</h3>
+            <div class="code-block">
+const WishlistButton = ({ productId, isInWishlist }) => {
+    const handleClick = async () => {
+        const endpoint = isInWishlist 
+            ? '/wish-list/delete-product/' 
+            : '/wish-list/add-product/';
+        
+        await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                <span class="key">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>,
+                <span class="key">'Content-Type'</span>: <span class="string">'application/json'</span>
+            },
+            body: JSON.stringify({ product_id: productId })
+        });
+    };
+
+    return (
+        &lt;button onClick={handleClick}&gt;
+            {isInWishlist ? '❤️' : '🤍'}
+        &lt;/button&gt;
+    );
+};
+            </div>
+        </div>
+
+        <!-- Error Responses -->
+        <div class="card">
+            <h2>Error Responses</h2>
+            <div class="code-block">
+{
+<span class="key">"type"</span>: <span class="string">"error"</span>,
+<span class="key">"message"</span>: <span class="string">"Error description"</span>
+}
+            </div>
+            <h3>Common Error Messages</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <tr><th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Error</th><th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Description</th></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border);">Product not found</td><td style="padding: 0.5rem; border: 1px solid var(--border);">Product with given ID doesn't exist</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border);">Product already in wishlist</td><td style="padding: 0.5rem; border: 1px solid var(--border);">Product was already added</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border);">Product not in wishlist</td><td style="padding: 0.5rem; border: 1px solid var(--border);">Tried to remove non-existent item</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border);">Authentication required</td><td style="padding: 0.5rem; border: 1px solid var(--border);">No valid token provided</td></tr>
+            </table>
+        </div>
+
+        <!-- Notes -->
+        <div class="card">
+            <h2>Notes</h2>
+            <ul style="margin-left: 1.5rem;">
+                <li style="margin: 0.5rem 0;"><strong>User-specific</strong> - Wishlist is tied to authenticated user</li>
+                <li style="margin: 0.5rem 0;"><strong>No duplicates</strong> - Adding same product twice doesn't create duplicates</li>
+                <li style="margin: 0.5rem 0;"><strong>Cascade delete</strong> - Removing product from platform also removes from wishlists</li>
+                <li style="margin: 0.5rem 0;"><strong>Real-time sync</strong> - Changes reflect immediately across devices</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><a href="/docs/">← Back to API Documentation</a></p>
+        <p>📧 api-support@comersify.com | © 2024 Comersify</p>
+    </div>
+</body>
+</html>
