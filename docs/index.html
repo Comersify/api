@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comersify API Documentation</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; font-size: 1.1rem; }
+        .version-badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+        
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--card);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            padding: 0.5rem 1rem;
+            background: var(--bg);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav a:hover { background: var(--primary); color: white; }
+        
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+        .card h3 { font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-icon { font-size: 1.5rem; }
+        .card ul { list-style: none; }
+        .card li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+        .card li:last-child { border-bottom: none; }
+        .method {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-post { background: #dcfce7; color: #15803d; }
+        .method-put { background: #fef3c7; color: #b45309; }
+        .method-delete { background: #fee2e2; color: #b91c1c; }
+        
+        /* Table */
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .endpoint-table th, .endpoint-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .endpoint-table th { background: var(--bg); font-weight: 600; }
+        .endpoint-table tr:hover { background: var(--bg); }
+        code {
+            background: var(--bg);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Sections */
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.75rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); }
+        
+        /* Response Format */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+        }
+        .code-block .key { color: #93c5fd; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+        
+        /* Auth badge */
+        .auth-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .auth-required { background: #fef3c7; color: #92400e; }
+        .auth-vendor { background: #fce7f3; color: #9d174d; }
+        .auth-none { background: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ Comersify API</h1>
+        <p>Complete API documentation for the Comersify e-commerce platform</p>
+        <span class="version-badge">v2.0</span>
+    </div>
+
+    <div class="container">
+        <!-- Quick Links -->
+        <nav class="nav">
+            <a href="#authentication">🔐 Auth</a>
+            <a href="#products">📦 Products</a>
+            <a href="#cart">🛒 Cart</a>
+            <a href="#orders">📋 Orders</a>
+            <a href="#wishlist">❤️ Wishlist</a>
+            <a href="#tracking">📊 Tracking</a>
+            <a href="#vendor">🏪 Vendor</a>
+            <a href="#docs">📚 Docs</a>
+        </nav>
+
+        <!-- Base URL -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3><span class="card-icon">🌐</span> Base URLs</h3>
+            <p><strong>Production:</strong> <code>https://api.comersify.com</code></p>
+            <p><strong>Development:</strong> <code>http://localhost:8000</code></p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="section" id="authentication">
+            <h2>🔐 Authentication & Users</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/signup/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create new account</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/login/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Login with credentials</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/refresh-token/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Refresh JWT token</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/settings/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get user settings</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/settings/update/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Update user settings</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/store/{id}/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get store details</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/stores/top/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get top stores</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Products Section -->
+        <div class="section" id="products">
+            <h2>📦 Products & Categories</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/v2/products/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>List all products</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/products/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create product</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/products/{id}/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get product details</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/products/{id}/</code></td>
+                        <td><span class="method method-put">PUT</span></td>
+                        <td>Update product</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/products/{id}/</code></td>
+                        <td><span class="method method-delete">DELETE</span></td>
+                        <td>Delete product</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/products/super-deals/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get deal products</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/categories/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>List categories</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/v2/categories/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create category</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/reviews/{id}</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get product reviews</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cart Section -->
+        <div class="section" id="cart">
+            <h2>🛒 Cart</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/cart/products/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get cart contents</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/cart/add-product/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Add product to cart</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/cart/delete-product/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Remove from cart</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/cart/update-product/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Update quantity</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/cart/apply-coupon/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Apply coupon</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="section" id="orders">
+            <h2>📋 Orders</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/my-orders/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get customer orders</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/order/create/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create order from cart</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/one-seller/order/create/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Direct order</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/orders/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get vendor orders</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/orders/</code></td>
+                        <td><span class="method method-put">PUT</span></td>
+                        <td>Update order status</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/analytics/orders/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Order analytics</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Wishlist Section -->
+        <div class="section" id="wishlist">
+            <h2>❤️ Wishlist</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/wish-list/products/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get wishlist</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/wish-list/has-product/{id}/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Check product in wishlist</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/wish-list/add-product/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Add to wishlist</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/wish-list/delete-product/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Remove from wishlist</td>
+                        <td><span class="auth-badge auth-required">Yes</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tracking Section -->
+        <div class="section" id="tracking">
+            <h2>📊 Tracking & Analytics</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/tracking/visits/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Visit statistics</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/tracking/behavior/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>User behavior</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/ads/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get active ads</td>
+                        <td><span class="auth-badge auth-none">No</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Vendor Section -->
+        <div class="section" id="vendor">
+            <h2>🏪 Vendor Dashboard</h2>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/dashboard/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Dashboard data</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/products/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Vendor products</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/coupons/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>List coupons</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/coupons/</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create coupon</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>/vendor/discounts/</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>List discounts</td>
+                        <td><span class="auth-badge auth-vendor">Vendor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Response Format -->
+        <div class="section" id="docs">
+            <h2>📚 Documentation Files</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3><span class="card-icon">📖</span> README</h3>
+                    <ul>
+                        <li>Complete API overview</li>
+                        <li>Quick start guide</li>
+                        <li>All endpoints by category</li>
+                        <li>Error codes & rate limits</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="README.md">Open README.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">⚡</span> Quick Reference</h3>
+                    <ul>
+                        <li>All endpoints at a glance</li>
+                        <li>Common headers</li>
+                        <li>Status codes</li>
+                        <li>Example requests</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="QUICK_REFERENCE.md">Open QUICK_REFERENCE.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">📄</span> USER_API.md</h3>
+                    <ul>
+                        <li>Authentication flows</li>
+                        <li>User registration</li>
+                        <li>Token refresh</li>
+                        <li>Settings management</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="USER_API.md">Open USER_API.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">📦</span> PRODUCT_API.md</h3>
+                    <ul>
+                        <li>Product CRUD</li>
+                        <li>Categories</li>
+                        <li>Variants & Attributes</li>
+                        <li>Coupons & Discounts</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="PRODUCT_API.md">Open PRODUCT_API.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">🛒</span> CART_API.md</h3>
+                    <ul>
+                        <li>View cart</li>
+                        <li>Add/remove items</li>
+                        <li>Apply coupons</li>
+                        <li>Update quantities</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="CART_API.md">Open CART_API.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">📋</span> ORDER_API.md</h3>
+                    <ul>
+                        <li>Create orders</li>
+                        <li>Order status</li>
+                        <li>Vendor management</li>
+                        <li>Analytics</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="ORDER_API.md">Open ORDER_API.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">❤️</span> WISHLIST_API.md</h3>
+                    <ul>
+                        <li>Get wishlist</li>
+                        <li>Add/remove items</li>
+                        <li>Check product status</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="WISHLIST_API.md">Open WISHLIST_API.md →</a></p>
+                </div>
+                <div class="card">
+                    <h3><span class="card-icon">📊</span> TRACKING_API.md</h3>
+                    <ul>
+                        <li>Visitor tracking</li>
+                        <li>Analytics</li>
+                        <li>Behavior data</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="TRACKING_API.md">Open TRACKING_API.md →</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Format -->
+        <div class="section">
+            <h2>📝 Response Format</h2>
+            <div class="code-block">
+<span class="key">"type"</span>: <span class="string">"success"</span>  <span class="comment">// or "error"</span>
+<span class="key">"data"</span>: { ... }  <span class="comment">// Response data</span>
+<span class="key">"message"</span>: <span class="string">"Optional message"</span>
+            </div>
+            <br>
+            <h3>Headers</h3>
+            <div class="code-block">
+Authorization: Bearer <span class="string">&lt;access_token&gt;</span>
+Content-Type: application/json
+X-COMERCIFY-VISITOR: <span class="string">&lt;tracker_id&gt;</span>
+Origin: <span class="string">https://domain.com</span>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="section">
+            <h2>🎛️ Admin Dashboard</h2>
+            <div class="card">
+                <h3><span class="card-icon">⚡</span> Admin Dashboard</h3>
+                <p>Access the admin dashboard at: <code>/admin/</code></p>
+                <ul style="margin-top: 1rem;">
+                    <li>🎨 Modern shadcn/ui design</li>
+                    <li>🌙 Dark mode toggle</li>
+                    <li>📱 Responsive layout</li>
+                    <li>⚡ Quick actions panel</li>
+                    <li>📈 System status indicators</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>📧 <strong>api-support@comersify.com</strong></p>
+        <p>🐙 <strong>github.com/Comersify/api</strong></p>
+        <p style="margin-top: 1rem;">© 2024 Comersify. All rights reserved.</p>
+    </div>
+</body>
+</html>
