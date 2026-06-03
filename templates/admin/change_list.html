@@ -1,0 +1,157 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} - {% trans 'Django Admin' %}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="header-breadcrumb-separator">/</span>
+<span class="header-breadcrumb-current">{{ cl.opts.verbose_name_plural|title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ cl.opts.verbose_name_plural|title }}</h1>
+        {% if cl.result_count > 0 %}
+        <p class="page-subtitle">{{ cl.result_count }} {% trans 'total' %}</p>
+        {% endif %}
+    </div>
+    <div class="object-tools">
+        {% for button in object_tools %}
+        <a href="{{ button.url }}" class="btn btn-primary">{{ button.label }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    {% if cl.has_filters %}
+    <div class="card-header">
+        <div class="filters-bar">
+            <div class="filter-group">
+                <span class="filter-label">{% trans 'Filter' %}</span>
+                <div class="filter-options">
+                    {% for spec in cl.filter_specs %}
+                    <a href="?" class="filter-chip {% if spec.selected %}active{% endif %}">
+                        {{ spec.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form id="changelist-form" method="post">
+        {% csrf_token %}
+        
+        <div class="action-bar">
+            <select name="action" aria-label="{% trans 'Action' %}">
+                <option value="">---------</option>
+                <option value="delete_selected">{% trans 'Delete selected' %}</option>
+            </select>
+            <button type="submit" class="btn btn-secondary">{% trans 'Go' %}</button>
+            <span class="actions-count">{{ result_count }} {% trans 'items' %}</span>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table" id="result_list">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell">
+                            <input type="checkbox" class="row-checkbox" id="action-toggle" aria-label="Select all">
+                        </th>
+                        {% for header in result_headers %}
+                        <th {{ header.class_attrib }}>
+                            {{ header.text }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    {% if result.form %}{{ result.form }}{% else %}
+                    <tr class="row-{% cycle 'odd' 'even' %}">
+                        <td class="checkbox-cell">
+                            <input type="checkbox" name="_selected_action" value="{{ result.pk }}" class="row-checkbox action-checkbox">
+                        </td>
+                        {% for item in result %}
+                        <td>{{ item }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    {% if pagination_info.has_next or pagination_info.has_previous %}
+    <div class="pagination">
+        <span class="pagination-info">
+            {% blocktrans with start=pagination_info.start_index end=pagination_info.end_index total=pagination_info.total_count %}Showing {{ start }} to {{ end }} of {{ total }} entries{% endblocktrans %}
+        </span>
+        <div class="pagination-controls">
+            {% if pagination_info.has_previous %}
+            <a href="?p={{ pagination_info.previous_page }}" class="pagination-link">‹</a>
+            {% else %}
+            <span class="pagination-link disabled">‹</span>
+            {% endif %}
+            
+            {% for page in pagination_info.page_range %}
+            <a href="?p={{ page }}" class="pagination-link {% if page == pagination_info.current_page %}active{% endif %}">{{ page }}</a>
+            {% endfor %}
+            
+            {% if pagination_info.has_next %}
+            <a href="?p={{ pagination_info.next_page }}" class="pagination-link">›</a>
+            {% else %}
+            <span class="pagination-link disabled">›</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.module-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    padding: 1.25rem;
+}
+.module-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+.module-icon { font-size: 1.25rem; }
+.module-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+.module-list { display: flex; flex-direction: column; gap: 0.25rem; }
+.module-item {
+    display: flex;
+    align-items: center;
+}
+.module-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    width: 100%;
+    transition: all 0.15s;
+}
+.module-item-link:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--primary));
+}
+</style>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Django Admin Dashboard' %}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="header-breadcrumb-separator">/</span>
+<span class="header-breadcrumb-current">{% trans 'Dashboard' %}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{% trans 'Dashboard' %}</h1>
+        <p class="page-subtitle">{% trans 'Welcome back! Here\'s what\'s happening with your store.' %}</p>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    {% for app in available_apps %}
+    <div class="card stat-card animate-fade-in stagger-{{ forloop.counter }}">
+        <div class="card-content">
+            <div class="stat-header">
+                <div class="stat-icon primary">📊</div>
+            </div>
+            <div class="stat-value">{{ app.models|length }}</div>
+            <div class="stat-label">{{ app.name }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- App Modules Grid -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans 'Applications' %}</h2>
+        <p class="card-description">{% trans 'Manage your store applications and models' %}</p>
+    </div>
+    <div class="card-content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+            {% for app in available_apps %}
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-icon">📦</span>
+                    <span class="module-title">{{ app.name }}</span>
+                </div>
+                <div class="module-list">
+                    {% for model in app.models %}
+                    <div class="module-item">
+                        <a href="{{ model.admin_url }}" class="module-item-link">{{ model.name }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.module-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    padding: 1.25rem;
+}
+.module-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+.module-icon { font-size: 1.25rem; }
+.module-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+.module-list { display: flex; flex-direction: column; gap: 0.25rem; }
+.module-item {
+    display: flex;
+    align-items: center;
+}
+.module-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    width: 100%;
+    transition: all 0.15s;
+}
+.module-item-link:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--primary));
+}
+</style>
+{% endblock %}
