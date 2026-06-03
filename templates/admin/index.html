@@ -7,18 +7,5 @@
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'admin/css/shadcn-admin.css' %}">
 <link rel="stylesheet" href="{% static 'admin/css/admin-dashboard.css' %}">
-{% endblock %}
-
-{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
-
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-</div>
-{% endblock %}
-
-{% block content %}
-<div id="content" class="dashboard-content">
-    {{ block.super }}
-</div>
+<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
 {% endblock %}

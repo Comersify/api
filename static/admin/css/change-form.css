@@ -1,0 +1,368 @@
+/* Change form styling */
+
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .form-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Main form */
+.django-admin-form {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* Fieldsets */
+.django-admin-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.django-admin-form fieldset:last-of-type {
+    border-bottom: none;
+}
+
+.django-admin-form fieldset.module {
+    background: var(--bg-secondary);
+    border: none;
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1rem;
+    margin: 0;
+}
+
+.django-admin-form fieldset.module h2 {
+    background: transparent;
+    padding: 0;
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border: none;
+}
+
+.django-admin-form fieldset.module caption {
+    background: transparent;
+    padding: 0;
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border: none;
+    caption-side: top;
+}
+
+/* Form rows */
+.form-row {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+.form-row label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    padding-top: 0.25rem;
+}
+
+.form-row .readonly {
+    background: var(--bg-tertiary);
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Form inputs */
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="number"],
+.form-row input[type="url"],
+.form-row input[type="search"],
+.form-row input[type="tel"],
+.form-row input[type="date"],
+.form-row input[type="datetime-local"],
+.form-row textarea,
+.form-row select {
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* File input */
+.form-row input[type="file"] {
+    padding: 0.5rem 0;
+}
+
+/* Checkbox/radio */
+.form-row input[type="checkbox"],
+.form-row input[type="radio"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+/* Help text */
+.form-row p.help {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Error messages */
+.errorlist {
+    list-style: none;
+    margin: 0.5rem 0 0 0;
+    padding: 0;
+}
+
+.errorlist li {
+    color: var(--destructive);
+    font-size: 0.875rem;
+    padding: 0.375rem 0;
+}
+
+.form-row.errors {
+    background: #fef2f2;
+    padding: 1rem;
+    border-radius: var(--radius);
+}
+
+/* Submit row */
+.submit-row {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-top: 1px solid var(--border-primary);
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.submit-row input[type="submit"] {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.submit-row input[type="submit"]:hover {
+    background: var(--accent-hover);
+}
+
+.submit-row .deletelink-box {
+    margin-left: auto;
+}
+
+.submit-row .deletelink-box a {
+    background: var(--destructive);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.submit-row .deletelink-box a:hover {
+    background: #dc2626;
+}
+
+/* Object-tools (buttons above form) */
+.object-tools {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.object-tools a,
+.object-tools input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.object-tools a:hover,
+.object-tools input[type="submit"]:hover {
+    background: var(--accent-hover);
+}
+
+/* Sidebar */
+.form-sidebar {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+}
+
+.form-sidebar h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+/* Inline forms */
+.inline-group {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.inline-group .module {
+    background: var(--bg-tertiary);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.inline-group table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inline-group thead th {
+    background: var(--bg-secondary);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.inline-group tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.inline-group tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.inline-group .add-row {
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+}
+
+.inline-group .add-row a {
+    color: var(--accent-primary);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.inline-group .add-row a:hover {
+    text-decoration: underline;
+}
+
+/* Delete confirmation */
+.deletion-confirmation {
+    background: var(--bg-primary);
+    border: 1px solid var(--destructive);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.deletion-confirmation .errornote {
+    background: #fef2f2;
+    border: 1px solid var(--destructive);
+    color: var(--destructive);
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+.deletion-confirmation ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.deletion-confirmation li {
+    margin: 0.5rem 0;
+}
+
+.deletion-confirmation form {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.deletion-confirmation input[type="submit"] {
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.deletion-confirmation input[type="submit"].deletelink {
+    background: var(--destructive);
+    color: white;
+    border: none;
+}
+
+.deletion-confirmation input[type="submit"].deletelink:hover {
+    background: #dc2626;
+}
+
+.deletion-confirmation a {
+    padding: 0.625rem 1.25rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+}

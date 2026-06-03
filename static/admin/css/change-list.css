@@ -1,0 +1,242 @@
+/* Change list styling */
+
+#changelist-wrapper {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* Results area */
+#result_list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#result_list thead th {
+    background: var(--bg-tertiary);
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+#result_list thead th.sortable a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+#result_list thead th.sortable:hover a {
+    color: var(--text-primary);
+}
+
+#result_list tbody tr {
+    transition: background 0.15s ease;
+}
+
+#result_list tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+#result_list tbody td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-primary);
+    vertical-align: middle;
+}
+
+#result_list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Action bar */
+#changelist-form > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+#changelist-form .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#changelist-form .actions label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+#changelist-form .actions select {
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--bg-primary);
+}
+
+#changelist-form .actions button {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#changelist-form .actions button:hover {
+    background: var(--bg-hover);
+}
+
+/* Search bar */
+#changelist-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#changelist-search input[type="search"] {
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    min-width: 250px;
+}
+
+#changelist-search input[type="search"]:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+#changelist-search input[type="submit"] {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#changelist-search input[type="submit"]:hover {
+    background: var(--accent-hover);
+}
+
+/* Filter sidebar */
+#changelist-filter {
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-primary);
+}
+
+#changelist-filter h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+#changelist-filter ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+#changelist-filter li {
+    margin: 0;
+}
+
+#changelist-filter li a {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+}
+
+#changelist-filter li a:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+#changelist-filter li.selected a {
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+/* Pagination */
+.paginator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-primary);
+    font-size: 0.875rem;
+}
+
+.paginator .page-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.paginator a {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.paginator a:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.paginator span.this-page {
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    font-weight: 500;
+}
+
+/* Show all link */
+.paginator .show-all {
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+/* Clear filters */
+.clear_filters {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.clear_filters:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
