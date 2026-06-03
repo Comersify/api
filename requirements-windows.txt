@@ -1,5 +1,5 @@
 # Windows-specific requirements
-# Note: cffi and some packages with C extensions may require Microsoft Visual C++ Build Tools
+# Note: Some packages may require Microsoft Visual C++ Build Tools
 # Get it from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
 
 amqp==5.1.1
@@ -71,7 +71,7 @@ service-identity==21.1.0
 six==1.16.0
 soupsieve==2.4.1
 sqlparse==0.5.0
-Twisted==23.10.0
+Twisted==24.3.0
 txaio==23.1.1
 typing_extensions==4.6.2
 tzdata==2023.3
