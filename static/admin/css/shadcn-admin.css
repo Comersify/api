@@ -22,13 +22,154 @@
     --warning: 38 92.6% 50.2%;
 }
 
-.dark {
+html.dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
     --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 217.2 32.6% 17.5%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 217.2 91.2% 59.8%;
+}
+
+/* Dark mode body background */
+html.dark body,
+html.dark {
+    background-color: hsl(222.2 84% 4.9%);
+    color: hsl(210 40% 98%);
+}
+
+/* Dark mode specific components */
+html.dark .sidebar {
+    background-color: hsl(222.2 84% 3.9%);
+    border-right-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .sidebar-header {
+    background-color: hsl(222.2 84% 3.9%);
+    border-bottom-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .admin-header {
+    background-color: hsl(222.2 84% 3.9%);
+    border-bottom-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .card {
+    background-color: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .stat-card {
+    background-color: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .quick-action {
+    background-color: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .quick-action:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .module-item {
+    background-color: hsl(222.2 84% 3.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .module-item:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .app-list a {
+    color: hsl(210 40% 98%);
+}
+
+html.dark .app-list a:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .model-list a {
+    color: hsl(210 40% 98%);
+}
+
+html.dark .model-list a:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background-color: hsl(217.2 32.6% 17.5%);
+    border-color: hsl(217.2 32.6% 25%);
+    color: hsl(210 40% 98%);
+}
+
+html.dark .user-menu-dropdown {
+    background-color: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .user-menu-item {
+    color: hsl(210 40% 98%);
+}
+
+html.dark .user-menu-item:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .table th,
+html.dark .table td {
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .actions-bar {
+    background-color: hsl(222.2 84% 3.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .pagination {
+    background-color: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .pagination a {
+    color: hsl(210 40% 98%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .pagination a:hover {
+    background-color: hsl(217.2 32.6% 17.5%);
+}
+
+html.dark .breadcrumbs {
+    color: hsl(215.4 16.3% 56.9%);
+}
+
+html.dark .breadcrumbs a {
+    color: hsl(215.4 16.3% 56.9%);
+}
+
+html.dark .breadcrumbs a:hover {
+    color: hsl(210 40% 98%);
+}
+
+html.dark .section-title {
+    color: hsl(210 40% 98%);
+}
+
+html.dark .module-icon {
+    background-color: hsl(217.2 32.6% 17.5%);
 }
 
 *, *::before, *::after {
