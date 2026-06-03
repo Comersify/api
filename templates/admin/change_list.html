@@ -17,9 +17,15 @@
         {% endif %}
     </div>
     <div class="object-tools">
-        {% for button in object_tools %}
-        <a href="{{ button.url }}" class="btn btn-primary">{{ button.label }}</a>
-        {% endfor %}
+        {% if has_add_permission %}
+        <a href="{{ add_url }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            {% trans 'Add' %} {{ cl.opts.verbose_name }}
+        </a>
+        {% endif %}
     </div>
 </div>
 
@@ -27,16 +33,11 @@
     {% if cl.has_filters %}
     <div class="card-header">
         <div class="filters-bar">
-            <div class="filter-group">
-                <span class="filter-label">{% trans 'Filter' %}</span>
-                <div class="filter-options">
-                    {% for spec in cl.filter_specs %}
-                    <a href="?" class="filter-chip {% if spec.selected %}active{% endif %}">
-                        {{ spec.title }}
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
+            {% for spec in cl.filter_specs %}
+            <a href="?" class="filter-chip">
+                {{ spec.title }}
+            </a>
+            {% endfor %}
         </div>
     </div>
     {% endif %}
@@ -50,7 +51,7 @@
                 <option value="delete_selected">{% trans 'Delete selected' %}</option>
             </select>
             <button type="submit" class="btn btn-secondary">{% trans 'Go' %}</button>
-            <span class="actions-count">{{ result_count }} {% trans 'items' %}</span>
+            <span class="actions-count">{{ cl.result_count }} {% trans 'items' %}</span>
         </div>
 
         <div class="table-container">
@@ -68,8 +69,8 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if results %}
                     {% for result in results %}
-                    {% if result.form %}{{ result.form }}{% else %}
                     <tr class="row-{% cycle 'odd' 'even' %}">
                         <td class="checkbox-cell">
                             <input type="checkbox" name="_selected_action" value="{{ result.pk }}" class="row-checkbox action-checkbox">
@@ -78,31 +79,40 @@
                         <td>{{ item }}</td>
                         {% endfor %}
                     </tr>
-                    {% endif %}
                     {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="100%" class="empty-state">
+                            <div class="empty-state-content">
+                                <span class="empty-state-icon">📋</span>
+                                <p>{% trans 'No results found' %}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
     </form>
 
-    {% if pagination_info.has_next or pagination_info.has_previous %}
+    {% if cl.paginator %}
     <div class="pagination">
         <span class="pagination-info">
-            {% blocktrans with start=pagination_info.start_index end=pagination_info.end_index total=pagination_info.total_count %}Showing {{ start }} to {{ end }} of {{ total }} entries{% endblocktrans %}
+            {% blocktrans with start=cl.start_index end=cl.end_index total=cl.result_count %}Showing {{ start }} to {{ end }} of {{ total }} entries{% endblocktrans %}
         </span>
         <div class="pagination-controls">
-            {% if pagination_info.has_previous %}
-            <a href="?p={{ pagination_info.previous_page }}" class="pagination-link">‹</a>
+            {% if cl.has_previous %}
+            <a href="?p={{ cl.previous_page_number }}" class="pagination-link">‹</a>
             {% else %}
             <span class="pagination-link disabled">‹</span>
             {% endif %}
             
-            {% for page in pagination_info.page_range %}
-            <a href="?p={{ page }}" class="pagination-link {% if page == pagination_info.current_page %}active{% endif %}">{{ page }}</a>
+            {% for page_num in cl.paginator.page_range %}
+            <a href="?p={{ page_num }}" class="pagination-link {% if page_num == cl.number %}active{% endif %}">{{ page_num }}</a>
             {% endfor %}
             
-            {% if pagination_info.has_next %}
-            <a href="?p={{ pagination_info.next_page }}" class="pagination-link">›</a>
+            {% if cl.has_next %}
+            <a href="?p={{ cl.next_page_number }}" class="pagination-link">›</a>
             {% else %}
             <span class="pagination-link disabled">›</span>
             {% endif %}
@@ -112,46 +122,53 @@
 </div>
 
 <style>
-.module-card {
-    background: hsl(var(--card));
+.checkbox-cell {
+    width: 40px;
+    text-align: center;
+}
+
+.checkbox-cell input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.empty-state-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.875rem;
+}
+
+.actions-count {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.btn-secondary {
+    background: hsl(var(--background));
     border: 1px solid hsl(var(--border));
-    border-radius: calc(var(--radius) + 4px);
-    padding: 1.25rem;
-}
-.module-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid hsl(var(--border));
-}
-.module-icon { font-size: 1.25rem; }
-.module-title {
-    font-size: 0.875rem;
-    font-weight: 600;
     color: hsl(var(--foreground));
 }
-.module-list { display: flex; flex-direction: column; gap: 0.25rem; }
-.module-item {
-    display: flex;
-    align-items: center;
-}
-.module-item-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0.625rem;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    color: hsl(var(--foreground));
-    text-decoration: none;
-    width: 100%;
-    transition: all 0.15s;
-}
-.module-item-link:hover {
+
+.btn-secondary:hover {
     background: hsl(var(--accent));
-    color: hsl(var(--primary));
 }
 </style>
 {% endblock %}

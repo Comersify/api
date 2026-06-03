@@ -162,6 +162,46 @@
             sidebar.classList.remove('open');
         }
     });
+    
+    // Checkbox toggle for admin list
+    document.getElementById('action-toggle')?.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.action-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+    
+    // Animate elements on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.stat-card, .module-card').forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Dark mode toggle
+    const themeToggle = document.querySelector('.header-theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+        
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    }
     </script>
 </body>
 </html>
